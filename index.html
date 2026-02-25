@@ -170,6 +170,16 @@
                 <label class="checkbox-item"><input type="checkbox" id="checkSonstiges" onclick="toggleSonstiges()"> <span>Sonstiges</span></label>
             </div>
             <input type="text" id="inputSonstiges" placeholder="..." style="display:none; margin-top:6px;">
+            <!-- Auswahl der Standardtexte für Flachdachfälle (nur sichtbar bei aktivierter Flachdach-Prüfung) -->
+            <div id="flachdachTextOptions" class="no-print" style="margin-top:6px; display:none;">
+                <span class="label">Textvorlage für Befund</span>
+                <select id="flachdachTemplate">
+                    <option value="">- wählen -</option>
+                    <option value="funkenschlag">Funkenschlag</option>
+                    <option value="roofscan">RoofScan</option>
+                    <option value="s23">Samsung S23</option>
+                </select>
+            </div>
         </div>
         <div>
             <h2>Leistungen</h2>
@@ -179,15 +189,6 @@
                 <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
                 <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Pool LO</span></label>
-            </div>
-            <!-- Auswahl der Standardtexte für Flachdachfälle (nur sichtbar bei aktivierter Flachdach-Prüfung) -->
-            <div id="flachdachTextOptions" class="no-print" style="margin-top:6px; display:none;">
-                <span class="label">Textvorlage für Befund</span>
-                <select id="flachdachTemplate">
-                    <option value="">- wählen -</option>
-                    <option value="funkenschlag">Funkenschlag</option>
-                    <option value="roofscan">RoofScan</option>
-                </select>
             </div>
             <div class="grid" style="margin-top:8px;">
                 <div><span class="label">Arbeitszeit (Std)</span><input type="number" step="0.5" placeholder="0.0"></div>
@@ -355,6 +356,14 @@ Es wurde zum Zeitpunkt der Überprüfung ein Verdachtsbereich V1 ermittelt.
 Der Verdachtsbereich befindet sich ca. 3 m neben dem betroffenen Gully.
 Da eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht möglich ist, wird empfohlen, die gesamte Flachdachfläche nach einem Niederschlag nochmals zu prüfen.`;
 
+    const FLACHDACH_TEXT_S23 =
+`Bei dem vorliegenden Schaden handelt es sich um ein Mobiltelefon des Typs Samsung Galaxy S23.
+Das Gerät wurde zum Zeitpunkt der Begutachtung funktionsgeprüft und äußerlich inspiziert.
+
+Im Rahmen der Sichtprüfung wurden Beschädigungen im Bereich des Gehäuses und/oder des Displays festgestellt, die mit einem mechanischen Einwirkungsereignis (z.B. Sturz) vereinbar sind.
+Zusätzlich wurden Hinweise auf einen möglichen Feuchtigkeitseintrag erhoben (z.B. Korrosionsspuren an Kontakten, Verfärbungen an Feuchtigkeitssensoren, Beschlagspuren).
+
+Eine weiterführende Öffnung des Gerätes sowie detaillierte Diagnose- und Reparaturarbeiten sind erforderlich, um das genaue Ausmaß der Beschädigung festzustellen und eine wirtschaftliche Instandsetzung zu beurteilen.`;
     // Checkbox: steuert, ob Skizzenseite beim Drucken verwendet wird
     const toggleSketch = document.getElementById('toggleSketch');
     const sketchPage = document.getElementById('sketchPage');
@@ -401,6 +410,8 @@ Da eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht m�
                 befundTextarea.value = FLACHDACH_TEXT_FUNKENSCHLAG;
             } else if (flachdachTemplateSelect.value === 'roofscan') {
                 befundTextarea.value = FLACHDACH_TEXT_ROOFSCAN;
+            } else if (flachdachTemplateSelect.value === 's23') {
+                befundTextarea.value = FLACHDACH_TEXT_S23;
             } else {
                 return;
             }
