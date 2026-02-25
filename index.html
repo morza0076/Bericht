@@ -62,6 +62,59 @@
         button { padding: 12px; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
         button.secondary { background: #444; }
 
+        /* Mobile-Optimierung für Smartphones (z.B. Samsung S23) */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 4px;
+                background: #e5e2d8;
+            }
+            .page {
+                width: 100%;
+                min-height: auto;
+                margin: 0 0 12px 0;
+                padding: 10px 8px 16px 8px;
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .header-right {
+                text-align: left;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            #controls {
+                position: sticky;
+                top: 0;
+                right: auto;
+                left: 0;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 4px;
+                background: rgba(244, 241, 232, 0.95);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            #controls button {
+                flex: 1 1 45%;
+                min-width: 120px;
+            }
+            .sketch-box {
+                height: 60vh;
+            }
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+            .img-container {
+                height: 220px;
+            }
+        }
+
         @media print { 
             body { background: white; padding: 0; margin: 0; }
             #controls, .toolbar, .no-print, #photoInput { display: none !important; } 
@@ -177,7 +230,6 @@
                     <option value="">- wählen -</option>
                     <option value="funkenschlag">Funkenschlag</option>
                     <option value="roofscan">RoofScan</option>
-                    <option value="s23">Samsung S23</option>
                 </select>
             </div>
         </div>
@@ -356,14 +408,6 @@ Es wurde zum Zeitpunkt der Überprüfung ein Verdachtsbereich V1 ermittelt.
 Der Verdachtsbereich befindet sich ca. 3 m neben dem betroffenen Gully.
 Da eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht möglich ist, wird empfohlen, die gesamte Flachdachfläche nach einem Niederschlag nochmals zu prüfen.`;
 
-    const FLACHDACH_TEXT_S23 =
-`Bei dem vorliegenden Schaden handelt es sich um ein Mobiltelefon des Typs Samsung Galaxy S23.
-Das Gerät wurde zum Zeitpunkt der Begutachtung funktionsgeprüft und äußerlich inspiziert.
-
-Im Rahmen der Sichtprüfung wurden Beschädigungen im Bereich des Gehäuses und/oder des Displays festgestellt, die mit einem mechanischen Einwirkungsereignis (z.B. Sturz) vereinbar sind.
-Zusätzlich wurden Hinweise auf einen möglichen Feuchtigkeitseintrag erhoben (z.B. Korrosionsspuren an Kontakten, Verfärbungen an Feuchtigkeitssensoren, Beschlagspuren).
-
-Eine weiterführende Öffnung des Gerätes sowie detaillierte Diagnose- und Reparaturarbeiten sind erforderlich, um das genaue Ausmaß der Beschädigung festzustellen und eine wirtschaftliche Instandsetzung zu beurteilen.`;
     // Checkbox: steuert, ob Skizzenseite beim Drucken verwendet wird
     const toggleSketch = document.getElementById('toggleSketch');
     const sketchPage = document.getElementById('sketchPage');
@@ -410,8 +454,6 @@ Eine weiterführende Öffnung des Gerätes sowie detaillierte Diagnose- und Repa
                 befundTextarea.value = FLACHDACH_TEXT_FUNKENSCHLAG;
             } else if (flachdachTemplateSelect.value === 'roofscan') {
                 befundTextarea.value = FLACHDACH_TEXT_ROOFSCAN;
-            } else if (flachdachTemplateSelect.value === 's23') {
-                befundTextarea.value = FLACHDACH_TEXT_S23;
             } else {
                 return;
             }
