@@ -178,9 +178,9 @@
             .label { color: #555 !important; font-size: 8pt !important; margin-bottom: 2px !important; }
             .section h2 { color: #000 !important; border-bottom: 1px solid #ccc !important; font-size: 11pt !important; }
             
-            .checkbox-group, .checkbox-group-3 { grid-template-columns: 1fr 1fr; border: none; gap: 5px; }
-            .checkbox-item { padding: 2px 0; border: none; color: #000 !important; }
-            input[type="checkbox"] { appearance: auto !important; -webkit-appearance: auto !important; accent-color: #000 !important; width: 14px; height: 14px; }
+            .checkbox-group, .checkbox-group-3 { grid-template-columns: 1fr 1fr; border: none; gap: 5px; background: transparent !important; border-radius: 0 !important; overflow: visible !important; }
+            .checkbox-item { padding: 2px 0; border: none !important; color: #000 !important; margin: 0 !important; }
+            input[type="checkbox"] { appearance: auto !important; -webkit-appearance: auto !important; accent-color: #000 !important; width: 14px !important; height: 14px !important; }
 
             .bauteile-container { border: 1px solid #000 !important; background: transparent !important; box-shadow: none !important; padding: 8px !important; margin-bottom: 10px !important; border-left: 1px solid #000 !important; }
             
@@ -191,7 +191,7 @@
             .photo-box { border: 1px solid #aaa !important; padding: 5px !important; background: transparent !important; }
             .img-container { height: 75mm !important; border: none !important; }
             
-            .footer { position: absolute; bottom: 10mm; left: 15mm; right: 15mm; border-top: 1px solid #ccc !important; color: #555 !important; }
+            .footer { position: absolute; bottom: 10mm; left: 15mm; right: 15mm; border-top: 1px solid #ccc !important; color: #555 !important; margin-top: 0 !important; }
         }
     </style>
 </head>
@@ -209,3 +209,812 @@
     <button onclick="document.getElementById('importFile').click()">📂 Laden</button>
     <input type="file" id="importFile" accept=".lok,application/json" style="display:none" onchange="importFullReport(this)">
 </div>
+
+<div class="page" id="mainPage">
+    <div class="header">
+        <div class="header-left">
+            <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+            <h1>Leckortungsbericht</h1>
+        </div>
+        <div class="header-right">
+            <strong>Brugger Entfeuchtung &amp; Kanaltechnik GmbH</strong><br />
+            Liebenauer Hauptstraße 181, 8041 Graz<br />
+            Tel: +43 316 471771 | office@brugger-entfeuchtung.at
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Kundendaten</h2>
+        <div class="grid">
+            <div><span class="label">Kunde / Name</span><input type="text" id="name"></div>
+            <div><span class="label">Datum</span><input type="date" id="datum"></div>
+        </div>
+        <div style="margin-top: 10px;">
+            <span class="label">Einsatzadresse</span>
+            <input type="text" id="adresse" placeholder="Straße / Hausnummer">
+            <div class="address-grid">
+                <input type="text" id="plz" placeholder="PLZ">
+                <input type="text" id="ort" placeholder="Ort">
+                <input type="text" id="telefon" placeholder="Telefonnummer">
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Schadensanalyse &amp; Befund</h2>
+        <textarea id="befund" placeholder="Ergebnisse der Ortung..."></textarea>
+    </div>
+
+    <div class="section grid">
+        <div>
+            <h2>Maßnahmen</h2>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox"> <span>Trocknung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Sanierung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Verstopfungsbehebung</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkReparatur"> <span>Reparatur</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkSonstiges" onclick="toggleSonstiges()"> <span>Sonstiges</span></label>
+            </div>
+            <input type="text" id="inputSonstiges" placeholder="..." style="display:none; margin-top:8px;">
+            
+            <div id="flachdachTextOptions" class="no-print" style="margin-top:15px; display:none;">
+                <span class="label" style="color: var(--accent);">Textvorlage für Befund</span>
+                <select id="flachdachTemplate">
+                    <option value="">- wählen -</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <h2>Leistungen</h2>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" id="checkLOPauschale"> <span>LO Pauschale</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkLeckortung"> <span>Leckortung</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkOptLeckortung"> <span>opt. Leckortung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkPool"> <span>Pool LO</span></label>
+            </div>
+            
+            <div id="zeitContainer" style="margin-top:12px; display:none; border-top: 1px dashed var(--border); padding-top: 12px;">
+                <div class="grid">
+                    <div><span class="label">Arbeitszeit (Std)</span><input type="number" step="0.5" placeholder="0.0"></div>
+                    <div><span class="label">Fahrzeit (Std)</span><input type="number" step="0.5" placeholder="0.0"></div>
+                </div>
+            </div>
+            <div class="grid" style="margin-top:12px;">
+                <div><span class="label">Fahrzone</span><select><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                <div><span class="label">Ortungsgas (l)</span><select><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="reparaturSection">
+        <h2>Reparatur &amp; Prüfdetails</h2>
+        
+        <div id="ueberpruefteBauteileContainer" class="bauteile-container" style="display:none;">
+            <span class="label" style="color:var(--primary); margin-bottom:8px;">Überprüfte Bauteile</span>
+            <div class="checkbox-group-3">
+                <label class="checkbox-item"><input type="checkbox"> <span>Kaltwasser</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Warmwasser</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Zirkulation</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Heizungsleitungen</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Ablauf</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Regenablauf</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkSonstigesBauteile" onclick="toggleSonstigesBauteile()"> <span>Sonstiges</span></label>
+            </div>
+            <input type="text" id="inputSonstigesBauteile" placeholder="..." style="display:none; margin-top:8px;">
+        </div>
+
+        <div id="poolBauteileContainer" class="bauteile-container pool" style="display:none;">
+            <span class="label" style="color:#2b83b8; margin-bottom:8px;">Pool Bauteile</span>
+            <div class="checkbox-group-3">
+                <label class="checkbox-item"><input type="checkbox"> <span>Skimmerleitung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Düsenleitung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Saugleitung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Gegenstromanlage</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkSonstigesPool" onclick="toggleSonstigesPool()"> <span>Sonstiges</span></label>
+            </div>
+            <input type="text" id="inputSonstigesPool" placeholder="..." style="display:none; margin-top:8px;">
+        </div>
+
+        <div id="reparaturWorks" style="margin-bottom: 15px; display:none;">
+            <span class="label">Erforderliche Reparaturarbeiten</span>
+            <textarea id="reparatur" placeholder="..."></textarea>
+        </div>
+        
+        <div class="grid" style="margin-bottom: 15px;">
+            <div><span class="label">Betroffene Räume</span><input type="text" placeholder="..."></div>
+            <div><span class="label">Etage</span><input type="text" placeholder="..."></div>
+        </div>
+        
+        <div class="checkbox-group-3">
+            <label class="checkbox-item"><input type="checkbox"> <span>Ursache bereits behoben</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Druckabfall</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeit</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Tracergas</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Endoskopie</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Rohrkamera</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Druckprüfung</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Absperrblase</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Nebelverfahren</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Luminatspülung</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeitsmessung</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Akustik</span></label>
+            <label class="checkbox-item"><input type="checkbox"> <span>Stemmarbeiten</span></label>
+            <label class="checkbox-item"><input type="checkbox" id="checkSonstigesReparatur" onclick="toggleSonstigesReparatur()"> <span>Sonstiges</span></label>
+        </div>
+        <input type="text" id="inputSonstigesReparatur" placeholder="..." style="display:none; margin-top:8px;">
+    </div>
+
+    <div class="section no-print" style="margin-top: 30px; padding: 15px; background: #fff5d1; border-radius: 8px; border-left: 4px solid var(--accent);">
+        <label class="checkbox-item" style="font-weight: bold; color: var(--primary);">
+            <input type="checkbox" id="toggleSketch">
+            <span>Skizzenseite (Seite 2) beim Bericht generieren & drucken</span>
+        </label>
+    </div>
+    <div class="footer"><span>Brugger GmbH</span><span>Seite 1</span></div>
+</div>
+
+<div class="page" id="sketchPage">
+    <div class="header">
+        <div class="header-left">
+            <h1>Skizze / Grundriss</h1>
+        </div>
+    </div>
+
+    <div class="toolbar no-print">
+        <div class="tool active" style="background:#000" onclick="setTool('#000', 2, this)"></div>
+        <div class="tool" style="background:#0055ff" onclick="setTool('#0055ff', 2, this)"></div>
+        <div class="tool" style="background:#ff2a2a" onclick="setTool('#ff2a2a', 2, this)"></div>
+        <div class="tool" style="background:#00c800" onclick="setTool('#00c800', 2, this)"></div>
+        <div class="tool eraser" onclick="setTool('#ffffff', 20, this)">🧽</div>
+    </div>
+
+    <canvas id="sketch-canvas" class="drawing-area sketch-box"></canvas>
+    <div style="font-size:12px; color:var(--text-light); margin-top:10px; font-weight:600; display:flex; gap: 15px; justify-content: center;">
+        <span><span style="color:#0055ff;">■</span> Wasser</span>
+        <span><span style="color:#ff2a2a;">■</span> Heizung</span>
+        <span><span style="color:#00c800;">■</span> Abfluss</span>
+    </div>
+    <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
+</div>
+
+<div id="photoPagesContainer"></div>
+
+<script>
+/* =========================
+   Initialisierung / Helpers
+   ========================= */
+const dateInput = document.getElementById('datum');
+if (dateInput) {
+    try {
+        if ('valueAsDate' in dateInput) {
+            dateInput.valueAsDate = new Date();
+        } else {
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
+    } catch (e) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
+}
+let currentStyle = '#000';
+let currentWidth = 2;
+
+function buildReportBaseName() {
+    const adr = document.getElementById('adresse')?.value.trim() || '';
+    const plz = document.getElementById('plz')?.value.trim() || '';
+    const ort = document.getElementById('ort')?.value.trim() || '';
+    const baseTitle = 'Leckortungsbericht';
+
+    let locationPart = `${plz} ${ort}`.trim();
+    let titleParts = [];
+    if (locationPart) titleParts.push(locationPart);
+    if (adr) titleParts.push(adr);
+
+    if (titleParts.length > 0) {
+        return `${baseTitle} - ${titleParts.join(', ')}`;
+    } else {
+        return baseTitle;
+    }
+}
+
+function updateTitleWithAddress() {
+    document.title = buildReportBaseName();
+}
+
+document.getElementById('adresse')?.addEventListener('input', updateTitleWithAddress);
+document.getElementById('plz')?.addEventListener('input', updateTitleWithAddress);
+document.getElementById('ort')?.addEventListener('input', updateTitleWithAddress);
+updateTitleWithAddress();
+
+function autoResize() { this.style.height = 'auto'; this.style.height = (this.scrollHeight + 2) + 'px'; }
+document.querySelectorAll('textarea').forEach(el => el.addEventListener('input', autoResize));
+
+/* =========================
+   Zustände / Sichtbarkeiten
+   ========================= */
+const checkFlachdach = document.getElementById('checkFlachdach');
+const reparaturSection = document.getElementById('reparaturSection');
+const befundTextarea = document.getElementById('befund');
+const flachdachTextOptions = document.getElementById('flachdachTextOptions');
+const flachdachTemplateSelect = document.getElementById('flachdachTemplate');
+const checkReparatur = document.getElementById('checkReparatur');
+const reparaturWorks = document.getElementById('reparaturWorks');
+
+function applyReparaturState() {
+    if (!checkReparatur || !reparaturWorks) return;
+    reparaturWorks.style.display = checkReparatur.checked ? '' : 'none';
+}
+checkReparatur?.addEventListener('change', applyReparaturState);
+applyReparaturState();
+
+const toggleSketch = document.getElementById('toggleSketch');
+const sketchPage = document.getElementById('sketchPage');
+if (toggleSketch) {
+    document.body.classList.remove('sketch-enabled');
+    toggleSketch.addEventListener('change', () => {
+        if (toggleSketch.checked) {
+            document.body.classList.add('sketch-enabled');
+            if (sketchPage) sketchPage.style.display = '';
+        } else {
+            document.body.classList.remove('sketch-enabled');
+        }
+        renumberPhotoPages();
+    });
+}
+
+function setTemplateOptions(mode) {
+    if (!flachdachTemplateSelect) return;
+    const prev = flachdachTemplateSelect.value;
+    const base = `<option value="">- wählen -</option>`;
+    let opts = '';
+    if (mode === 'flachdach') {
+        opts = `
+            <option value="funkenschlag">Funkenschlag</option>
+            <option value="roofscan">RoofScan</option>
+        `;
+    } else if (mode === 'leckortung') {
+        opts = `
+            <option value="heizung">Heizung</option>
+            <option value="blei">Blei Wohnung</option>
+            <option value="silikonfuge">Silikonfuge</option>
+            <option value="gasaustritt">Gasaustritt Whg</option>
+        `;
+    } else {
+        flachdachTemplateSelect.innerHTML = base;
+        flachdachTemplateSelect.value = '';
+        return;
+    }
+    flachdachTemplateSelect.innerHTML = base + opts;
+    const stillExists = Array.from(flachdachTemplateSelect.options).some(o => o.value === prev);
+    flachdachTemplateSelect.value = stillExists ? prev : '';
+}
+
+function applyTemplateVisibility() {
+    if (!flachdachTextOptions) return;
+    const cf = document.getElementById('checkFlachdach');
+    const cl = document.getElementById('checkLeckortung');
+    const clo = document.getElementById('checkLOPauschale');
+    const co = document.getElementById('checkOptLeckortung');
+
+    const flachdachOn = !!(cf && cf.checked);
+    const leckOn = !!((cl && cl.checked) || (clo && clo.checked) || (co && co.checked));
+
+    const bauteileContainer = document.getElementById('ueberpruefteBauteileContainer');
+    if (bauteileContainer) {
+        bauteileContainer.style.display = leckOn ? 'block' : 'none';
+    }
+
+    if (flachdachOn) {
+        flachdachTextOptions.style.display = 'block';
+        setTemplateOptions('flachdach');
+    } else if (leckOn) {
+        flachdachTextOptions.style.display = 'block';
+        setTemplateOptions('leckortung');
+    } else {
+        flachdachTextOptions.style.display = 'none';
+        setTemplateOptions(null);
+    }
+}
+checkFlachdach?.addEventListener('change', applyFlachdachState);
+function applyFlachdachState() {
+    if (!checkFlachdach) return;
+    if (checkFlachdach.checked) {
+        if (reparaturSection) reparaturSection.style.display = 'none';
+        if (sketchPage) sketchPage.style.display = 'none';
+        if (toggleSketch) {
+            toggleSketch.checked = false;
+            document.body.classList.remove('sketch-enabled');
+        }
+    } else {
+        if (reparaturSection) reparaturSection.style.display = '';
+        if (sketchPage) sketchPage.style.display = '';
+    }
+    applyTemplateVisibility();
+    renumberPhotoPages();
+}
+applyFlachdachState();
+
+const checkPool = document.getElementById('checkPool');
+function applyPoolState() {
+    const poolContainer = document.getElementById('poolBauteileContainer');
+    if (!checkPool || !poolContainer) return;
+    poolContainer.style.display = checkPool.checked ? 'block' : 'none';
+}
+checkPool?.addEventListener('change', applyPoolState);
+applyPoolState();
+
+/* Vorlagentexte */
+const FLACHDACH_TEXT_FUNKENSCHLAG = `1. Verfahrensoptik und Methodik\nDie Überprüfung der Kunststoff-Dachabdichtung auf dem Hauptdach wurde mittels des Hochspannungs-Impuls-Verfahrens (Trockenortungsverfahren) durchgeführt. Dieses Verfahren basiert auf der elektrischen Isolationsfähigkeit der Abdichtungslage.\n\nFunktionsweise: Eine kontrollierte Hochspannung wird über eine mobile Kupferbürste auf die Oberfläche der Dachbahn appliziert. Da die Kunststoffabdichtung als Nichtleiter fungiert, bleibt der Stromkreis unterbrochen, solange die Schicht intakt ist.\nDetektion: Bei Vorliegen einer Fehlstelle (Loch, Riss oder kapillare Undichtigkeit) kommt es zum Funkendurchschlag in Richtung des geerdeten Untergrunds. Dieser Durchschlag wird sowohl akustisch als auch optisch signalisiert und ermöglicht eine zentimetergenaue Lokalisierung.\nParameter: Die Prüfspannung wurde spezifisch auf die Materialstärke der vorliegenden Kunststoffbahn kalibriert, um eine zuverlässige Durchschlagskraft bei Defekten zu gewährleisten, ohne das intakte Material thermisch zu belasten.\n\n2. Untersuchungsumfang\nGegenstand der Prüfung war die freiliegende Flachdachfläche des Hauptdaches. Voraussetzung für die Durchführung war eine trockene und besenreine Oberfläche ohne Auflast (z. B. Kies oder Begrünung), um eine flächendeckende Kontaktierung durch die Prüfbürste sicherzustellen.\n\n3. Befund und Ergebnisse\nIm Rahmen der systematischen Abfahrung der Dachfläche sowie der detaillierten Überprüfung der Nahtfügebereiche und Anschlüsse wurden insgesamt 24 Verdachtsbereiche identifiziert.\n\nCharakteristik der Fehlstellen: Die Detektionen umfassen sowohl punktuelle Perforationen als auch potenzielle Schwachstellen im Bereich der Nahtüberlappungen.\nDokumentation: Alle 24 lokalisierten Stellen wurden unmittelbar auf der Dachhaut markiert, um eine direkte Zuordnung für die nachfolgenden Instandsetzungsmaßnahmen zu ermöglichen.`;
+const FLACHDACH_TEXT_ROOFSCAN = `1. Ausgangssituation:\nAn der Decke im 1. Untergeschoss wurde ein Wassereintritt im Bereich eines Gullys festgestellt.\nDarüber befindet sich die Flachdachabdichtung der Terrasse.\n\nDer Aufbau des Flachdaches stellt sich wie folgt dar:\n- Stahlbetondecke\n- Abdichtung\n- Isolierung\n- Kies\n- Betonplatten\n\nZur Lokalisierung der Wasserdurchtritte wurden Untersuchungen mittels einer Potential-Differenzmessung durchgeführt.\nEs wurde nur ein Teilbereich der Terrasse überprüft.\n\n2. Durchführung der Messung und vorbereitende Maßnahmen:\nZur Charakterisierung von möglichen Leckagen im Abdichtungssystem wurden gerichtete elektrische Felder zwischen der Einspeisung an der Schadstelle und einem mobilen Sensor im Messbereich erzeugt. Wegsamkeitsbereiche durch das Abdichtungssystem äußern sich durch erhöhte Energiedurchtritte des Tracersignals.\n\n3. Untersuchungsergebnisse:\nEs wurde zum Zeitpunkt der Überprüfung ein Verdachtsbereich V1 ermittelt.\nDer Verdachtsbereich befindet sich ca. 3 m neben dem betroffenen Gully.\nDa eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht möglich ist, wird empfohlen, die gesamte Flachdachfläche nach einem Niederschlag nochmals zu prüfen.`;
+const TEXT_HEIZUNG = `Diagnose und Druckprüfung\nAufgrund eines systemseitigen Wasserverlustes an der Heizungsanlage wurden die einzelnen Heizkreise einer systemgetrennten Druckprobe unterzogen. Hierbei konnte ein signifikanter Druckabfall im Heizkreis des Gastraums lokalisiert werden.\n\nLeckortung mittels Spurengas\nZur exakten Lokalisierung der Schadstelle wurde der betroffene Heizkreis entleert und mit Ortungsgas (Formiergas) beaufschlagt. Die anschließende messtechnische Untersuchung ergab einen Gasaustritt an der Heizungsleitung innerhalb des Gastraums.`;
+const TEXT_BLEI_WOHNUNG = `An den Wänden zum Badezimmer wurden Vernässungen festgestellt.\nEs erfolgte die Überprüfung der Druck- und Ablaufleitungen im Schadensbereich.\n\nBei den Druckleitungen wurde zum Zeitpunkt der Überprüfung keine Undichtheit festgestellt.\nBei der Überprüfung der Ablaufleitungen wurden Undichtheiten in der Bleileitung des Waschtisches in der Wand und im Fußbodenaufbau sowie Undichtheiten in der Bleileitung zum Gully festgestellt.`;
+const TEXT_SILIKONFUGE = `An einer Wand zum Badezimmer wurden Vernässungen festgestellt.\nEs erfolgte die Überprüfung der Druck- und Ablaufleitungen in der gesamten Wohnung.\nZum Zeitpunkt der Überprüfung wurde keine Undichtheit an den Druck- und Ablaufleitungen festgestellt.\n\nEs wurden Undichtheiten in der Silikonabdichtung der Badewanne festgestellt.`;
+const TEXT_GASAUSTritt_WHG = `Objekt: Trennwand Kinderzimmer / Badezimmer\nSchadensbild: Akute Vernässung des Mauerwerks im bodennahen und mittleren Wandbereich.\n\nUntersuchungsschritte\nSystemprüfung: Funktionsprüfung der Abwasser- und Druckleitungen zur Differenzierung der Schadensquelle.\nVorbereitung: Absperrung der Wasserzufuhr sowie vollständige Entleerung des Leitungssystems.\nDetektionsverfahren: Beaufschlagung der Rohrleitungen mit Prüfgas (Tracergas). Die Ortung erfolgte mittels elektronischem Gasspürgerät durch Messung der Gasdiffusion an den Bauteiloberflächen.\n\nTechnischer Befund\nDie messtechnische Untersuchung lokalisierte eine Undichtigkeit an der Warmwasserleitung. Der Gasaustritt konzentriert sich innerhalb der Wandung im Bereich der Zuleitung zur Duscharmatur.`;
+
+if (flachdachTemplateSelect && befundTextarea) {
+    flachdachTemplateSelect.addEventListener('change', () => {
+        const v = flachdachTemplateSelect.value;
+        if (v === 'funkenschlag') befundTextarea.value = FLACHDACH_TEXT_FUNKENSCHLAG;
+        else if (v === 'roofscan') befundTextarea.value = FLACHDACH_TEXT_ROOFSCAN;
+        else if (v === 'heizung') befundTextarea.value = TEXT_HEIZUNG;
+        else if (v === 'blei') befundTextarea.value = TEXT_BLEI_WOHNUNG;
+        else if (v === 'silikonfuge') befundTextarea.value = TEXT_SILIKONFUGE;
+        else if (v === 'gasaustritt') befundTextarea.value = TEXT_GASAUSTritt_WHG;
+        autoResize.call(befundTextarea);
+    });
+}
+
+const checkLeckortung = document.getElementById('checkLeckortung');
+const zeitContainer = document.getElementById('zeitContainer');
+function applyLeckortungState() {
+    if (!checkLeckortung || !zeitContainer) return;
+    zeitContainer.style.display = checkLeckortung.checked ? '' : 'none';
+    applyTemplateVisibility();
+}
+checkLeckortung?.addEventListener('change', applyLeckortungState);
+applyLeckortungState();
+
+document.getElementById('checkLOPauschale')?.addEventListener('change', applyTemplateVisibility);
+document.getElementById('checkOptLeckortung')?.addEventListener('change', applyTemplateVisibility);
+applyTemplateVisibility();
+
+/* =========================
+   Zeichnen / Skizze (Canvas)
+   ========================= */
+function initDrawing(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    function resize() {
+        const rect = canvas.getBoundingClientRect();
+        const temp = canvas.toDataURL();
+        canvas.width = rect.width; canvas.height = rect.height;
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = temp;
+    }
+    window.addEventListener('load', resize);
+    window.addEventListener('resize', resize);
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    canvas.addEventListener('mousedown', () => { drawing = true; ctx.beginPath(); });
+    canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        const pos = getPos(e);
+        ctx.lineWidth = currentWidth; ctx.lineCap = 'round'; ctx.strokeStyle = currentStyle;
+        ctx.lineTo(pos.x, pos.y); ctx.stroke();
+    });
+    window.addEventListener('mouseup', () => drawing = false);
+
+    canvas.addEventListener('touchstart', (e) => { drawing = true; ctx.beginPath(); e.preventDefault(); }, {passive:false});
+    canvas.addEventListener('touchmove', (e) => {
+        if (!drawing) return;
+        const pos = getPos(e);
+        ctx.lineWidth = currentWidth; ctx.lineCap = 'round'; ctx.strokeStyle = currentStyle;
+        ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault();
+    }, {passive:false});
+    canvas.addEventListener('touchend', () => drawing = false);
+
+    return ctx;
+}
+const sketchCtx = initDrawing('sketch-canvas');
+
+function setTool(color, width, el) {
+    currentStyle = color; currentWidth = width;
+    document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function clearSketch() {
+    const canvas = document.getElementById('sketch-canvas');
+    sketchCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =========================
+   Fotos / Markierungen
+   ========================= */
+function getOrCreateLastGrid() {
+    const container = document.getElementById('photoPagesContainer');
+    const grids = container.querySelectorAll('.photo-grid');
+    let lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
+
+    if (!lastGrid || lastGrid.children.length >= 4) {
+        const page = document.createElement('div');
+        page.className = 'page';
+        const gridId = 'grid-' + Date.now() + '-' + Math.floor(Math.random()*1000);
+        page.innerHTML = `
+            <div class="header">
+                <div class="header-left">
+                    <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                    <h1>Fotodokumentation</h1>
+                </div>
+            </div>
+            <div class="photo-grid" id="${gridId}"></div>
+            <div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>
+        `;
+        container.appendChild(page);
+        renumberPhotoPages();
+        return document.getElementById(gridId);
+    }
+    return lastGrid;
+}
+
+function handlePhotos(input) {
+    const files = Array.from(input.files);
+    files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            scaleAndInsertPhoto(e.target.result, null); 
+        };
+        reader.readAsDataURL(file);
+    });
+    input.value = ''; 
+}
+
+function calcPhotoPageNumber(photoPageIndex) {
+    const hasSketch = !!(toggleSketch && toggleSketch.checked);
+    return (hasSketch ? 3 : 2) + photoPageIndex;
+}
+
+function renumberPhotoPages() {
+    const footers = document.querySelectorAll('#photoPagesContainer .page .footer .page-no');
+    footers.forEach((el, idx) => {
+        el.textContent = `Seite ${calcPhotoPageNumber(idx)}`;
+    });
+}
+
+function addArrow(e, container) {
+    const old = container.querySelector('.marker-arrow'); if (old) old.remove();
+    const rect = container.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const arrow = document.createElement('div');
+    arrow.className = 'marker-arrow';
+    arrow.style.left = x + '%';
+    arrow.style.top  = y + '%';
+    arrow.innerHTML = `
+        <svg viewBox="0 0 100 100" fill="red">
+            <path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/>
+            <path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/>
+        </svg>`;
+    container.appendChild(arrow);
+}
+
+function insertPhotoBox(imgSrc, gridId = null, descText = '', arrowPos = null) {
+    const box = document.createElement('div');
+    box.className = 'photo-box';
+    box.innerHTML = `
+        <div class="img-container" onclick="addArrow(event, this)">
+            <img src="${imgSrc}">
+        </div>
+        <input type="text" class="photo-desc" placeholder="Beschreibung eingeben..." value="${descText ? (''+descText).replace(/"/g,'&quot;') : ''}">
+    `;
+    
+    let grid;
+    if (gridId) {
+        grid = document.getElementById(gridId);
+    }
+    if (!grid) {
+        grid = getOrCreateLastGrid();
+    }
+    
+    grid.appendChild(box);
+
+    if (arrowPos && typeof arrowPos.x === 'number' && typeof arrowPos.y === 'number') {
+        const container = box.querySelector('.img-container');
+        const arrow = document.createElement('div');
+        arrow.className = 'marker-arrow';
+        arrow.style.left = arrowPos.x + '%';
+        arrow.style.top  = arrowPos.y + '%';
+        arrow.innerHTML = `
+            <svg viewBox="0 0 100 100" fill="red">
+                <path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/>
+                <path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/>
+            </svg>`;
+        container.appendChild(arrow);
+    }
+}
+
+function scaleAndInsertPhoto(dataUrl, gridId = null) {
+    const img = new Image();
+    img.onload = () => {
+        const maxSide = 1000;
+        let { width, height } = img;
+        
+        if (width > height && width > maxSide) {
+            height = Math.round(height * (maxSide / width));
+            width = maxSide;
+        } else if (height >= width && height > maxSide) {
+            width = Math.round(width * (maxSide / height));
+            height = maxSide;
+        }
+        
+        const c = document.createElement('canvas');
+        c.width = width; 
+        c.height = height;
+        const cx = c.getContext('2d');
+        cx.drawImage(img, 0, 0, width, height);
+        
+        const scaledDataUrl = cx.canvas.toDataURL('image/jpeg', 0.7);
+        insertPhotoBox(scaledDataUrl, gridId);
+    };
+    img.src = dataUrl;
+}
+
+/* =========================
+   Mailto 
+   ========================= */
+function sendEmail() {
+    const subject = buildReportBaseName();
+
+    const nameEl = document.getElementById('name');
+    const datumEl = document.getElementById('datum');
+    const adresseEl = document.getElementById('adresse');
+    const plzEl = document.getElementById('plz');
+    const ortEl = document.getElementById('ort');
+    const telEl = document.getElementById('telefon');
+    const befundEl = document.getElementById('befund');
+    const reparaturEl = document.getElementById('reparatur');
+
+    const name = nameEl?.value || '';
+    const datum = datumEl?.value || '';
+    const adresse = adresseEl?.value || '';
+    const plz = plzEl?.value || '';
+    const ort = ortEl?.value || '';
+    const tel = telEl?.value || '';
+    const befund = befundEl?.value || '';
+    const reparatur = reparaturEl?.value || '';
+
+    let body = '';
+    body += 'Leckortungsbericht\n';
+    body += '-------------------\n\n';
+    if (name) body += `Kunde / Name: ${name}\n`;
+    if (datum) body += `Datum: ${datum}\n`;
+    if (adresse || plz || ort) {
+        body += 'Einsatzadresse:\n';
+        body += `  ${adresse}\n`;
+        body += `  ${plz} ${ort}\n`;
+    }
+    if (tel) body += `Telefon: ${tel}\n`;
+    body += '\n';
+    if (befund) { body += 'Schadensanalyse & Befund:\n' + befund + '\n\n'; }
+    if (reparatur) { body += 'Erforderliche Reparaturarbeiten:\n' + reparatur + '\n\n'; }
+    body += '\n---\nGesendet vom Leckortungsbericht-System.';
+
+    const mailto = `mailto:kanal@brugger-entfeuchtung.at?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+}
+
+/* =========================
+   Vollständiges Speichern/Laden (.lok)
+   ========================= */
+function exportFullReport() {
+    const data = {
+        version: 1,
+        meta: { savedAt: new Date().toISOString() },
+        toggles: { sketchEnabled: !!(toggleSketch && toggleSketch.checked) },
+        byId: {},
+        inputsNoId: [],
+        textareasNoId: [],
+        selectsNoId: [],
+        checkStatesOrdered: [],
+        sketch: { png: null },
+        photos: []
+    };
+
+    document.querySelectorAll('input').forEach(inp => {
+        if (inp.type === 'checkbox') return;
+        if (inp.id) data.byId[inp.id] = inp.value;
+        else data.inputsNoId.push(inp.value);
+    });
+    document.querySelectorAll('textarea').forEach(ta => {
+        if (ta.id) data.byId[ta.id] = ta.value;
+        else data.textareasNoId.push(ta.value);
+    });
+    document.querySelectorAll('select').forEach(sel => {
+        if (sel.id) data.byId[sel.id] = sel.value;
+        else data.selectsNoId.push(sel.value);
+    });
+
+    const allChecks = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+    data.checkStatesOrdered = allChecks.map(c => !!c.checked);
+
+    try { data.sketch.png = document.getElementById('sketch-canvas').toDataURL('image/png'); }
+    catch (_) { data.sketch.png = null; }
+
+    const photoPages = Array.from(document.querySelectorAll('#photoPagesContainer .page'));
+    photoPages.forEach((page, pageIdx) => {
+        const grid = page.querySelector('.photo-grid');
+        if (!grid) return;
+        const boxes = Array.from(grid.querySelectorAll('.photo-box'));
+        const images = boxes.map(box => {
+            const img = box.querySelector('img');
+            const desc = box.querySelector('.photo-desc')?.value || '';
+            const arrow = box.querySelector('.marker-arrow');
+            let arrowPos = null;
+            if (arrow) {
+                const x = parseFloat((arrow.style.left || '0').replace('%','')) || 0;
+                const y = parseFloat((arrow.style.top  || '0').replace('%','')) || 0;
+                arrowPos = { x, y };
+            }
+            return { dataUrl: img?.src || '', description: desc, arrow: arrowPos };
+        });
+        data.photos.push({ index: pageIdx, images });
+    });
+
+    const safeFilename = buildReportBaseName().replace(/[<>:"/\\|?*]/g, '_');
+    const blob = new Blob([JSON.stringify(data)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = safeFilename + '.lok';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importFullReport(inputEl) {
+    const file = inputEl.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            restoreFromData(data);
+            inputEl.value = '';
+        } catch (err) {
+            console.error(err);
+            alert('Datei konnte nicht geladen werden. Ist es eine gültige .lok-Datei?');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function restoreFromData(data) {
+    if (!data || typeof data !== 'object') return;
+
+    if (data.byId) {
+        Object.keys(data.byId).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.tagName === 'SELECT' || el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'checkbox')) {
+                el.value = data.byId[id];
+                if (el.tagName === 'TEXTAREA') autoResize.call(el);
+            }
+        });
+    }
+
+    if (Array.isArray(data.inputsNoId)) {
+        let idx = 0;
+        document.querySelectorAll('input').forEach(inp => {
+            if (inp.type === 'checkbox') return;
+            if (inp.id) return;
+            inp.value = data.inputsNoId[idx++] ?? '';
+        });
+    }
+    if (Array.isArray(data.textareasNoId)) {
+        let idx = 0;
+        document.querySelectorAll('textarea').forEach(ta => {
+            if (ta.id) return;
+            ta.value = data.textareasNoId[idx++] ?? '';
+            autoResize.call(ta);
+        });
+    }
+    if (Array.isArray(data.selectsNoId)) {
+        let idx = 0;
+        document.querySelectorAll('select').forEach(sel => {
+            if (sel.id) return;
+            sel.value = data.selectsNoId[idx++] ?? '';
+        });
+    }
+
+    if (Array.isArray(data.checkStatesOrdered)) {
+        const allChecks = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+        allChecks.forEach((c, i) => { c.checked = !!data.checkStatesOrdered[i]; });
+    }
+
+    applyReparaturState();
+    applyLeckortungState();
+    applyTemplateVisibility();
+    applyPoolState();
+
+    if (data.toggles && typeof data.toggles.sketchEnabled === 'boolean' && toggleSketch) {
+        toggleSketch.checked = data.toggles.sketchEnabled;
+        toggleSketch.dispatchEvent(new Event('change'));
+    }
+
+    if (data.sketch && data.sketch.png) {
+        const canvas = document.getElementById('sketch-canvas');
+        const img = new Image();
+        img.onload = () => { sketchCtx.drawImage(img, 0, 0, canvas.width, canvas.height); };
+        img.src = data.sketch.png;
+    }
+
+    const container = document.getElementById('photoPagesContainer');
+    container.innerHTML = '';
+    if (Array.isArray(data.photos) && data.photos.length) {
+        data.photos.forEach((p, pageIdx) => {
+            const page = document.createElement('div');
+            page.className = 'page';
+            
+            const gridId = `grid-restore-${pageIdx}-${Date.now()}`;
+            
+            page.innerHTML = `
+                <div class="header">
+                    <div class="header-left">
+                        <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                        <h1>Fotodokumentation</h1>
+                    </div>
+                </div>
+                <div class="photo-grid" id="${gridId}"></div>
+                <div class="footer"><span>Brugger GmbH</span><span class="page-no">Seite ${calcPhotoPageNumber(pageIdx)}</span></div>
+            `;
+            container.appendChild(page);
+
+            if (Array.isArray(p.images)) {
+                p.images.forEach(imgObj => {
+                    insertPhotoBox(imgObj.dataUrl, gridId, imgObj.description, imgObj.arrow);
+                });
+            }
+        });
+    }
+    
+    updateTitleWithAddress();
+}
+
+/* =========================
+   Kleine Helfer
+   ========================= */
+function toggleSonstiges() {
+    const check = document.getElementById('checkSonstiges');
+    document.getElementById('inputSonstiges').style.display = check.checked ? 'block' : 'none';
+}
+function toggleSonstigesReparatur() {
+    const check = document.getElementById('checkSonstigesReparatur');
+    document.getElementById('inputSonstigesReparatur').style.display = check.checked ? 'block' : 'none';
+}
+function toggleSonstigesBauteile() {
+    const check = document.getElementById('checkSonstigesBauteile');
+    const input = document.getElementById('inputSonstigesBauteile');
+    if (check && input) {
+        input.style.display = check.checked ? 'block' : 'none';
+    }
+}
+function toggleSonstigesPool() {
+    const check = document.getElementById('checkSonstigesPool');
+    const input = document.getElementById('inputSonstigesPool');
+    if (check && input) {
+        input.style.display = check.checked ? 'block' : 'none';
+    }
+}
+</script>
+</body>
+</html>
