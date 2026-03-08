@@ -304,23 +304,23 @@
            PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
-            html, body { background: #fff; padding: 0; margin: 0; color: #000; height: auto !important; overflow: visible !important; }
+            html, body { background: #fff; padding: 0; margin: 0; color: #000; width: 100%; height: 100%; overflow: visible !important; }
             #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal { display: none !important; }
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
             /* Optimierte Seiteneinstellungen für iPad/Druck */
-            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; height: 295mm !important; padding: 5mm 10mm !important; page-break-after: auto !important; page-break-inside: avoid !important; border-radius: 0; overflow: hidden; }
+            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; height: 290mm !important; padding: 0 10mm !important; page-break-after: auto !important; page-break-inside: avoid !important; border-radius: 0; overflow: hidden; position: relative; }
             
             /* Seitenumbrüche explizit steuern */
             #sketchPage { page-break-before: always !important; }
             #photoPagesContainer .page { page-break-before: always !important; }
             
-            .header { border-bottom: 2px solid #000; margin-bottom: 5px; padding-bottom: 2px; }
-            .header-top { margin-bottom: 2px; }
+            .header { border-bottom: 2px solid #000; margin-bottom: 2px; padding-bottom: 2px; padding-top: 5mm; }
+            .header-top { margin-bottom: 0; }
             .header-title { background: var(--primary-light) !important; color: var(--primary) !important; padding: 4px 0 !important; font-size: 16px !important; text-align: center !important; border-radius: 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: none !important; }
-            .section { margin-bottom: 3px; }
-            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 2px !important; font-size: 11px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .grid, .address-grid { gap: 4px; margin-top: 2px; }
+            .section { margin-bottom: 2px; }
+            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 1px !important; font-size: 11px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid, .address-grid { gap: 2px; margin-top: 1px; }
             .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
             textarea { display: none !important; }
             .print-textarea-clone { display: block !important; width: 100% !important; font-size: 10px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
