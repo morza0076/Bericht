@@ -5,1297 +5,1717 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Leckortung" />
-    <title>Leckortungsbericht</title>
+    <meta name="apple-mobile-web-app-title" content="Brugger Berichte" />
+    <title>Brugger Formulare</title>
+    <link rel="manifest" id="manifest-placeholder">
 
     <style>
-        /* Modernisiertes Farbschema & Variablen */
-        :root { 
-            --accent: #b89b1e; 
-            --accent-light: #f4efd9;
-            --text: #2c3e50; 
-            --text-light: #7f8c8d;
-            --bg: #f0efe9; 
-            --panel-bg: #fafafa;
-            --border: #dcdcdc; 
-            --shadow: 0 4px 15px rgba(0,0,0,0.05);
-            --radius: 6px;
+        /* =========================================
+           BASIS & FARBEN
+           ========================================= */
+        :root {
+            /* Neutral & Gold Palette (Passend zum Logo) */
+            --primary: #b89b1e;
+            --primary-hover: #9a8218;
+            --primary-light: #fdfbf2; /* Sehr helles Gold für Hintergründe */
+            
+            --gray-900: #111827; /* Haupttext (Satteres Schwarz) */
+            --gray-600: #4b5563; /* Sekundärtext */
+            --gray-400: #9ca3af; /* Placeholder / Icons */
+            --gray-200: #e5e7eb; /* Borders */
+            --gray-100: #f3f4f6; /* Input Backgrounds */
+            --gray-50: #f9fafb;  /* Page Background */
+            
+            --bg-app: #f3f4f6;    /* Hellerer, freundlicherer Hintergrund */
+            --surface: #ffffff;
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+            
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-        /* Druckeinstellungen */
         @page { size: A4; margin: 0 !important; }
 
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); 
+            font-family: var(--font-main);
+            background: var(--bg-app); 
             margin: 0; 
             padding: 10px; 
-            color: var(--text); 
-            line-height: 1.4;
+            color: var(--gray-900); 
+            line-height: 1.5; 
+            -webkit-font-smoothing: antialiased;
         }
-
-        /* Die "Papierseite" */
-        .page {
-            width: 100%; 
-            max-width: 210mm; 
-            min-height: 297mm; 
-            background: #fff; 
-            padding: 12mm 10mm; 
-            margin: 0 auto 20px auto; 
-            position: relative; 
-            box-shadow: var(--shadow); 
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: box-shadow 0.3s ease;
-        }
-
-        /* Header Styling */
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; 
-            border-bottom: 2px solid var(--accent); 
-            padding-bottom: 8px; 
-            margin-bottom: 12px; 
-        }
-        .header-left { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
-        .logo { max-height: 50px; width: auto; object-fit: contain; margin-bottom: 2px; }
-        .header-left h1 { margin: 0; font-size: 22px; color: var(--text); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .header-right { text-align: right; font-size: 10px; line-height: 1.3; color: var(--text-light); }
-
-        /* Sektionen */
-        .section { margin-bottom: 12px; }
-        .section h2 { 
-            font-size: 12px; 
-            text-transform: uppercase; 
-            background: var(--accent-light);
-            color: var(--accent);
-            padding: 4px 8px;
-            margin: 0 0 6px 0;
-            font-weight: 700; 
-            border-radius: 3px;
-            letter-spacing: 0.5px;
-        }
-
-        /* Grids */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .address-grid { display: grid; grid-template-columns: 80px 1fr 1.3fr; gap: 8px; margin-top: 6px; }
-        
-        .label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display: block; color: var(--text-light); text-transform: uppercase; }
-        
-        /* Eingabefelder */
-        input, textarea, select { 
-            width: 100%; 
-            border: 1px solid var(--border); 
-            padding: 6px 8px; 
-            font-size: 12px; 
-            border-radius: 3px; 
-            background: var(--panel-bg); 
-            outline: none; 
-            color: var(--text);
-            transition: all 0.2s ease;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--accent);
-            background: #fff;
-            box-shadow: 0 0 0 2px rgba(184, 155, 30, 0.15);
-        }
-        
-        textarea { min-height: 40px; font-family: inherit; resize: none; overflow: hidden; line-height: 1.4; }
-
-        /* Checkboxen */
-        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; }
-        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 11px; }
-        .checkbox-item { display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 1px 0; }
-        .checkbox-item input { width: auto; margin: 0; cursor: pointer; accent-color: var(--accent); }
-
-        /* Karierter Raster Canvas */
-        .drawing-area {
-            border: 1px solid var(--border);
-            cursor: crosshair; touch-action: none; position: relative; width: 100%; 
-            border-radius: var(--radius);
-            background-color: #ffffff;
-            background-image: linear-gradient(#e0e0e0 1px, transparent 1px), linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
-            background-size: 10px 10px;
-            background-position: -1px -1px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
-        }
-        .sketch-box { height: 420px; margin-top: 8px; }
-
-        /* Toolbar */
-        .toolbar { 
-            display: flex; gap: 8px; margin-bottom: 8px; align-items: center; 
-            background: #ededed; padding: 8px; border-radius: 6px; 
-            border: 1px solid var(--border);
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            flex-wrap: wrap; 
-        }
-        .tool { 
-            width: 30px; height: 30px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: all 0.2s ease; font-size: 16px;
-        }
-        .mode-tool { background: #fff; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .mode-tool:hover { transform: scale(1.1); }
-        .mode-tool.active { background: #d0e4f5; border-color: #2b83b8; transform: scale(1.1); box-shadow: 0 2px 6px rgba(43, 131, 184, 0.3); }
-        
-        .color-tool { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .color-tool:hover { transform: scale(1.1); }
-        .color-tool.active { border: 2px solid #222; transform: scale(1.15); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-
-        .toolbar-divider { width: 2px; height: 24px; background: #ccc; margin: 0 4px; border-radius: 2px; flex-shrink: 0; }
-
-        /* Fotos */
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .photo-box { 
-            border: 1px solid var(--border); padding: 8px; text-align: center; 
-            background: #fff; border-radius: var(--radius); 
-            break-inside: avoid; page-break-inside: avoid; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        }
-        .img-container { position: relative; width: 100%; height: 240px; background: #fdfdfd; margin-bottom: 8px; overflow: hidden; cursor: crosshair; border-radius: 3px; border: 1px solid #eee; }
-        .img-container img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        .marker-arrow { position: absolute; width: 40px; height: 40px; transform: translate(-100%, -100%); pointer-events: none; filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4)); }
-        .photo-desc { width: 100%; border: none; border-bottom: 2px solid var(--accent-light); font-size: 12px; padding: 4px 0; background: transparent; border-radius: 0; }
-        .photo-desc:focus { border-bottom-color: var(--accent); box-shadow: none; background: #fff; }
-
-        /* Footer */
-        .footer { position: absolute; bottom: 10mm; left: 10mm; right: 10mm; font-size: 9px; display: flex; justify-content: space-between; color: var(--text-light); border-top: 1px solid #eee; padding-top: 6px; }
-
-        /* Controls Desktop */
-        #controls { position: fixed; top: 10px; right: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: 240px; }
-        button { 
-            padding: 10px 12px; background: var(--accent); color: #fff; border: none; 
-            border-radius: 4px; cursor: pointer; font-weight: 700; font-size: 11px; 
-            text-transform: uppercase; letter-spacing: 0.5px;
-            box-shadow: 0 2px 5px rgba(184, 155, 30, 0.3);
-            transition: all 0.2s ease;
-        }
-        button:hover { background: #a3891a; transform: translateY(-1px); box-shadow: 0 3px 6px rgba(184, 155, 30, 0.4); }
-        button:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(184, 155, 30, 0.3); }
-        button.secondary { background: #34495e; box-shadow: 0 2px 5px rgba(52, 73, 94, 0.2); }
-        button.secondary:hover { background: #2c3e50; box-shadow: 0 3px 6px rgba(52, 73, 94, 0.3); }
 
         /* =========================================
-           TABLET & IPAD OPTIMIERUNG
+           STARTBILDSCHIRM (APP MENÜ)
+           ========================================= */
+        #start-screen {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 90vh;
+            padding: 20px;
+        }
+        .menu-box {
+            background: var(--surface); 
+            padding: 40px; 
+            border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-lg); 
+            text-align: center; 
+            max-width: 500px; 
+            width: 100%; 
+            border: 1px solid var(--surface);
+        }
+        .menu-box img { max-height: 90px; margin-bottom: 25px; }
+        .menu-box h1 { 
+            font-size: 22px; 
+            color: var(--gray-900); 
+            margin-top: 0; 
+            margin-bottom: 35px; 
+            font-weight: 700; 
+            letter-spacing: -0.02em;
+        }
+        .menu-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 16px 20px; margin-bottom: 12px; 
+            background: linear-gradient(145deg, var(--primary), #a38a1a); color: #fff;
+            border: none; border-radius: var(--radius-md); 
+            font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; 
+            cursor: pointer; box-shadow: var(--shadow-md); transition: all 0.2s ease;
+        }
+        .menu-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--primary-hover); }
+        .menu-btn.secondary { background: linear-gradient(145deg, var(--gray-600), #374151); }
+        .menu-btn.secondary:hover { background: var(--gray-900); }
+
+        /* =========================================
+           FORMULAR DESIGN (Für beide Berichte)
+           ========================================= */
+        .page {
+            width: 100%; max-width: 210mm; min-height: 297mm; 
+            background: #fff; 
+            padding: 10mm 10mm; 
+            margin: 0 auto 20px auto; 
+            position: relative; 
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); 
+            border-radius: 2px; /* A4 Papier Look */
+        }
+        .header { display: flex; flex-direction: column; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 8px; }
+        .logo { max-height: 60px; width: auto; object-fit: contain; }
+        .header-right { text-align: right; font-size: 10.5px; line-height: 1.4; color: var(--gray-600); }
+        .header-right strong { font-size: 13px; color: var(--gray-900); letter-spacing: 0.3px; display: inline-block; margin-bottom: 2px; }
+        
+        .header-title { 
+            margin: 0; font-size: 20px; color: var(--primary); 
+            text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; 
+            background: var(--primary-light); padding: 6px; border-radius: var(--radius-sm); 
+            text-align: center; border: 1px solid rgba(184, 155, 30, 0.1);
+        }
+
+        .section { margin-bottom: 10px; }
+        .section-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .section h2 { 
+            font-size: 11px; text-transform: uppercase; 
+            color: var(--gray-900); 
+            padding: 5px 10px; margin: 0 0 8px 0; 
+            font-weight: 700; letter-spacing: 0.05em;
+            background: var(--gray-100);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 8px; margin-top: 4px; }
+        .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 6px; margin-bottom: 6px; }
+        .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 6px; margin-bottom: 6px; }
+        .grid-header { font-size: 9px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; padding-left: 4px; letter-spacing: 0.5px; }
+        .label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display: block; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.03em; }
+        
+        .gps-btn, .mic-btn {
+            background: var(--gray-600); color: #fff; border: none; padding: 4px 8px; border-radius: var(--radius-sm); 
+            font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; 
+            text-transform: uppercase; transition: all 0.2s; box-shadow: var(--shadow-sm);
+        }
+        .gps-btn:hover { background: var(--gray-900); transform: translateY(-1px); }
+        .mic-btn { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .mic-btn:hover { background: #fff; border-color: var(--gray-400); }
+        .mic-btn.recording { background: #e74c3c; color: white; border-color: #c0392b; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+
+        input, textarea, select { 
+            width: 100%; 
+            border: 1px solid #d1d5db; 
+            padding: 7px 10px; 
+            font-size: 12px; 
+            border-radius: var(--radius-sm); 
+            background: #fff; 
+            outline: none; 
+            color: var(--gray-900); 
+            margin: 0; 
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary); 
+            background: #fff; 
+            box-shadow: 0 0 0 3px rgba(184, 155, 30, 0.2); 
+        }
+        textarea { min-height: 40px; font-family: inherit; resize: none; overflow: hidden; line-height: 1.4; display: block; }
+        .print-textarea-clone { display: none; }
+
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; }
+        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 0; font-size: 11px; color: var(--gray-900); }
+        .checkbox-item input { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--primary); border-radius: 3px; border: 1px solid var(--gray-400); }
+
+        .sketch-container { 
+            position: relative; width: 100%; height: 900px; 
+            border: 1px solid var(--gray-200); border-radius: var(--radius-sm); 
+            background-color: #ffffff; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); 
+            overflow: hidden; 
+            background-image: linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px); 
+            background-size: 20px 20px; background-position: -1px -1px; margin-top: 8px;
+            background-size: 10px 10px; background-position: -1px -1px; margin-top: 8px;
+        }
+        #sketch-bg-canvas, #sketch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair;}
+        #sketch-canvas { z-index: 2; } #sketch-bg-canvas { z-index: 1; }
+
+        .signature-pad { width: 100%; height: 120px; border: 1px dashed var(--gray-400); border-radius: var(--radius-sm); background: #fff; touch-action: none; cursor: crosshair;}
+        .signature-box { border: 1px solid var(--gray-200); background: var(--gray-50); padding: 10px; border-radius: var(--radius-sm); }
+        .legal-text { font-size: 9.5px; color: #555; line-height: 1.4; text-align: justify; margin: 15px 0; }
+
+        .toolbar { 
+            display: flex; gap: 10px; margin-bottom: 10px; align-items: center; 
+            background: #fff; padding: 8px 16px; border-radius: 50px; flex-wrap: wrap; 
+            box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); 
+            width: fit-content; margin-left: auto; margin-right: auto; 
+        }
+        .tool { width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; border-radius: 50%; transition: all 0.2s; }
+        .mode-tool { background: var(--gray-100); border: 1px solid transparent; color: var(--gray-600); }
+        .mode-tool:hover { background: var(--gray-200); }
+        .mode-tool.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(184, 155, 30, 0.4); transform: translateY(-1px); }
+        .color-tool { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .color-tool.active { border: 2px solid #fff; transform: scale(1.2); box-shadow: 0 0 0 2px var(--gray-900); }
+        .toolbar-divider { width: 2px; height: 24px; background: #ccc; margin: 0 4px; border-radius: 2px; flex-shrink: 0; }
+
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .photo-box { position: relative; border: 1px solid var(--gray-200); padding: 8px; text-align: center; background: #fff; border-radius: var(--radius-sm); break-inside: avoid; page-break-inside: avoid; box-shadow: var(--shadow-sm); }
+        .delete-photo-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            z-index: 10;
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 26px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .delete-photo-btn:hover { background: #e74c3c; }
+        .photo-number {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-bottom-right-radius: 6px;
+            z-index: 20;
+            display: none;
+        }
+        body.show-photo-numbers .photo-number { display: block; }
+        .img-container { position: relative; width: 100%; height: 240px; background: #fdfdfd; margin-bottom: 8px; overflow: hidden; cursor: crosshair; border-radius: 4px; border: 1px solid #eee; }
+        .img-container img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .marker-arrow { position: absolute; width: 40px; height: 40px; transform: translate(-100%, -100%); pointer-events: none; filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4)); }
+        .photo-desc { width: 100%; border: none; border-bottom: 1px solid var(--gray-200); font-size: 12px; padding: 4px 0; background: transparent; border-radius: 0; box-shadow: none; }
+        .photo-desc:focus { border-bottom-color: var(--primary); box-shadow: none; background: transparent; }
+
+        .footer { position: absolute; bottom: 10mm; left: 10mm; right: 10mm; font-size: 9px; display: flex; justify-content: space-between; color: var(--gray-400); border-top: 1px solid #eee; padding-top: 6px; }
+
+        #controls { position: fixed; top: 10px; right: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: 240px; }
+        .control-btn { 
+            padding: 12px 16px; background: linear-gradient(135deg, var(--primary), #a38a1a); color: #fff; border: none; border-radius: 8px; 
+            cursor: pointer; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px -1px rgba(184, 155, 30, 0.3); transition: all 0.2s; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        .control-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 10px -2px rgba(184, 155, 30, 0.4); }
+        .control-btn.secondary { background: linear-gradient(135deg, #525252, #404040); box-shadow: 0 4px 6px -1px rgba(64, 64, 64, 0.3); }
+        .control-btn.secondary:hover { box-shadow: 0 6px 10px -2px rgba(64, 64, 64, 0.4); }
+        .control-btn.home { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3); margin-top: 10px; }
+
+        /* CROP MODAL */
+        #cropModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #cropCanvas { border: 1px dashed #fff; touch-action: none; background: #000; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
+        
+        /* PHOTO EDITOR MODAL */
+        #photoEditorModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
+        #photoEditorCanvas { box-shadow: 0 0 20px rgba(0,0,0,0.5); max-width: 95vw; max-height: 70vh; }
+
+        /* =========================================
+           TABLET & MOBILE OPTIMIERUNG
            ========================================= */
         @media screen and (max-width: 1024px) {
             body { padding: 0; background: var(--bg); }
-            
-            #controls { 
-                position: sticky; top: 0; left: 0; width: 100%; 
-                flex-direction: row; flex-wrap: nowrap; overflow-x: auto; 
-                gap: 8px; padding: 12px; background: #2c3e50; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                border-radius: 0;
-            }
+            #controls { position: sticky; top: 0; left: 0; width: 100%; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 12px; background: #2c3e50; border-radius: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             #controls::-webkit-scrollbar { display: none; }
-            #controls button { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; }
-
+            #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
             .page { margin: 15px auto; }
             input, textarea, select { font-size: 16px; padding: 10px; }
-            .sketch-box { height: 50vh; }
+            .sketch-container { height: 75vh; }
         }
 
-        /* =========================================
-           MOBILE OPTIMIERUNG (Samsung S23)
-           ========================================= */
         @media screen and (max-width: 768px) {
             .page { margin: 0 0 12px 0; border-radius: 0; padding: 12px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .header-top { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
             .header-right { text-align: left; font-size: 11px; }
-            .header-left h1 { font-size: 20px; }
-            
+            .header-title { font-size: 18px; text-align: left; padding: 8px; }
             .grid, .address-grid { grid-template-columns: 1fr; gap: 10px; }
-            
-            /* Checkboxen auf extrem schmalen Handys untereinander */
             .checkbox-group-3, .checkbox-group { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); } 
-            .checkbox-item { padding: 6px 0; } 
-            
-            .label { font-size: 11px; margin-bottom: 4px; }
-            
-            /* Toolbar wird horizontal scrollbar, damit sie nicht den Bildschirm vollmüllt */
+            .grid-header { display: none; } 
+            .worker-grid { grid-template-columns: 1fr 1fr; background: #fff; padding: 8px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; }
+            .worker-grid input:nth-child(1) { grid-column: 1; } .worker-grid input:nth-child(3) { grid-column: 2; } .worker-grid input:nth-child(2), .worker-grid input:nth-child(4) { grid-column: 1 / span 2; } 
+            .material-grid { grid-template-columns: 80px 1fr; background: #fff; padding: 8px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; }
+            .material-grid input:nth-child(1) { grid-column: 1; } .material-grid input:nth-child(2) { grid-column: 2; } .material-grid input:nth-child(3) { grid-column: 1 / span 2; } 
             .toolbar { flex-wrap: nowrap; overflow-x: auto; padding: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-            .toolbar::-webkit-scrollbar { display: none; }
-            
-            .photo-grid { grid-template-columns: 1fr; gap: 15px; }
-            .photo-box { padding: 12px; }
+            .photo-grid { grid-template-columns: 1fr; }
             .img-container { height: 220px; }
-            .photo-desc { font-size: 16px; padding: 8px 0; }
-        }
-
-        /* Für ganz schmale Handys (< 400px, typisch für S23 Hochformat) */
-        @media screen and (max-width: 400px) {
-            .checkbox-group-3, .checkbox-group { grid-template-columns: 1fr; gap: 4px; } 
         }
 
         /* =========================================
-           Print Styles
+           PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
             body { background: #fff; padding: 0; margin: 0; color: #000; }
-            #controls, .toolbar, .no-print, #photoInput, #importFile { display: none !important; }
+            #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal { display: none !important; }
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
-            
-            .page {
-                margin: 0 !important; box-shadow: none !important; border: none !important;
-                width: 190mm; min-height: auto; height: auto; 
-                padding: 8mm 10mm 12mm 10mm;
-                page-break-after: always; page-break-inside: avoid; break-after: page; break-inside: avoid;
-                border-radius: 0;
-            }
-            .header { border-bottom-color: #000; margin-bottom: 8px; padding-bottom: 4px; }
-            .section { margin-bottom: 8px; }
-            .section h2 { background: #eee !important; color: #000 !important; border-radius: 0; padding: 3px 5px; font-size: 11px; margin-bottom: 4px; border: 1px solid #ccc; }
-            
-            .grid, .address-grid { gap: 6px; margin-top: 4px; }
-
+            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; min-height: 297mm !important; padding: 5mm 10mm !important; page-break-after: always !important; border-radius: 0; overflow: hidden; }
+            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; height: 297mm !important; padding: 5mm 10mm !important; page-break-after: always !important; border-radius: 0; overflow: hidden; }
+            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; height: 297mm !important; padding: 5mm 10mm !important; page-break-after: auto !important; border-radius: 0; overflow: hidden; }
+            #sketchPage, #photoPagesContainer .page { page-break-before: always !important; break-before: page !important; }
+            .header { border-bottom: 2px solid #000; margin-bottom: 5px; padding-bottom: 2px; }
+            .header-top { margin-bottom: 2px; }
+            .header-title { background: var(--primary-light) !important; color: var(--primary) !important; padding: 4px 0 !important; font-size: 16px !important; text-align: center !important; border-radius: 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: none !important; }
+            .section { margin-bottom: 3px; }
+            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 2px !important; font-size: 11px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid, .address-grid { gap: 4px; margin-top: 2px; }
             .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
-            .page:last-of-type { page-break-after: auto; break-after: auto; }
+            textarea { display: none !important; }
+            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 10px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
+            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 10px !important; margin: 0 !important; border-radius: 0 !important; }
+            input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 11px; height: 11px; margin-right: 4px; }
+            input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+            .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
+            .grid-header { color: #000; border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
+            .is-empty-row { display: none !important; }
             
-            input:not([type="checkbox"]), textarea, select, .photo-desc {
-                border: none !important; background: transparent !important; padding: 0 !important; 
-                -webkit-appearance: none; appearance: none; color: #000; font-size: 11px;
-            }
+            /* SKIZZE DRUCK: Hintergrundbild ausblenden, nur Linien drucken */
+            .sketch-container { border: none !important; background: transparent !important; box-shadow: none !important; height: 225mm !important; background-image: none !important; margin-top: 0 !important; }
+            /* #sketch-bg-canvas { display: none !important; } */ /* FIX: Hintergrundbild drucken */
+            #sketch-canvas { position: static !important; width: 100% !important; height: 100% !important; }
             
-            input[type="checkbox"] {
-                -webkit-appearance: auto !important; 
-                appearance: auto !important;
-                border: 1px solid #000 !important;
-                width: 11px; height: 11px;
-                margin-right: 4px;
-            }
-
-            .checkbox-group, .checkbox-group-3 { font-size: 10.5px; gap: 2px; }
-            textarea { line-height: 1.3; }
-            
-            .drawing-area { border: 1px solid #000 !important; background: transparent !important; box-shadow: none !important; }
-            .sketch-box { height: 170mm !important; }
+            .signature-box { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 10px; }
+            .signature-pad { border: 1px solid #ccc !important; background: transparent !important; height: 80px !important; }
+            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
+            .photo-box { border: none !important; box-shadow: none !important; padding: 0 !important; page-break-inside: avoid; }
             .img-container { height: 50mm !important; border: none !important; background: transparent !important; }
-            .photo-box { border: 1px solid #ccc !important; box-shadow: none !important; padding: 5px !important; }
-            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #ccc !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
+            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
+            #auftraggeberContainer { border-top: none !important; }
+            
+            /* Wenn eine Checkbox in der Gruppe gewählt ist, verstecke die nicht gewählten beim Drucken */
+            .checkbox-group:has(input:checked) .checkbox-item:not(:has(input:checked)),
+            .checkbox-group-3:has(input:checked) .checkbox-item:not(:has(input:checked)) {
+                display: none !important;
+            }
         }
+
+        /* TOAST NOTIFICATIONS */
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 14px; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: auto; display: flex; align-items: center; gap: 10px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
     </style>
 </head>
 <body>
 
-<div id="controls" class="no-print">
-    <button class="secondary" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-    <button class="secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-    <button class="secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-    
-    <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-    <button class="secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-
-    <button class="secondary" onclick="document.getElementById('importFile').click()">BERICHT LADEN</button>
-    <input type="file" id="importFile" accept=".lok,application/json" style="display:none" onchange="importFullReport(this)">
+<div id="start-screen">
+    <div class="menu-box">
+        <img src="Logo.PNG" alt="Brugger Logo" onerror="this.style.display='none'">
+        <h1>Berichtstyp wählen</h1>
+        <button class="menu-btn" onclick="startApp('LO')">💧 Leckortungsbericht</button>
+        <button class="menu-btn" onclick="startApp('KB')">🕳️ Kanalreinigungs- & Inspektionsbericht</button>
+        <button class="menu-btn" onclick="startApp('RB')">📝 Regiebericht</button>
+        <hr style="border:0; border-top:1px solid var(--gray-200); margin: 25px 0;">
+        <button id="btnRestoreAutosave" class="menu-btn secondary" style="display:none; background: linear-gradient(145deg, #e67e22, #d35400);" onclick="restoreAutosave()">🔄 Letzten Entwurf wiederherstellen</button>
+        <input type="file" id="startImportFile" accept=".lok,application/json" style="display:none" onchange="importFromStart(this)">
+        <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
+        <div style="margin-top: 20px; cursor: pointer; color: #666; font-size: 12px; text-decoration: underline;" onclick="openSettings()">⚙️ E-Mail Einstellungen</div>
+    </div>
 </div>
 
-<div class="page" id="mainPage">
-    <div class="header">
-        <div class="header-left">
-            <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
-            <h1>Leckortungsbericht</h1>
-        </div>
-        <div class="header-right">
-            <strong>Brugger Entfeuchtung &amp; Kanaltechnik GmbH</strong><br />
-            Liebenauer Hauptstraße 181, 8041 Graz<br />
-            Tel: +43 316 471771 | office@brugger-entfeuchtung.at
+<div id="cropModal" class="no-print">
+    <h3 style="color:#fff; margin-bottom:5px;">Ausschnitt markieren</h3>
+    <p style="color:#ccc; font-size:12px; margin-top:0; margin-bottom:15px;">Mit dem Finger/Maus den Bereich aufziehen</p>
+    <canvas id="cropCanvas"></canvas>
+    <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="control-btn" style="padding: 12px 20px; font-size: 13px;" onclick="confirmCrop()">✔ Einfügen</button>
+        <button class="control-btn secondary" style="padding: 12px 20px; font-size: 13px;" onclick="closeCropModal()">✖ Abbrechen</button>
+    </div>
+</div>
+<input type="file" id="sketchPhotoInput" accept="image/*" style="display:none" onchange="openCropModal(this)">
+
+<!-- PHOTO EDITOR MODAL -->
+<div id="photoEditorModal" class="no-print">
+    <div style="color:white; margin-bottom:10px; font-weight:bold;">Foto bearbeiten</div>
+    <canvas id="photoEditorCanvas"></canvas>
+    <div class="toolbar" style="margin-top:15px; background: #333; border:none;">
+        <div class="tool mode-tool active" onclick="setPE_Mode('arrow', this)" title="Pfeil">↗️</div>
+        <div class="tool mode-tool" onclick="setPE_Mode('circle', this)" title="Kreis">⭕</div>
+        <div class="tool mode-tool" onclick="setPE_Mode('text', this)" title="Text">T</div>
+        <div class="toolbar-divider"></div>
+        <div class="tool color-tool active" style="background:red; border-color:white;" onclick="setPE_Color('red', this)"></div>
+        <div class="tool color-tool" style="background:white" onclick="setPE_Color('white', this)"></div>
+        <div class="tool color-tool" style="background:black" onclick="setPE_Color('black', this)"></div>
+        <div class="toolbar-divider"></div>
+        <div class="tool mode-tool" onclick="undoPE()" title="Rückgängig">↩️</div>
+    </div>
+    <div style="margin-top:10px; display:flex; gap:10px;">
+        <button class="control-btn" onclick="savePhotoEditor()">💾 Speichern</button>
+        <button class="control-btn secondary" onclick="closePhotoEditor()">Abbrechen</button>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="no-print" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10002; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:25px; border-radius:12px; width:90%; max-width:400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        <h3 style="margin-top:0; margin-bottom:15px; color:#111827;">Einstellungen</h3>
+        <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Standard E-Mail Empfänger:</label>
+        <input type="email" id="settingsEmail" placeholder="kanal@brugger-entfeuchtung.at" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="control-btn secondary" onclick="closeSettings()">Abbrechen</button>
+            <button class="control-btn" onclick="saveSettings()">Speichern</button>
         </div>
     </div>
+</div>
 
-    <div class="section">
-        <h2>Kundendaten</h2>
-        <div class="grid">
-            <div><span class="label">Kunde / Name</span><input type="text" id="name"></div>
-            <div><span class="label">Datum</span><input type="date" id="datum"></div>
-        </div>
-        <div>
-            <span class="label" style="margin-top:6px;">Einsatzadresse</span>
-            <input type="text" id="adresse" placeholder="Straße / Hausnummer">
-            <div class="address-grid">
-                <input type="text" id="plz" placeholder="PLZ">
-                <input type="text" id="ort" placeholder="Ort">
-                <input type="text" id="telefon" placeholder="Telefonnummer">
-            </div>
-        </div>
+<div id="app-root"></div>
+
+<template id="tpl-lo">
+    <div id="controls" class="no-print">
+        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
+            <span>FOTOS NUMMERIEREN</span>
+        </label>
+        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 
-    <div class="section">
-        <h2>Schadensanalyse &amp; Befund</h2>
-        <textarea id="befund" placeholder="Ergebnisse der Ortung..." oninput="autoResize.call(this)"></textarea>
-    </div>
-
-    <div class="section grid">
-        <div>
-            <h2>Maßnahmen</h2>
-            <div class="checkbox-group">
-                <label class="checkbox-item"><input type="checkbox"> <span>Trocknung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Sanierung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Verstopfungsbehebung</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkReparatur"> <span>Reparatur</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkSonstiges" onclick="toggleSonstiges()"> <span>Sonstiges</span></label>
-            </div>
-            <input type="text" id="inputSonstiges" placeholder="..." style="display:none; margin-top:6px;">
-            <div id="flachdachTextOptions" class="no-print" style="margin-top:8px; display:none;">
-                <span class="label">Textvorlage für Befund</span>
-                <select id="flachdachTemplate">
-                    <option value="">- wählen -</option>
-                </select>
-            </div>
-        </div>
-        <div>
-            <h2>Leistungen</h2>
-            <div class="checkbox-group">
-                <label class="checkbox-item"><input type="checkbox" id="checkLOPauschale"> <span>LO Pauschale</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkLeckortung"> <span>Leckortung</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkOptLeckortung"> <span>opt. Leckortung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkPool"> <span>Pool LO</span></label>
-            </div>
-            <div id="zeitContainer" style="margin-top:8px; display:none;">
-                <div class="grid">
-                    <div><span class="label">Arbeitszeit (Std)</span><input type="number" step="0.5" placeholder="0.0"></div>
-                    <div><span class="label">Fahrzeit (Std)</span><input type="number" step="0.5" placeholder="0.0"></div>
+    <div class="page" id="mainPage">
+        <div class="header">
+            <div class="header-top">
+                <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-right">
+                    <strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br />
+                    Liebenauer Hauptstraße 181, 8041 Graz<br />
+                    Tel: +43 316 471771 | office@brugger-entfeuchtung.at
                 </div>
             </div>
-            <div class="grid" style="margin-top:6px;">
-                <div><span class="label">Fahrzone</span><select><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-                <div><span class="label">Ortungsgas (l)</span><select><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></div>
+            <h1 class="header-title">Leckortungsbericht</h1>
+        </div>
+
+        <div class="section">
+            <h2>Kundendaten & Einsatzort</h2>
+            <div class="grid">
+                <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
+                <div><span class="label">Datum</span><input type="date" id="datum"></div>
+            </div>
+            <div>
+                <div class="section-header-flex" style="margin-top: 6px;">
+                    <span class="label" style="margin:0;">Einsatzadresse</span>
+                    <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'main')">📍 Ortung</button>
+                </div>
+                <input type="text" id="adresse" placeholder="Straße / Hausnummer">
+                <div class="address-grid">
+                    <input type="text" id="plz" placeholder="PLZ">
+                    <input type="text" id="ort" placeholder="Ort">
+                    <input type="text" id="telefon" placeholder="Telefonnummer">
+                </div>
+            </div>
+            
+            <div class="no-print" style="margin-top: 12px; margin-bottom: 4px;">
+                <label class="checkbox-item" style="font-weight: bold; color: var(--primary);">
+                    <input type="checkbox" id="checkAuftraggeber" onchange="toggleAuftraggeber()">
+                    <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
+                </label>
+            </div>
+            
+            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
+                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+                <div class="grid">
+                    <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
+                    <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
+                </div>
+                <div style="margin-top: 6px;">
+                    <div class="section-header-flex">
+                        <span class="label" style="margin:0;">Rechnungsadresse</span>
+                        <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
+                    </div>
+                    <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
+                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                        <input type="text" id="auftraggeber_plz" placeholder="PLZ">
+                        <input type="text" id="auftraggeber_ort" placeholder="Ort">
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="section">
+            <div class="section-header-flex">
+                <h2 style="margin:0;">Schadensanalyse & Befund</h2>
+                <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'befund')">🎤 Diktieren</button>
+            </div>
+            <textarea id="befund" placeholder="Ergebnisse der Ortung..."></textarea>
+        </div>
+
+        <div class="section grid">
+            <div>
+                <h2>Maßnahmen</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox"> <span>Trocknung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Sanierung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Verstopfungsbehebung</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkReparatur"> <span>Reparatur</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkSonstiges" onclick="toggleSonstiges()"> <span>Sonstiges</span></label>
+                </div>
+                <input type="text" id="inputSonstiges" placeholder="..." style="display:none; margin-top:6px;">
+                <div id="flachdachTextOptions" class="no-print" style="margin-top:8px; display:none;">
+                    <span class="label">Textvorlage für Befund einfügen</span>
+                    <select id="flachdachTemplate" onchange="insertTemplate()">
+                        <option value="">- Vorlage wählen -</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <h2>Leistungen</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" id="checkLOPauschale"> <span>LO Pauschale</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkLeckortung"> <span>Leckortung</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkOptLeckortung"> <span>opt. Leckortung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkPool"> <span>Pool LO</span></label>
+                </div>
+                
+                <div class="grid" style="margin-top:8px;">
+                    <div class="grid" id="boxArbeitszeitOrtungsgas" style="gap: 8px; margin:0;">
+                        <div><span class="label">Arbeitszeit</span><input type="text" placeholder="z.B. 1.5 Std" id="arbeitszeit_input"></div>
+                        <div><span class="label">Ortungsgas</span><select id="ortungsgas_select"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></div>
+                    </div>
+                    <div class="grid" style="gap: 8px; margin:0;">
+                        <div><span class="label">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input"></div>
+                        <div><span class="label">Fahrzone</span><select id="fahrzone_select"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="reparaturSection">
+            <h2>Reparatur & Prüfdetails</h2>
+            <div id="ueberpruefteBauteileContainer" style="display:none; margin-bottom: 8px; border: 1px solid var(--gray-200); padding: 8px; border-radius: 4px; background: #fafafa;">
+                <span class="label" style="color:var(--primary); font-size:11px; margin-bottom:6px;">Überprüfte Bauteile</span>
+                <div class="checkbox-group-3">
+                    <label class="checkbox-item"><input type="checkbox"> <span>Kaltwasser</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Warmwasser</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Zirkulation</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Heizungsleitungen</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Ablauf</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Regenablauf</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkSonstigesBauteile" onclick="toggleSonstigesBauteile()"> <span>Sonstiges</span></label>
+                </div>
+                <input type="text" id="inputSonstigesBauteile" placeholder="..." style="display:none; margin-top:6px;">
+            </div>
+
+            <div id="poolBauteileContainer" style="display:none; margin-bottom: 8px; border: 1px solid #cee3f0; padding: 8px; border-radius: 4px; background: #eef5f9;">
+                <span class="label" style="color:#2b83b8; font-size:11px; margin-bottom:6px;">Pool Bauteile</span>
+                <div class="checkbox-group-3">
+                    <label class="checkbox-item"><input type="checkbox"> <span>Skimmerleitung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Düsenleitung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Saugleitung</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Gegenstromanlage</span></label>
+                    <label class="checkbox-item"><input type="checkbox" id="checkSonstigesPool" onclick="toggleSonstigesPool()"> <span>Sonstiges</span></label>
+                </div>
+                <input type="text" id="inputSonstigesPool" placeholder="..." style="display:none; margin-top:6px;">
+            </div>
+
+            <div id="reparaturWorks" style="margin-bottom: 8px; display:none;">
+                <div class="section-header-flex">
+                    <span class="label" style="margin:0;">Erforderliche Reparaturarbeiten</span>
+                    <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'reparatur')">🎤 Diktieren</button>
+                </div>
+                <textarea id="reparatur" placeholder="..."></textarea>
+            </div>
+            <div class="grid" style="margin-bottom: 8px;">
+                <div><span class="label">Betroffene Räume</span><input type="text" placeholder="..."></div>
+                <div><span class="label">Etage</span><input type="text" placeholder="..."></div>
+            </div>
+            <div class="checkbox-group-3">
+                <label class="checkbox-item"><input type="checkbox"> <span>Ursache bereits behoben</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Druckabfall</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeit</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Tracergas</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Endoskopie</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Rohrkamera</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Druckprüfung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Absperrblase</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Nebelverfahren</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Luminatspülung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeitsmessung</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Akustik</span></label>
+                <label class="checkbox-item"><input type="checkbox"> <span>Stemmarbeiten</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="checkSonstigesReparatur" onclick="toggleSonstigesReparatur()"> <span>Sonstiges</span></label>
+            </div>
+            <input type="text" id="inputSonstigesReparatur" placeholder="..." style="display:none; margin-top:6px;">
+        </div>
+
+        <div class="section no-print" style="margin-top: 15px; border: 1px dashed #2b83b8; padding: 10px; border-radius: var(--radius); background: #f0f7fb;">
+            <div class="section-header-flex">
+                <h2 style="background: none; color: #2b83b8; padding: 0; margin: 0;">Interne Notizen (Nur für E-Mail)</h2>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'interne_notizen')">🎤 Dikt.</button>
+                    <button type="button" class="no-print gps-btn" style="background: #2b83b8; font-size: 10px; padding: 4px 8px;" onclick="insertGPSLink(this, 'interne_notizen')">📍 GPS</button>
+                </div>
+            </div>
+            <textarea id="interne_notizen" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+        </div>
+
+        <div class="section no-print" style="margin-top: 15px;">
+            <label class="checkbox-item">
+                <input type="checkbox" id="toggleSketch">
+                <span style="font-weight: bold; color: var(--text);">Skizzenseite (Seite 2) beim Bericht verwenden</span>
+            </label>
+        </div>
+        <div class="footer"><span>Brugger GmbH</span><span>Seite 1</span></div>
     </div>
 
-    <div class="section" id="reparaturSection">
-        <h2>Reparatur &amp; Prüfdetails</h2>
-        
-        <div id="ueberpruefteBauteileContainer" style="display:none; margin-bottom: 8px; border: 1px solid var(--border); padding: 8px; border-radius: 4px; background: #fafafa; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
-            <span class="label" style="color:var(--accent); font-size:11px; margin-bottom:6px;">Überprüfte Bauteile</span>
-            <div class="checkbox-group-3">
-                <label class="checkbox-item"><input type="checkbox"> <span>Kaltwasser</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Warmwasser</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Zirkulation</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Heizungsleitungen</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Ablauf</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Regenablauf</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkSonstigesBauteile" onclick="toggleSonstigesBauteile()"> <span>Sonstiges</span></label>
+    <div class="page" id="sketchPage">
+        <div class="header">
+            <div class="header-top">
+                <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-right">
+                    <strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br />
+                    Liebenauer Hauptstraße 181, 8041 Graz<br />
+                    Tel: +43 316 471771
+                </div>
             </div>
-            <input type="text" id="inputSonstigesBauteile" placeholder="..." style="display:none; margin-top:6px;">
+            <h1 class="header-title">Skizze / Grundriss</h1>
         </div>
 
-        <div id="poolBauteileContainer" style="display:none; margin-bottom: 8px; border: 1px solid #cee3f0; padding: 8px; border-radius: 4px; background: #eef5f9; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);">
-            <span class="label" style="color:#2b83b8; font-size:11px; margin-bottom:6px;">Pool Bauteile</span>
-            <div class="checkbox-group-3">
-                <label class="checkbox-item"><input type="checkbox"> <span>Skimmerleitung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Düsenleitung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Saugleitung</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Gegenstromanlage</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="checkSonstigesPool" onclick="toggleSonstigesPool()"> <span>Sonstiges</span></label>
-            </div>
-            <input type="text" id="inputSonstigesPool" placeholder="..." style="display:none; margin-top:6px;">
+        <div class="toolbar no-print">
+            <div class="tool mode-tool" id="touchToggleBtn" onclick="toggleTouch(this)" title="Zeichnen mit Finger aktivieren/deaktivieren">👆</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
+            <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
+            <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool color-tool active" style="background:#000" onclick="setColor('#000', this)"></div>
+            <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
+            <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
+            <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
         </div>
 
-        <div id="reparaturWorks" style="margin-bottom: 8px; display:none;">
-            <span class="label">Erforderliche Reparaturarbeiten</span>
-            <textarea id="reparatur" placeholder="..." oninput="autoResize.call(this)"></textarea>
+        <div class="sketch-container">
+            <canvas id="sketch-bg-canvas"></canvas>
+            <canvas id="sketch-canvas"></canvas>
         </div>
-        <div class="grid" style="margin-bottom: 8px;">
-            <div><span class="label">Betroffene Räume</span><input type="text" placeholder="..."></div>
-            <div><span class="label">Etage</span><input type="text" placeholder="..."></div>
-        </div>
-        <div class="checkbox-group-3">
-            <label class="checkbox-item"><input type="checkbox"> <span>Ursache bereits behoben</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Druckabfall</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeit</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Tracergas</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Endoskopie</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Rohrkamera</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Druckprüfung</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Absperrblase</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Nebelverfahren</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Luminatspülung</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeitsmessung</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Akustik</span></label>
-            <label class="checkbox-item"><input type="checkbox"> <span>Stemmarbeiten</span></label>
-            <label class="checkbox-item"><input type="checkbox" id="checkSonstigesReparatur" onclick="toggleSonstigesReparatur()"> <span>Sonstiges</span></label>
-        </div>
-        <input type="text" id="inputSonstigesReparatur" placeholder="..." style="display:none; margin-top:6px;">
+        <p style="font-size:11px; color:#555; margin-top:8px; font-weight:bold; text-align: center; background: #eee; padding: 5px; border-radius: 4px;">🔵 Wasser | 🔴 Heizung | 🟢 Abfluss</p>
+        <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
     </div>
 
-    <div class="section no-print">
-        <label class="checkbox-item">
-            <input type="checkbox" id="toggleSketch">
-            <span style="font-weight: bold; color: var(--text);">Skizzenseite (Seite 2) beim Bericht verwenden</span>
+    <div id="photoPagesContainer"></div>
+</template>
+
+<template id="tpl-kb">
+    <div id="controls" class="no-print">
+        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
+            <span>FOTOS NUMMERIEREN</span>
         </label>
+        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
     </div>
-    <div class="footer"><span>Brugger GmbH</span><span>Seite 1</span></div>
-</div>
 
-<div class="page" id="sketchPage">
-    <div class="header">
-        <div class="header-left">
-            <h1>Skizze / Grundriss</h1>
+    <div class="page" id="mainPage">
+        <div class="header">
+            <div class="header-top">
+                <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-right">
+                    <strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br />
+                    Liebenauer Hauptstraße 181, 8041 Graz<br />
+                    Tel: +43 316 471771 | office@brugger-entfeuchtung.at
+                </div>
+            </div>
+            <h1 class="header-title">Kanalreinigungs- & Inspektionsbericht</h1>
         </div>
+
+        <div class="section">
+            <h2>Kundendaten & Einsatzort</h2>
+            <div class="grid">
+                <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
+                <div><span class="label">Datum</span><input type="date" id="datum"></div>
+            </div>
+            <div>
+                <div class="section-header-flex" style="margin-top: 6px;">
+                    <span class="label" style="margin:0;">Einsatzadresse</span>
+                    <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'main')">📍 Ortung</button>
+                </div>
+                <input type="text" id="adresse" placeholder="Straße / Hausnummer">
+                <div class="address-grid">
+                    <input type="text" id="plz" placeholder="PLZ">
+                    <input type="text" id="ort" placeholder="Ort">
+                    <input type="text" id="telefon" placeholder="Telefonnummer">
+                </div>
+            </div>
+            <div class="no-print" style="margin-top: 12px; margin-bottom: 4px;">
+                <label class="checkbox-item" style="font-weight: bold; color: var(--primary);">
+                    <input type="checkbox" id="checkAuftraggeber" onchange="toggleAuftraggeber()">
+                    <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
+                </label>
+            </div>
+            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
+                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+                <div class="grid">
+                    <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
+                    <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
+                </div>
+                <div style="margin-top: 6px;">
+                    <div class="section-header-flex">
+                        <span class="label" style="margin:0;">Rechnungsadresse</span>
+                        <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
+                    </div>
+                    <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
+                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                        <input type="text" id="auftraggeber_plz" placeholder="PLZ">
+                        <input type="text" id="auftraggeber_ort" placeholder="Ort">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Einsatzdetails</h2>
+            <div class="checkbox-group-3">
+                <label class="checkbox-item"><input type="checkbox" id="kb_verstopfung"> <span>Verstopfung</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="kb_reinigung"> <span>Reinigung</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="kb_tvinspektion"> <span>TV-Inspektion</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="kb_ortung"> <span>Ortung</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="kb_neuabnahme"> <span>Neuabnahme</span></label>
+                <label class="checkbox-item"><input type="checkbox" id="kb_wartung"> <span>Wartung</span></label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Technische Daten</h2>
+            <div class="grid" style="margin-bottom: 8px;">
+                <div><span class="label">Rohrmaterial</span><select id="rohrmaterial"><option value="">- wählen -</option><option>PVC (Kunststoff)</option><option>Beton</option><option>Steinzeug</option><option>Guss</option><option>Faserzement</option><option>Sonstiges</option></select></div>
+                <div><span class="label">Nennweite (DN)</span><select id="nennweite"><option value="">- wählen -</option><option>DN 50</option><option>DN 70</option><option>DN 100</option><option>DN 125</option><option>DN 150</option><option>DN 200</option><option>DN 250</option><option>DN 300</option><option>> DN 300</option></select></div>
+            </div>
+            <div class="grid" style="margin-bottom: 8px;">
+                <div><span class="label">Länge (m)</span><input type="number" id="haltung_laenge" placeholder="0.0" step="0.1"></div>
+                <div></div>
+            </div>
+            <div class="grid">
+                <div><span class="label">Abschnitt Von</span><input type="text" id="abschnitt_von" placeholder="z.B. Schacht 1 / Haus"></div>
+                <div><span class="label">Abschnitt Bis</span><input type="text" id="abschnitt_bis" placeholder="z.B. Hauptkanal"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Reinigung & Zustand</h2>
+            <div class="grid">
+                <div><span class="label">Reinigungsart</span><select id="reinigungsart"><option value="">- wählen -</option><option>Hochdruckspülen</option><option>Elektromech. Spirale</option><option>Fräsarbeiten</option><option>Manuelle Reinigung</option></select></div>
+                <div><span class="label">Verschmutzung</span><select id="verschmutzung"><option value="">- wählen -</option><option>Ablagerungen (leicht)</option><option>Ablagerungen (stark)</option><option>Fettablagerungen</option><option>Inkrustation</option><option>Wurzeleinwuchs</option><option>Fremdkörper</option><option>Baureste</option></select></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header-flex">
+                <h2 style="margin:0;">Untersuchungsergebnis / Feststellungen</h2>
+                <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'kanal_befund')">🎤 Diktieren</button>
+            </div>
+            <textarea id="kanal_befund" placeholder="Beschreibung des Zustands, Verlaufs, festgestellte Schäden..."></textarea>
+        </div>
+
+        <div class="section no-print" style="margin-top: 15px; border: 1px dashed #2b83b8; padding: 10px; border-radius: var(--radius); background: #f0f7fb;">
+            <div class="section-header-flex">
+                <h2 style="background: none; color: #2b83b8; padding: 0; margin: 0;">Interne Notizen (Nur für E-Mail)</h2>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'interne_notizen')">🎤 Dikt.</button>
+                    <button type="button" class="no-print gps-btn" style="background: #2b83b8; font-size: 10px; padding: 4px 8px;" onclick="insertGPSLink(this, 'interne_notizen')">📍 GPS</button>
+                </div>
+            </div>
+            <textarea id="interne_notizen" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+        </div>
+
+        <div class="section no-print" style="margin-top: 15px;">
+            <label class="checkbox-item">
+                <input type="checkbox" id="toggleSketch">
+                <span style="font-weight: bold; color: var(--text);">Skizzenseite (Seite 2) beim Bericht verwenden</span>
+            </label>
+        </div>
+        <div class="footer"><span>Brugger GmbH</span><span>Seite 1</span></div>
     </div>
 
-    <div class="toolbar no-print">
-        <div class="tool mode-tool" id="touchToggleBtn" onclick="toggleTouch(this)" title="Zeichnen mit Finger aktivieren/deaktivieren">👆</div>
-        
-        <div class="toolbar-divider"></div>
+    <div class="page" id="sketchPage">
+        <div class="header">
+            <div class="header-top">
+                <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-right">
+                    <strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br />
+                    Liebenauer Hauptstraße 181, 8041 Graz<br />
+                    Tel: +43 316 471771
+                </div>
+            </div>
+            <h1 class="header-title">Skizze / Leitungsverlauf</h1>
+        </div>
 
-        <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
-        <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
-        <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
-        <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
-        
-        <div class="toolbar-divider"></div>
-        
-        <div class="tool color-tool active" style="background:#000" onclick="setColor('#000', this)"></div>
-        <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
-        <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
-        <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
-        
-        <div class="toolbar-divider"></div>
-        
-        <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
+        <div class="toolbar no-print">
+            <div class="tool mode-tool" id="touchToggleBtn" onclick="toggleTouch(this)" title="Zeichnen mit Finger aktivieren/deaktivieren">👆</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
+            <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
+            <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool color-tool active" style="background:#000" onclick="setColor('#000', this)"></div>
+            <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
+            <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
+            <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
+            <div class="toolbar-divider"></div>
+            <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
+        </div>
+
+        <div class="sketch-container">
+            <canvas id="sketch-bg-canvas"></canvas>
+            <canvas id="sketch-canvas"></canvas>
+        </div>
+        <p style="font-size:11px; color:#555; margin-top:8px; font-weight:bold; text-align: center; background: #eee; padding: 5px; border-radius: 4px;">🔵 Wasser | 🔴 Heizung | 🟢 Abfluss</p>
+        <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
     </div>
 
-    <canvas id="sketch-canvas" class="drawing-area sketch-box"></canvas>
-    <p style="font-size:11px; color:#555; margin-top:8px; font-weight:bold; text-align: center; background: #eee; padding: 5px; border-radius: 4px;">🔵 Wasser | 🔴 Heizung | 🟢 Abfluss</p>
-    <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
-</div>
+    <div id="photoPagesContainer"></div>
+</template>
 
-<div id="photoPagesContainer"></div>
+<template id="tpl-rb">
+    <div id="controls" class="no-print">
+        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
+            <span>FOTOS NUMMERIEREN</span>
+        </label>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
+    </div>
+
+    <div class="page" id="mainPage">
+        
+        <div class="header">
+            <div class="header-top">
+                <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
+                <div class="header-right">
+                    <strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br />
+                    Liebenauer Hauptstraße 181, 8041 Graz<br />
+                    Tel: +43 316 471771 | office@brugger-entfeuchtung.at
+                </div>
+            </div>
+            <h1 class="header-title">Regiebericht</h1>
+        </div>
+
+        <div class="section">
+            <h2>Kundendaten & Einsatzort</h2>
+            <div class="grid">
+                <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
+                <div><span class="label">Datum</span><input type="date" id="datum"></div>
+            </div>
+            <div>
+                <div class="section-header-flex" style="margin-top: 6px;">
+                    <span class="label" style="margin:0;">Einsatzadresse</span>
+                    <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'main')">📍 Ortung</button>
+                </div>
+                <input type="text" id="adresse" placeholder="Straße / Hausnummer">
+                <div class="address-grid">
+                    <input type="text" id="plz" placeholder="PLZ">
+                    <input type="text" id="ort" placeholder="Ort">
+                    <input type="text" id="telefon" placeholder="Telefonnummer">
+                </div>
+            </div>
+            
+            <div class="no-print" style="margin-top: 12px; margin-bottom: 4px;">
+                <label class="checkbox-item" style="font-weight: bold; color: var(--primary);">
+                    <input type="checkbox" id="checkAuftraggeber" onchange="toggleAuftraggeber()">
+                    <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
+                </label>
+            </div>
+            
+            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
+                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+                <div class="grid">
+                    <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
+                    <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
+                </div>
+                <div style="margin-top: 6px;">
+                    <div class="section-header-flex">
+                        <span class="label" style="margin:0;">Rechnungsadresse</span>
+                        <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
+                    </div>
+                    <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
+                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                        <input type="text" id="auftraggeber_plz" placeholder="PLZ">
+                        <input type="text" id="auftraggeber_ort" placeholder="Ort">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header-flex">
+                <h2 style="margin:0;">Erbrachte Leistungen</h2>
+                <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'leistungen')">🎤 Diktieren</button>
+            </div>
+            <textarea id="leistungen" placeholder="Genaue Beschreibung der durchgeführten Arbeiten (z.B. Einmessen der Kanalgrundleitung...)"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>Eingesetzte Arbeitskräfte & KFZ</h2>
+            <div class="worker-grid grid-header">
+                <div>Datum</div>
+                <div>Beschreibung Arbeitskraft / KFZ</div>
+                <div>Std.</div>
+                <div>2. Mann / Zuschlag</div>
+            </div>
+            <div id="worker-container">
+                <div class="worker-grid"><input type="date"><input type="text" placeholder="z.B. ZPE"><input type="text" placeholder="0.0" style="text-align:center;"><input type="text" placeholder="..."></div>
+                <div class="worker-grid"><input type="date"><input type="text" placeholder="z.B. KFZ"><input type="text" placeholder="0.0" style="text-align:center;"><input type="text" placeholder="..."></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+                <div class="worker-grid"><input type="date"><input type="text"><input type="text"><input type="text"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Material, Hilfs- & Nebenstoffe</h2>
+            <div class="material-grid grid-header">
+                <div>Menge</div>
+                <div>Einheit</div>
+                <div>Bezeichnung</div>
+            </div>
+            <div id="material-container">
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+            </div>
+        </div>
+
+        <div class="section no-print" style="margin-top: 15px; border: 1px dashed #2b83b8; padding: 10px; border-radius: var(--radius); background: #f0f7fb;">
+            <div class="section-header-flex">
+                <h2 style="background: none; color: #2b83b8; padding: 0; margin: 0;">Interne Notizen (Nur für E-Mail)</h2>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'interne_notizen_rb')">🎤 Dikt.</button>
+                    <button type="button" class="no-print gps-btn" style="background: #2b83b8; font-size: 10px; padding: 4px 8px;" onclick="insertGPSLink(this, 'interne_notizen_rb')">📍 GPS</button>
+                </div>
+            </div>
+            <textarea id="interne_notizen_rb" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+        </div>
+
+        <div class="section" style="margin-top: 20px;">
+            <div class="legal-text">
+                Vor Inangriffnahme der oben verzeichneten Leistungen wurde deren Art und Umfang, die Anzahl der Beschäftigungsgruppen der für die Durchführung der Leistungen erforderlichen Arbeitskräfte und die Umstände, die zu Aufzahlungen (Überstunden, Erschwernisse, usw.) führen können, mit dem Auftraggeber oder dessen bevollmächtigten Vertreter einvernehmlich festgelegt.<br><br>
+                Die ÖNORM B2112 in der geltenden Fassung ist in vollem Umfang vereinbart. Der Auftraggeber war mit den zum Einsatz gebrachten Arbeitnehmern einverstanden. Der bevollmächtigte Vertreter des Auftraggebers erklärt, zur Unterfertigung des Regieberichtes und der darin abgegebenen Erklärungen ermächtigt zu sein.
+            </div>
+
+            <div class="signature-box">
+                <span class="label" style="margin-bottom: 6px;">Unterschrift Auftraggeber / Bevollmächtigter Vertreter:</span>
+                <canvas id="signature-pad" class="signature-pad"></canvas>
+                <div style="text-align: right; margin-top: 5px;" class="no-print">
+                    <button class="control-btn secondary" style="padding: 6px 12px; font-size: 10px;" onclick="clearSignature()">Neu Unterschreiben</button>
+                </div>
+                <div style="margin-top: 15px; font-size: 9px; color: var(--text-light); text-align: left;">
+                    <strong>Auftragnehmer:</strong> Diese Bestätigung wurde automationsunterstützt erstellt und trägt daher keine Unterschrift. (Brugger GmbH)
+                </div>
+            </div>
+        </div>
+
+        <div class="footer"><span>Brugger GmbH</span><span>Seite 1</span></div>
+    </div>
+
+    <div id="photoPagesContainer"></div>
+</template>
 
 <script>
-/* =========================
-   Initialisierung / Helpers
-   ========================= */
-const dateInput = document.getElementById('datum');
-if (dateInput) {
-    try {
-        if ('valueAsDate' in dateInput) {
-            dateInput.valueAsDate = new Date();
-        } else {
-            dateInput.value = new Date().toISOString().split('T')[0];
+/* =========================================================
+   TEXT-VORLAGEN (Leckortung)
+   ========================================================= */
+const FLACHDACH_TEXT_FUNKENSCHLAG = "1. Verfahrensoptik und Methodik\nDie Überprüfung der Kunststoff-Dachabdichtung auf dem Hauptdach wurde mittels des Hochspannungs-Impuls-Verfahrens (Trockenortungsverfahren) durchgeführt. Dieses Verfahren basiert auf der elektrischen Isolationsfähigkeit der Abdichtungslage.\n\nFunktionsweise: Eine kontrollierte Hochspannung wird über eine mobile Kupferbürste auf die Oberfläche der Dachbahn appliziert. Da die Kunststoffabdichtung als Nichtleiter fungiert, bleibt der Stromkreis unterbrochen, solange die Schicht intakt ist.\nDetektion: Bei Vorliegen einer Fehlstelle (Loch, Riss oder kapillare Undichtigkeit) kommt es zum Funkendurchschlag in Richtung des geerdeten Untergrunds. Dieser Durchschlag wird sowohl akustisch als auch optisch signalisiert und ermöglicht eine zentimetergenaue Lokalisierung.\nParameter: Die Prüfspannung wurde spezifisch auf die Materialstärke der vorliegenden Kunststoffbahn kalibriert, um eine zuverlässige Durchschlagskraft bei Defekten zu gewährleisten, ohne das intakte Material thermisch zu belasten.\n\n2. Untersuchungsumfang\nGegenstand der Prüfung war die freiliegende Flachdachfläche des Hauptdaches. Voraussetzung für die Durchführung war eine trockene und besenreine Oberfläche ohne Auflast (z. B. Kies oder Begrünung), um eine flächendeckende Kontaktierung durch die Prüfbürste sicherzustellen.\n\n3. Befund und Ergebnisse\nIm Rahmen der systematischen Abfahrung der Dachfläche sowie der detaillierten Überprüfung der Nahtfügebereiche und Anschlüsse wurden insgesamt 24 Verdachtsbereiche identifiziert.\n\nCharakteristik der Fehlstellen: Die Detektionen umfassen sowohl punktuelle Perforationen als auch potenzielle Schwachstellen im Bereich der Nahtüberlappungen.\nDokumentation: Alle 24 lokalisierten Stellen wurden unmittelbar auf der Dachhaut markiert, um eine direkte Zuordnung für die nachfolgenden Instandsetzungsmaßnahmen zu ermöglichen.";
+const FLACHDACH_TEXT_ROOFSCAN = "1. Ausgangssituation:\nAn der Decke im 1. Untergeschoss wurde ein Wassereintritt im Bereich eines Gullys festgestellt.\nDarüber befindet sich die Flachdachabdichtung der Terrasse.\n\nDer Aufbau des Flachdaches stellt sich wie folgt dar:\n- Stahlbetondecke\n- Abdichtung\n- Isolierung\n- Kies\n- Betonplatten\n\nZur Lokalisierung der Wasserdurchtritte wurden Untersuchungen mittels einer Potential-Differenzmessung durchgeführt.\nEs wurde nur ein Teilbereich der Terrasse überprüft.\n\n2. Durchführung der Messung und vorbereitende Maßnahmen:\nZur Charakterisierung von möglichen Leckagen im Abdichtungssystem wurden gerichtete elektrische Felder zwischen der Einspeisung an der Schadstelle und einem mobilen Sensor im Messbereich erzeugt. Wegsamkeitsbereiche durch das Abdichtungssystem äußern sich durch erhöhte Energiedurchtritte des Tracersignals.\n\n3. Untersuchungsergebnisse:\nEs wurde zum Zeitpunkt der Überprüfung ein Verdachtsbereich V1 ermittelt.\nDer Verdachtsbereich befindet sich ca. 3 m neben dem betroffenen Gully.\nDa eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht möglich ist, wird empfohlen, die gesamte Flachdachfläche nach einem Niederschlag nochmals zu prüfen.";
+const TEXT_HEIZUNG = "Diagnose und Druckprüfung\nAufgrund eines systemseitigen Wasserverlustes an der Heizungsanlage wurden die einzelnen Heizkreise einer systemgetrennten Druckprobe unterzogen. Hierbei konnte ein signifikanter Druckabfall im Heizkreis des Gastraums lokalisiert werden.\n\nLeckortung mittels Spurengas\nZur exakten Lokalisierung der Schadstelle wurde der betroffene Heizkreis entleert und mit Ortungsgas (Formiergas) beaufschlagt. Die anschließende messtechnische Untersuchung ergab einen Gasaustritt an der Heizungsleitung innerhalb des Gastraums.";
+const TEXT_BLEI_WOHNUNG = "An den Wänden zum Badezimmer wurden Vernässungen festgestellt.\nEs erfolgte die Überprüfung der Druck- und Ablaufleitungen im Schadensbereich.\n\nBei den Druckleitungen wurde zum Zeitpunkt der Überprüfung keine Undichtheit festgestellt.\nBei der Überprüfung der Ablaufleitungen wurden Undichtheiten in der Bleileitung des Waschtisches in der Wand und im Fußbodenaufbau sowie Undichtheiten in der Bleileitung zum Gully festgestellt.";
+const TEXT_SILIKONFUGE = "An einer Wand zum Badezimmer wurden Vernässungen festgestellt.\nEs erfolgte die Überprüfung der Druck- und Ablaufleitungen in der gesamten Wohnung.\nZum Zeitpunkt der Überprüfung wurde keine Undichtheit an den Druck- und Ablaufleitungen festgestellt.\n\nEs wurden Undichtheiten in der Silikonabdichtung der Badewanne festgestellt.";
+const TEXT_GASAUSTritt_WHG = "Objekt: Trennwand Kinderzimmer / Badezimmer\nSchadensbild: Akute Vernässung des Mauerwerks im bodennahen und mittleren Wandbereich.\n\nUntersuchungsschritte\nSystemprüfung: Funktionsprüfung der Abwasser- und Druckleitungen zur Differenzierung der Schadensquelle.\nVorbereitung: Absperrung der Wasserzufuhr sowie vollständige Entleerung des Leitungssystems.\nDetektionsverfahren: Beaufschlagung der Rohrleitungen mit Prüfgas (Tracergas). Die Ortung erfolgte mittels elektronischem Gasspürgerät durch Messung der Gasdiffusion an den Bauteiloberflächen.\n\nTechnischer Befund\nDie messtechnische Untersuchung lokalisierte eine Undichtigkeit an der Warmwasserleitung. Der Gasaustritt konzentriert sich innerhalb der Wandung im Bereich der Zuleitung zur Duscharmatur.";
+
+/* =========================================================
+   APP STEUERUNG
+   ========================================================= */
+let currentApp = null; 
+
+function startApp(type) {
+    currentApp = type;
+    document.getElementById('start-screen').style.display = 'none';
+    const tpl = document.getElementById(type === 'LO' ? 'tpl-lo' : (type === 'KB' ? 'tpl-kb' : 'tpl-rb'));
+    document.getElementById('app-root').appendChild(tpl.content.cloneNode(true));
+    
+    initCommon();
+    if (type === 'LO') initLO();
+    if (type === 'KB') initKB();
+    if (type === 'RB') initRB();
+    updateTitleWithAddress();
+    
+    // Start Auto-Save Listener
+    document.getElementById('app-root').addEventListener('input', debounce(saveToLocal, 1000));
+    document.getElementById('app-root').addEventListener('change', debounce(saveToLocal, 1000));
+}
+
+/* =========================================================
+   GEMEINSAME FUNKTIONEN
+   ========================================================= */
+function preparePrintView() {
+    document.querySelectorAll('textarea').forEach(el => {
+        let clone = el.nextElementSibling;
+        if (!clone || !clone.classList.contains('print-textarea-clone')) {
+            clone = document.createElement('div');
+            clone.className = 'print-textarea-clone';
+            el.parentNode.insertBefore(clone, el.nextSibling);
         }
-    } catch (e) {
-        dateInput.value = new Date().toISOString().split('T')[0];
-    }
+        clone.innerHTML = el.value.replace(/\n/g, '<br>');
+    });
+
+    // Felder Arbeitszeit, Ortungsgas, Fahrzeit, Fahrzone nur drucken wenn ausgefüllt
+    const opts = [
+        { id: 'arbeitszeit_input', def: '' },
+        { id: 'ortungsgas_select', def: '0' },
+        { id: 'fahrzeit_input', def: '' },
+        { id: 'fahrzone_select', def: '' }
+    ];
+    opts.forEach(o => {
+        const el = document.getElementById(o.id);
+        if(el && el.parentElement) {
+            const val = el.value.trim();
+            if(val === o.def || val === '- wählen -') el.parentElement.classList.add('no-print');
+            else el.parentElement.classList.remove('no-print');
+        }
+    });
+
+    // Fotobeschreibungen nur drucken, wenn sie ausgefüllt sind
+    document.querySelectorAll('.photo-desc').forEach(desc => {
+        if (desc.value.trim() === '') {
+            desc.classList.add('no-print');
+        } else {
+            desc.classList.remove('no-print');
+        }
+    });
+}
+
+function initCommon() {
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        try { input.valueAsDate = new Date(); } catch (e) { input.value = new Date().toISOString().split('T')[0]; }
+    });
+    document.querySelectorAll('textarea').forEach(el => {
+        el.addEventListener('input', autoResize);
+        if(el.value) autoResize.call(el);
+    });
+    ['name', 'adresse', 'plz', 'ort', 'auftraggeber_name', 'auftraggeber_adresse', 'auftraggeber_plz', 'auftraggeber_ort'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateTitleWithAddress);
+    });
+
+    window.addEventListener('beforeprint', preparePrintView);
+    
+    checkAutoSave();
+    setupPWA();
+}
+
+function autoResize() { 
+    this.style.height = 'auto'; 
+    this.style.height = (this.scrollHeight) + 'px'; 
 }
 
 function buildReportBaseName() {
     const adr = document.getElementById('adresse')?.value.trim() || '';
     const plz = document.getElementById('plz')?.value.trim() || '';
     const ort = document.getElementById('ort')?.value.trim() || '';
-    const baseTitle = 'Leckortungsbericht';
-
-    let locationPart = `${plz} ${ort}`.trim();
+    let baseTitle = currentApp === 'KB' ? 'Kanalreinigungs- & Inspektionsbericht' : 'Regiebericht';
+    if (currentApp === 'LO') {
+        baseTitle = document.getElementById('checkFlachdach')?.checked ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
+    }
     let titleParts = [];
-    if (locationPart) titleParts.push(locationPart);
+    if (`${plz} ${ort}`.trim()) titleParts.push(`${plz} ${ort}`.trim());
     if (adr) titleParts.push(adr);
-
-    if (titleParts.length > 0) {
-        return `${baseTitle} - ${titleParts.join(', ')}`;
-    } else {
-        return baseTitle;
-    }
+    return titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle;
 }
 
-function updateTitleWithAddress() {
-    document.title = buildReportBaseName();
+function updateTitleWithAddress() { document.title = buildReportBaseName(); }
+
+function autoLocate(btn, target) {
+    const origTxt = btn.innerHTML;
+    if (!navigator.geolocation) return showToast("Geolokalisierung nicht unterstützt.", "error");
+    btn.innerHTML = "⏳ Suche..."; btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1`);
+                const data = await res.json();
+                if (data && data.address) {
+                    const addr = data.address;
+                    let street = addr.road || addr.pedestrian || addr.footway || "";
+                    let houseNr = addr.house_number || "";
+                    document.getElementById(target === 'main' ? 'adresse' : 'auftraggeber_adresse').value = `${street} ${houseNr}`.trim();
+                    document.getElementById(target === 'main' ? 'plz' : 'auftraggeber_plz').value = addr.postcode || "";
+                    document.getElementById(target === 'main' ? 'ort' : 'auftraggeber_ort').value = addr.city || addr.town || addr.village || "";
+                    updateTitleWithAddress();
+                    showToast("Adresse gefunden!", "success");
+                } else showToast("Adresse nicht eindeutig ermittelbar.", "error");
+            } catch (err) { showToast("Fehler beim Abrufen der Adressdaten.", "error"); }
+            finally { btn.innerHTML = origTxt; btn.disabled = false; }
+        },
+        () => { showToast("Standort konnte nicht ermittelt werden.", "error"); btn.innerHTML = origTxt; btn.disabled = false; },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
 }
 
-document.getElementById('adresse')?.addEventListener('input', updateTitleWithAddress);
-document.getElementById('plz')?.addEventListener('input', updateTitleWithAddress);
-document.getElementById('ort')?.addEventListener('input', updateTitleWithAddress);
-updateTitleWithAddress();
-
-function autoResize() { this.style.height = 'auto'; this.style.height = (this.scrollHeight + 2) + 'px'; }
-document.querySelectorAll('textarea').forEach(el => {
-    el.addEventListener('input', autoResize);
-    if(el.value) autoResize.call(el);
-});
-
-/* =========================
-   Zustände / Sichtbarkeiten
-   ========================= */
-const checkFlachdach = document.getElementById('checkFlachdach');
-const reparaturSection = document.getElementById('reparaturSection');
-const befundTextarea = document.getElementById('befund');
-const flachdachTextOptions = document.getElementById('flachdachTextOptions');
-const flachdachTemplateSelect = document.getElementById('flachdachTemplate');
-
-const checkReparatur = document.getElementById('checkReparatur');
-const reparaturWorks = document.getElementById('reparaturWorks');
-
-function applyReparaturState() {
-    if (!checkReparatur || !reparaturWorks) return;
-    reparaturWorks.style.display = checkReparatur.checked ? '' : 'none';
-}
-checkReparatur?.addEventListener('change', applyReparaturState);
-applyReparaturState();
-
-const toggleSketch = document.getElementById('toggleSketch');
-const sketchPage = document.getElementById('sketchPage');
-if (toggleSketch) {
-    document.body.classList.remove('sketch-enabled');
-    toggleSketch.addEventListener('change', () => {
-        if (toggleSketch.checked) {
-            document.body.classList.add('sketch-enabled');
-            if (sketchPage) sketchPage.style.display = '';
-        } else {
-            document.body.classList.remove('sketch-enabled');
-        }
-        renumberPhotoPages();
-    });
-}
-
-function setTemplateOptions(mode) {
-    if (!flachdachTemplateSelect) return;
-    const prev = flachdachTemplateSelect.value;
-    const base = `<option value="">- wählen -</option>`;
-    let opts = '';
-    if (mode === 'flachdach') {
-        opts = `
-            <option value="funkenschlag">Funkenschlag</option>
-            <option value="roofscan">RoofScan</option>
-        `;
-    } else if (mode === 'leckortung') {
-        opts = `
-            <option value="heizung">Heizung</option>
-            <option value="blei">Blei Wohnung</option>
-            <option value="silikonfuge">Silikonfuge</option>
-            <option value="gasaustritt">Gasaustritt Whg</option>
-        `;
-    } else {
-        flachdachTemplateSelect.innerHTML = base;
-        flachdachTemplateSelect.value = '';
-        return;
-    }
-    flachdachTemplateSelect.innerHTML = base + opts;
-    const stillExists = Array.from(flachdachTemplateSelect.options).some(o => o.value === prev);
-    flachdachTemplateSelect.value = stillExists ? prev : '';
-}
-
-function applyTemplateVisibility() {
-    if (!flachdachTextOptions) return;
-    const cf = document.getElementById('checkFlachdach');
-    const cl = document.getElementById('checkLeckortung');
-    const clo = document.getElementById('checkLOPauschale');
-    const co = document.getElementById('checkOptLeckortung');
-
-    const flachdachOn = !!(cf && cf.checked);
-    const leckOn = !!((cl && cl.checked) || (clo && clo.checked) || (co && co.checked));
-
-    const bauteileContainer = document.getElementById('ueberpruefteBauteileContainer');
-    if (bauteileContainer) {
-        bauteileContainer.style.display = leckOn ? 'block' : 'none';
-    }
-
-    if (flachdachOn) {
-        flachdachTextOptions.style.display = 'block';
-        setTemplateOptions('flachdach');
-    } else if (leckOn) {
-        flachdachTextOptions.style.display = 'block';
-        setTemplateOptions('leckortung');
-    } else {
-        flachdachTextOptions.style.display = 'none';
-        setTemplateOptions(null);
-    }
-}
-checkFlachdach?.addEventListener('change', applyFlachdachState);
-function applyFlachdachState() {
-    if (!checkFlachdach) return;
-    if (checkFlachdach.checked) {
-        if (reparaturSection) reparaturSection.style.display = 'none';
-        if (sketchPage) sketchPage.style.display = 'none';
-        if (toggleSketch) {
-            toggleSketch.checked = false;
-            document.body.classList.remove('sketch-enabled');
-        }
-    } else {
-        if (reparaturSection) reparaturSection.style.display = '';
-        if (sketchPage) sketchPage.style.display = '';
-    }
-    applyTemplateVisibility();
-    renumberPhotoPages();
-}
-applyFlachdachState();
-
-const checkPool = document.getElementById('checkPool');
-function applyPoolState() {
-    const poolContainer = document.getElementById('poolBauteileContainer');
-    if (!checkPool || !poolContainer) return;
-    poolContainer.style.display = checkPool.checked ? 'block' : 'none';
-}
-checkPool?.addEventListener('change', applyPoolState);
-applyPoolState();
-
-/* Vorlagentexte */
-const FLACHDACH_TEXT_FUNKENSCHLAG =
-`1. Verfahrensoptik und Methodik
-Die Überprüfung der Kunststoff-Dachabdichtung auf dem Hauptdach wurde mittels des Hochspannungs-Impuls-Verfahrens (Trockenortungsverfahren) durchgeführt. Dieses Verfahren basiert auf der elektrischen Isolationsfähigkeit der Abdichtungslage.
-
-Funktionsweise: Eine kontrollierte Hochspannung wird über eine mobile Kupferbürste auf die Oberfläche der Dachbahn appliziert. Da die Kunststoffabdichtung als Nichtleiter fungiert, bleibt der Stromkreis unterbrochen, solange die Schicht intakt ist.
-Detektion: Bei Vorliegen einer Fehlstelle (Loch, Riss oder kapillare Undichtigkeit) kommt es zum Funkendurchschlag in Richtung des geerdeten Untergrunds. Dieser Durchschlag wird sowohl akustisch als auch optisch signalisiert und ermöglicht eine zentimetergenaue Lokalisierung.
-Parameter: Die Prüfspannung wurde spezifisch auf die Materialstärke der vorliegenden Kunststoffbahn kalibriert, um eine zuverlässige Durchschlagskraft bei Defekten zu gewährleisten, ohne das intakte Material thermisch zu belasten.
-
-2. Untersuchungsumfang
-Gegenstand der Prüfung war die freiliegende Flachdachfläche des Hauptdaches. Voraussetzung für die Durchführung war eine trockene und besenreine Oberfläche ohne Auflast (z. B. Kies oder Begrünung), um eine flächendeckende Kontaktierung durch die Prüfbürste sicherzustellen.
-
-3. Befund und Ergebnisse
-Im Rahmen der systematischen Abfahrung der Dachfläche sowie der detaillierten Überprüfung der Nahtfügebereiche und Anschlüsse wurden insgesamt 24 Verdachtsbereiche identifiziert.
-
-Charakteristik der Fehlstellen: Die Detektionen umfassen sowohl punktuelle Perforationen als auch potenzielle Schwachstellen im Bereich der Nahtüberlappungen.
-Dokumentation: Alle 24 lokalisierten Stellen wurden unmittelbar auf der Dachhaut markiert, um eine direkte Zuordnung für die nachfolgenden Instandsetzungsmaßnahmen zu ermöglichen.`;
-
-const FLACHDACH_TEXT_ROOFSCAN =
-`1. Ausgangssituation:
-An der Decke im 1. Untergeschoss wurde ein Wassereintritt im Bereich eines Gullys festgestellt.
-Darüber befindet sich die Flachdachabdichtung der Terrasse.
-
-Der Aufbau des Flachdaches stellt sich wie folgt dar:
-- Stahlbetondecke
-- Abdichtung
-- Isolierung
-- Kies
-- Betonplatten
-
-Zur Lokalisierung der Wasserdurchtritte wurden Untersuchungen mittels einer Potential-Differenzmessung durchgeführt.
-Es wurde nur ein Teilbereich der Terrasse überprüft.
-
-2. Durchführung der Messung und vorbereitende Maßnahmen:
-Zur Charakterisierung von möglichen Leckagen im Abdichtungssystem wurden gerichtete elektrische Felder zwischen der Einspeisung an der Schadstelle und einem mobilen Sensor im Messbereich erzeugt. Wegsamkeitsbereiche durch das Abdichtungssystem äußern sich durch erhöhte Energiedurchtritte des Tracersignals.
-
-3. Untersuchungsergebnisse:
-Es wurde zum Zeitpunkt der Überprüfung ein Verdachtsbereich V1 ermittelt.
-Der Verdachtsbereich befindet sich ca. 3 m neben dem betroffenen Gully.
-Da eine punktuelle Lokalisierung der Undichtheit aufgrund der Witterung nicht möglich ist, wird empfohlen, die gesamte Flachdachfläche nach einem Niederschlag nochmals zu prüfen.`;
-
-const TEXT_HEIZUNG =
-`Diagnose und Druckprüfung
-Aufgrund eines systemseitigen Wasserverlustes an der Heizungsanlage wurden die einzelnen Heizkreise einer systemgetrennten Druckprobe unterzogen. Hierbei konnte ein signifikanter Druckabfall im Heizkreis des Gastraums lokalisiert werden.
-
-Leckortung mittels Spurengas
-Zur exakten Lokalisierung der Schadstelle wurde der betroffene Heizkreis entleert und mit Ortungsgas (Formiergas) beaufschlagt. Die anschließende messtechnische Untersuchung ergab einen Gasaustritt an der Heizungsleitung innerhalb des Gastraums.`;
-
-const TEXT_BLEI_WOHNUNG =
-`An den Wänden zum Badezimmer wurden Vernässungen festgestellt.
-Es erfolgte die Überprüfung der Druck- und Ablaufleitungen im Schadensbereich.
-
-Bei den Druckleitungen wurde zum Zeitpunkt der Überprüfung keine Undichtheit festgestellt.
-Bei der Überprüfung der Ablaufleitungen wurden Undichtheiten in der Bleileitung des Waschtisches in der Wand und im Fußbodenaufbau sowie Undichtheiten in der Bleileitung zum Gully festgestellt.`;
-
-const TEXT_SILIKONFUGE =
-`An einer Wand zum Badezimmer wurden Vernässungen festgestellt.
-Es erfolgte die Überprüfung der Druck- und Ablaufleitungen in der gesamten Wohnung.
-Zum Zeitpunkt der Überprüfung wurde keine Undichtheit an den Druck- und Ablaufleitungen festgestellt.
-
-Es wurden Undichtheiten in der Silikonabdichtung der Badewanne festgestellt.`;
-
-const TEXT_GASAUSTritt_WHG =
-`Objekt: Trennwand Kinderzimmer / Badezimmer
-Schadensbild: Akute Vernässung des Mauerwerks im bodennahen und mittleren Wandbereich.
-
-Untersuchungsschritte
-Systemprüfung: Funktionsprüfung der Abwasser- und Druckleitungen zur Differenzierung der Schadensquelle.
-Vorbereitung: Absperrung der Wasserzufuhr sowie vollständige Entleerung des Leitungssystems.
-Detektionsverfahren: Beaufschlagung der Rohrleitungen mit Prüfgas (Tracergas). Die Ortung erfolgte mittels elektronischem Gasspürgerät durch Messung der Gasdiffusion an den Bauteiloberflächen.
-
-Technischer Befund
-Die messtechnische Untersuchung lokalisierte eine Undichtigkeit an der Warmwasserleitung. Der Gasaustritt konzentriert sich innerhalb der Wandung im Bereich der Zuleitung zur Duscharmatur.`;
-
-if (flachdachTemplateSelect && befundTextarea) {
-    flachdachTemplateSelect.addEventListener('change', () => {
-        const v = flachdachTemplateSelect.value;
-        if (v === 'funkenschlag') befundTextarea.value = FLACHDACH_TEXT_FUNKENSCHLAG;
-        else if (v === 'roofscan') befundTextarea.value = FLACHDACH_TEXT_ROOFSCAN;
-        else if (v === 'heizung') befundTextarea.value = TEXT_HEIZUNG;
-        else if (v === 'blei') befundTextarea.value = TEXT_BLEI_WOHNUNG;
-        else if (v === 'silikonfuge') befundTextarea.value = TEXT_SILIKONFUGE;
-        else if (v === 'gasaustritt') befundTextarea.value = TEXT_GASAUSTritt_WHG;
-        autoResize.call(befundTextarea);
-    });
-}
-
-const checkLeckortung = document.getElementById('checkLeckortung');
-const zeitContainer = document.getElementById('zeitContainer');
-function applyLeckortungState() {
-    if (!checkLeckortung || !zeitContainer) return;
-    zeitContainer.style.display = checkLeckortung.checked ? '' : 'none';
-    applyTemplateVisibility();
-}
-checkLeckortung?.addEventListener('change', applyLeckortungState);
-applyLeckortungState();
-
-document.getElementById('checkLOPauschale')?.addEventListener('change', applyTemplateVisibility);
-document.getElementById('checkOptLeckortung')?.addEventListener('change', applyTemplateVisibility);
-applyTemplateVisibility();
-
-/* =========================
-   Zeichnen / Skizze (Canvas)
-   ========================= */
-let currentMode = 'freehand'; 
-let currentStyle = '#000';
-let currentWidth = 2;
-let isEraser = false;
-
-// Intelligente Steuerung für Stift vs. Finger
-// Auf schmalen Geräten (wie S23) standardmäßig Finger erlauben, sonst (iPad) blockieren
-let allowTouchDrawing = window.innerWidth <= 768; 
-
-// Button Initialisierung beim Laden
-window.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('touchToggleBtn');
-    if(toggleBtn && allowTouchDrawing) {
-        toggleBtn.classList.add('active');
-        toggleBtn.style.background = "#d0e4f5";
-        toggleBtn.style.borderColor = "#2b83b8";
-    }
-});
-
-function toggleTouch(el) {
-    allowTouchDrawing = !allowTouchDrawing;
-    if(allowTouchDrawing) {
-        el.classList.add('active');
-        el.style.background = "#d0e4f5";
-        el.style.borderColor = "#2b83b8";
-    } else {
-        el.classList.remove('active');
-        el.style.background = "#fff";
-        el.style.borderColor = "#ccc";
-    }
-}
-
-function setMode(mode, el) {
-    currentMode = mode;
-    isEraser = false;
-    document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function setColor(color, el) {
-    currentStyle = color;
-    if (isEraser) {
-        setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]'));
-    }
-    document.querySelectorAll('.color-tool').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function setEraser(el) {
-    isEraser = true;
-    document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function initDrawing(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    
-    let startX = 0;
-    let startY = 0;
-    let snapshot;
-
-    function resize() {
-        const rect = canvas.getBoundingClientRect();
-        const temp = canvas.toDataURL();
-        canvas.width = rect.width; 
-        canvas.height = rect.height;
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        img.src = temp;
-    }
-    window.addEventListener('load', resize);
-    window.addEventListener('resize', debounce(resize, 200));
-
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return { 
-            x: (e.clientX - rect.left) * scaleX, 
-            y: (e.clientY - rect.top) * scaleY 
-        };
-    }
-
-    canvas.addEventListener('pointerdown', (e) => { 
-        if (e.pointerType === 'touch' && !allowTouchDrawing) return; 
-        e.preventDefault(); 
-        
-        drawing = true; 
-        const pos = getPos(e); 
-        startX = pos.x;
-        startY = pos.y;
-        
-        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        ctx.beginPath(); 
-        ctx.moveTo(startX, startY); 
-    });
-
-    canvas.addEventListener('pointermove', (e) => {
-        if (!drawing) return;
-        if (e.pointerType === 'touch' && !allowTouchDrawing) return; 
-        e.preventDefault(); 
-        
-        const pos = getPos(e);
-
-        if (isEraser) {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = 15; 
-            ctx.lineTo(pos.x, pos.y); 
-            ctx.stroke();
-        } 
-        else if (currentMode === 'freehand') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = currentWidth; 
-            ctx.strokeStyle = currentStyle;
-            ctx.lineTo(pos.x, pos.y); 
-            ctx.stroke();
-        } 
-        else {
-            ctx.putImageData(snapshot, 0, 0);
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = currentWidth; 
-            ctx.strokeStyle = currentStyle;
-            ctx.beginPath();
-            
-            if (currentMode === 'line') {
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(pos.x, pos.y);
-            } 
-            else if (currentMode === 'rect') {
-                ctx.rect(startX, startY, pos.x - startX, pos.y - startY);
-            } 
-            else if (currentMode === 'circle') {
-                const radius = Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2));
-                ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+function insertGPSLink(btn, textId) {
+    if (!navigator.geolocation) return showToast("Geolokalisierung nicht unterstützt.", "error");
+    const origTxt = btn.innerHTML; btn.innerHTML = "⏳..."; btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const box = document.getElementById(textId);
+            if (box) {
+                box.value = box.value.trim() ? box.value.trim() + '\n\n📍 ' + link : '📍 ' + link;
+                autoResize.call(box);
             }
-            ctx.stroke();
-        }
-    });
+            showToast("GPS-Link eingefügt", "success");
+            btn.innerHTML = "✔"; setTimeout(() => { btn.innerHTML = origTxt; btn.disabled = false; }, 2000);
+        },
+        () => { showToast("Standortfehler.", "error"); btn.innerHTML = origTxt; btn.disabled = false; },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
 
-    window.addEventListener('pointerup', (e) => {
-        if (e.pointerType === 'touch' && !allowTouchDrawing) return;
-        drawing = false;
-    });
+function toggleAuftraggeber() {
+    const c = document.getElementById('auftraggeberContainer');
+    if (c) c.style.display = document.getElementById('checkAuftraggeber').checked ? 'block' : 'none';
+}
+
+function printAndSave() { exportFullReport(); setTimeout(() => window.print(), 800); }
+
+/* =========================================================
+   SPEECH TO TEXT
+   ========================================================= */
+let recognition = null, activeMicBtn = null;
+function toggleDictation(btn, targetId) {
+    const targetEl = document.getElementById(targetId);
+    if (!targetEl) return;
+    if (activeMicBtn === btn && recognition) { recognition.stop(); return; }
+    if (recognition) recognition.stop();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return showToast("Browser unterstützt Diktieren nicht.", "error");
     
-    window.addEventListener('pointercancel', (e) => {
-        if (e.pointerType === 'touch' && !allowTouchDrawing) return;
-        drawing = false;
-    });
+    recognition = new SpeechRecognition();
+    recognition.lang = 'de-DE'; recognition.interimResults = true; recognition.continuous = true;
+    
+    let originalValue = targetEl.value;
+    recognition.onstart = () => { activeMicBtn = btn; btn.classList.add('recording'); btn.innerHTML = "🔴 Zuhören..."; };
+    recognition.onresult = (event) => {
+        let interim = '', final = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) final += event.results[i][0].transcript;
+            else interim += event.results[i][0].transcript;
+        }
+        let newText = originalValue;
+        if (originalValue && !originalValue.endsWith(' ') && !originalValue.endsWith('\n')) newText += ' ';
+        targetEl.value = newText + final + interim;
+        autoResize.call(targetEl);
+        if (final) originalValue = newText + final;
+    };
+    recognition.onerror = () => resetMicBtn();
+    recognition.onend = () => resetMicBtn();
+    try { recognition.start(); } catch(e) { resetMicBtn(); }
+}
+function resetMicBtn() {
+    if (activeMicBtn) {
+        activeMicBtn.classList.remove('recording');
+        activeMicBtn.innerHTML = activeMicBtn.innerText.includes("Dikt.") ? "🎤 Dikt." : "🎤 Diktieren";
+        activeMicBtn = null;
+    }
+    recognition = null;
+}
 
+/* =========================================================
+   CROP FUNKTION (Nur LO)
+   ========================================================= */
+let cropImg = new Image(), cropCvs = null, cropCtx = null, isCrop = false, cx1=0, cy1=0, cx2=0, cy2=0, cScale=1;
+window.addEventListener('DOMContentLoaded', () => {
+    cropCvs = document.getElementById('cropCanvas');
+    if(cropCvs) {
+        cropCtx = cropCvs.getContext('2d');
+        cropCvs.addEventListener('pointerdown', e => { isCrop = true; const r = cropCvs.getBoundingClientRect(); cx1 = e.clientX-r.left; cy1 = e.clientY-r.top; cx2=cx1; cy2=cy1; drawCrop(); e.preventDefault(); });
+        cropCvs.addEventListener('pointermove', e => { if(!isCrop) return; const r = cropCvs.getBoundingClientRect(); cx2 = e.clientX-r.left; cy2 = e.clientY-r.top; drawCrop(); e.preventDefault(); });
+        window.addEventListener('pointerup', () => isCrop=false); window.addEventListener('pointercancel', () => isCrop=false);
+    }
+});
+function openCropModal(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        cropImg.onload = () => {
+            document.getElementById('cropModal').style.display = 'flex';
+            const mw = window.innerWidth*0.95, mh = window.innerHeight*0.65;
+            let dw = mw, dh = mh;
+            if (cropImg.width/cropImg.height > mw/mh) dh = mw / (cropImg.width/cropImg.height); else dw = mh * (cropImg.width/cropImg.height);
+            cropCvs.width = dw; cropCvs.height = dh; cScale = cropImg.width/dw;
+            cx1 = 0; cy1 = 0; cx2 = dw; cy2 = dh; drawCrop();
+        }; cropImg.src = e.target.result;
+    }; reader.readAsDataURL(input.files[0]); input.value = '';
+}
+function drawCrop() {
+    if(!cropCtx) return; cropCtx.clearRect(0,0,cropCvs.width,cropCvs.height); cropCtx.drawImage(cropImg,0,0,cropCvs.width,cropCvs.height);
+    cropCtx.fillStyle = 'rgba(0,0,0,0.6)'; cropCtx.fillRect(0,0,cropCvs.width,cropCvs.height);
+    const x=Math.min(cx1,cx2), y=Math.min(cy1,cy2), w=Math.abs(cx2-cx1), h=Math.abs(cy2-cy1);
+    cropCtx.clearRect(x,y,w,h); cropCtx.drawImage(cropImg, x*cScale, y*cScale, w*cScale, h*cScale, x, y, w, h);
+    cropCtx.strokeStyle='#fff'; cropCtx.lineWidth=2; cropCtx.setLineDash([5,5]); cropCtx.strokeRect(x,y,w,h); cropCtx.setLineDash([]);
+}
+function closeCropModal() { document.getElementById('cropModal').style.display='none'; }
+function confirmCrop() {
+    let x=Math.min(cx1,cx2)*cScale, y=Math.min(cy1,cy2)*cScale, w=Math.abs(cx2-cx1)*cScale, h=Math.abs(cy2-cy1)*cScale;
+    if(w<10||h<10) { x=0; y=0; w=cropImg.width; h=cropImg.height; }
+    const tc = document.createElement('canvas'); tc.width=w; tc.height=h; tc.getContext('2d').drawImage(cropImg,x,y,w,h,0,0,w,h);
+    const bgc = document.getElementById('sketch-bg-canvas');
+    if (bgc) {
+        const cw=bgc.width, ch=bgc.height; let scale, off;
+        if(w/h > cw/ch) { scale = ch/h; off=(w*scale-cw)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,-off,0,w*scale,ch); } 
+        else { scale = cw/w; off=(h*scale-ch)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,0,-off,cw,h*scale); }
+    }
+    closeCropModal();
+}
+
+/* =========================================================
+   LECKORTUNG INIT & LOGIK
+   ========================================================= */
+let sketchCtx = null, cMode = 'freehand', cColor = '#000', cWidth = 2, isErase = false, touchOn = window.innerWidth <= 768; 
+
+function initLO() {
+    applyReparaturState(); applyFlachdachState(); applyPoolState(); applyTemplateVisibility();
+    document.getElementById('checkReparatur')?.addEventListener('change', applyReparaturState);
+    ['checkLOPauschale','checkLeckortung','checkOptLeckortung'].forEach(id => document.getElementById(id)?.addEventListener('change', applyTemplateVisibility));
+    document.getElementById('checkFlachdach')?.addEventListener('change', applyFlachdachState);
+    document.getElementById('checkPool')?.addEventListener('change', applyPoolState);
+    
+    const ts = document.getElementById('toggleSketch');
+    if (ts) {
+        document.body.classList.remove('sketch-enabled');
+        ts.addEventListener('change', () => {
+            document.body.classList.toggle('sketch-enabled', ts.checked);
+            if (document.getElementById('sketchPage')) document.getElementById('sketchPage').style.display = ts.checked ? '' : 'none';
+            renumberPhotoPages();
+        });
+    }
+    const tb = document.getElementById('touchToggleBtn');
+    if(tb && touchOn) { tb.classList.add('active'); tb.style.background="#d0e4f5"; tb.style.borderColor="#2b83b8"; }
+    const cvs = document.getElementById('sketch-canvas');
+    if(cvs) sketchCtx = initDrawing(cvs);
+}
+
+function insertTemplate() {
+    const sel = document.getElementById('flachdachTemplate'), bef = document.getElementById('befund');
+    if(!sel || !bef || !sel.value) return;
+    let txt = { funkenschlag:FLACHDACH_TEXT_FUNKENSCHLAG, roofscan:FLACHDACH_TEXT_ROOFSCAN, heizung:TEXT_HEIZUNG, blei:TEXT_BLEI_WOHNUNG, silikonfuge:TEXT_SILIKONFUGE, gasaustritt:TEXT_GASAUSTritt_WHG }[sel.value];
+    if(txt) { bef.value = bef.value.trim() ? bef.value.trim() + '\n\n' + txt : txt; autoResize.call(bef); }
+    sel.value = '';
+}
+
+function applyReparaturState() { const w = document.getElementById('reparaturWorks'); if(w) w.style.display = document.getElementById('checkReparatur')?.checked ? '' : 'none'; }
+function applyPoolState() { const c = document.getElementById('poolBauteileContainer'); if(c) c.style.display = document.getElementById('checkPool')?.checked ? 'block' : 'none'; }
+function applyFlachdachState() {
+    const cf = document.getElementById('checkFlachdach')?.checked;
+    const h1 = document.querySelector('#mainPage .header-title');
+    if(h1) h1.textContent = cf ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
+    ['reparaturSection','sketchPage','boxArbeitszeitOrtungsgas'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = cf ? 'none' : ''; });
+    if(cf) { const ts = document.getElementById('toggleSketch'); if(ts){ ts.checked=false; document.body.classList.remove('sketch-enabled'); } }
+    applyTemplateVisibility(); renumberPhotoPages(); updateTitleWithAddress();
+}
+function applyTemplateVisibility() {
+    const opts = document.getElementById('flachdachTextOptions'); if(!opts) return;
+    const cf = document.getElementById('checkFlachdach')?.checked;
+    const leck = ['checkLeckortung','checkLOPauschale','checkOptLeckortung'].some(id=>document.getElementById(id)?.checked);
+    const bt = document.getElementById('ueberpruefteBauteileContainer'); if(bt) bt.style.display = leck ? 'block' : 'none';
+    opts.style.display = (cf || leck) ? 'block' : 'none';
+    const sel = document.getElementById('flachdachTemplate');
+    if(sel) {
+        const v = sel.value; sel.innerHTML = '<option value="">- Vorlage wählen -</option>';
+        if(cf) sel.innerHTML += '<option value="funkenschlag">Funkenschlag</option><option value="roofscan">RoofScan</option>';
+        else if(leck) sel.innerHTML += '<option value="heizung">Heizung</option><option value="blei">Blei Wohnung</option><option value="silikonfuge">Silikonfuge</option><option value="gasaustritt">Gasaustritt Whg</option>';
+        if(Array.from(sel.options).some(o=>o.value===v)) sel.value=v;
+    }
+}
+
+['Sonstiges','SonstigesReparatur','SonstigesBauteile','SonstigesPool'].forEach(id => {
+    window['toggle'+id] = () => { document.getElementById('input'+id).style.display = document.getElementById('check'+id).checked ? 'block' : 'none'; };
+});
+
+function toggleTouch(el) { touchOn = !touchOn; el.classList.toggle('active', touchOn); el.style.background=touchOn?"#d0e4f5":"#fff"; el.style.borderColor=touchOn?"#2b83b8":"#ccc"; }
+function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setColor(c, el) { cColor = c; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+
+function initDrawing(cvs) {
+    const ctx = cvs.getContext('2d', {willReadFrequently:true});
+    let draw=false, sx=0, sy=0, snap;
+    const bgCvs = document.getElementById('sketch-bg-canvas');
+    function rs() {
+        const r = cvs.getBoundingClientRect();
+        [cvs, bgCvs].forEach(c => { const t = c.toDataURL(); c.width=r.width; c.height=r.height; const i=new Image(); i.onload=()=>c.getContext('2d').drawImage(i,0,0,c.width,c.height); i.src=t; });
+    }
+    setTimeout(rs, 100); window.addEventListener('resize', debounce(rs, 200));
+    function gp(e) { const r = cvs.getBoundingClientRect(); const cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY; return {x:(cx-r.left)*(cvs.width/r.width), y:(cy-r.top)*(cvs.height/r.height)}; }
+    cvs.addEventListener('pointerdown', e => { if(e.pointerType==='touch' && !touchOn) return; e.preventDefault(); draw=true; const p=gp(e); sx=p.x; sy=p.y; snap=ctx.getImageData(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(sx,sy); });
+    cvs.addEventListener('pointermove', e => {
+        if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault(); const p=gp(e);
+        if(isErase){ ctx.globalCompositeOperation='destination-out'; ctx.lineWidth=15; ctx.lineTo(p.x,p.y); ctx.stroke(); }
+        else if(cMode==='freehand'){ ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth; ctx.strokeStyle=cColor; ctx.lineTo(p.x,p.y); ctx.stroke(); }
+        else { ctx.putImageData(snap,0,0); ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth; ctx.strokeStyle=cColor; ctx.beginPath(); if(cMode==='line'){ ctx.moveTo(sx,sy); ctx.lineTo(p.x,p.y); }else if(cMode==='rect'){ ctx.rect(sx,sy,p.x-sx,p.y-sy); }else if(cMode==='circle'){ ctx.arc(sx,sy,Math.sqrt(Math.pow(p.x-sx,2)+Math.pow(p.y-sy,2)),0,2*Math.PI); } ctx.stroke(); }
+    });
+    ['pointerup','pointercancel'].forEach(ev => window.addEventListener(ev, e => { if(e.pointerType==='touch'&&!touchOn) return; draw=false; }));
     return ctx;
 }
-const sketchCtx = initDrawing('sketch-canvas');
+function clearSketch() { [document.getElementById('sketch-canvas'), document.getElementById('sketch-bg-canvas')].forEach(c=>{ if(c)c.getContext('2d').clearRect(0,0,c.width,c.height); }); }
 
-function clearSketch() {
-    const canvas = document.getElementById('sketch-canvas');
-    sketchCtx.clearRect(0, 0, canvas.width, canvas.height);
+/* =========================================================
+   KANALBERICHT INIT (KB)
+   ========================================================= */
+function initKB() {
+    const ts = document.getElementById('toggleSketch');
+    if (ts) {
+        document.body.classList.remove('sketch-enabled');
+        ts.addEventListener('change', () => {
+            document.body.classList.toggle('sketch-enabled', ts.checked);
+            if (document.getElementById('sketchPage')) document.getElementById('sketchPage').style.display = ts.checked ? '' : 'none';
+            renumberPhotoPages();
+        });
+    }
+    const cvs = document.getElementById('sketch-canvas'); if(cvs) sketchCtx = initDrawing(cvs);
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function() {
-        const context = this, args = arguments;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
+/* =========================================================
+   REGIEBERICHT INIT & LOGIK
+   ========================================================= */
+let sigCtx = null, sigCanvas = null;
+function initRB() {
+    updateDynamicRows(); ['worker-container','material-container'].forEach(id => document.getElementById(id)?.addEventListener('input', updateDynamicRows));
+    sigCanvas = document.getElementById('signature-pad');
+    if (sigCanvas) {
+        sigCtx = sigCanvas.getContext('2d'); let draw = false;
+        function rs() { const r = sigCanvas.getBoundingClientRect(); const t = sigCanvas.toDataURL(); sigCanvas.width=r.width; sigCanvas.height=r.height; const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0,r.width,r.height); i.src=t; }
+        setTimeout(rs, 100); window.addEventListener('resize', debounce(rs, 200));
+        function gp(e) { const r = sigCanvas.getBoundingClientRect(); const cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY; return {x:(cx-r.left)*(sigCanvas.width/r.width), y:(cy-r.top)*(sigCanvas.height/r.height)}; }
+        sigCanvas.addEventListener('pointerdown', e => { draw=true; sigCtx.beginPath(); const p=gp(e); sigCtx.moveTo(p.x,p.y); e.preventDefault(); });
+        sigCanvas.addEventListener('pointermove', e => { if(!draw) return; const p=gp(e); sigCtx.lineWidth=2; sigCtx.lineCap='round'; sigCtx.strokeStyle='#000'; sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); e.preventDefault(); });
+        ['pointerup','pointercancel'].forEach(ev => window.addEventListener(ev, () => draw=false));
+    }
+}
+function clearSignature() { if(sigCanvas && sigCtx) sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
+function updateDynamicRows() {
+    ['worker-container','material-container'].forEach(id => {
+        const c = document.getElementById(id); if(!c) return;
+        const rows = c.querySelectorAll(id==='worker-container'?'.worker-grid':'.material-grid'); let f = false;
+        rows.forEach(r => {
+            if(Array.from(r.querySelectorAll('input')).some(i => i.type!=='date'&&i.value.trim()!=='')) { r.style.display=''; r.classList.remove('is-empty-row'); }
+            else { r.style.display = f?'none':''; r.classList.add('is-empty-row'); f=true; }
+        });
+    });
 }
 
-/* =========================
-   Fotos / Markierungen
-   ========================= */
+/* =========================================================
+   FOTOS & EXPORT LOGIK
+   ========================================================= */
 function getOrCreateLastGrid() {
-    const container = document.getElementById('photoPagesContainer');
-    const grids = container.querySelectorAll('.photo-grid');
-    let lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
-
-    if (!lastGrid || lastGrid.children.length >= 4) {
-        const page = document.createElement('div');
-        page.className = 'page';
-        const gridId = 'grid-' + Date.now() + '-' + Math.floor(Math.random()*1000);
-        page.innerHTML = `
-            <div class="header">
-                <div class="header-left">
-                    <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
-                    <h1>Fotodokumentation</h1>
-                </div>
-            </div>
-            <div class="photo-grid" id="${gridId}"></div>
-            <div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>
-        `;
-        container.appendChild(page);
-        renumberPhotoPages();
-        return document.getElementById(gridId);
+    const c = document.getElementById('photoPagesContainer'); const grids = c.querySelectorAll('.photo-grid');
+    let l = grids.length ? grids[grids.length-1] : null;
+    if(!l || l.children.length >= 4) {
+        const p = document.createElement('div'); p.className = 'page'; const id = 'grid-'+Date.now();
+        p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title">Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        c.appendChild(p); renumberPhotoPages(); return document.getElementById(id);
     }
-    return lastGrid;
+    return l;
 }
-
-function handlePhotos(input) {
-    const files = Array.from(input.files);
-    files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            scaleAndInsertPhoto(e.target.result, null); 
-        };
-        reader.readAsDataURL(file);
-    });
-    input.value = ''; 
+function handlePhotos(inp) { Array.from(inp.files).forEach(f => { const r = new FileReader(); r.onload=e=>scaleAndInsertPhoto(e.target.result); r.readAsDataURL(f); }); inp.value=''; }
+function calcPhotoPageNumber(idx) { return ((currentApp === 'LO' || currentApp === 'KB') && document.getElementById('toggleSketch')?.checked ? 3 : 2) + idx; }
+function renumberPhotoPages() { document.querySelectorAll('#photoPagesContainer .page .footer .page-no').forEach((el, i) => el.textContent = `Seite ${calcPhotoPageNumber(i)}`); }
+function addArrow(e, c) {
+    const o = c.querySelector('.marker-arrow'); if(o) o.remove();
+    const r = c.getBoundingClientRect(); const cx = e.touches?e.touches[0].clientX:e.clientX, cy = e.touches?e.touches[0].clientY:e.clientY;
+    const a = document.createElement('div'); a.className='marker-arrow'; a.style.left=((cx-r.left)/r.width)*100+'%'; a.style.top=((cy-r.top)/r.height)*100+'%';
+    a.innerHTML = `<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>`; c.appendChild(a);
 }
-
-function calcPhotoPageNumber(photoPageIndex) {
-    const hasSketch = !!(toggleSketch && toggleSketch.checked);
-    return (hasSketch ? 3 : 2) + photoPageIndex;
-}
-
-function renumberPhotoPages() {
-    const footers = document.querySelectorAll('#photoPagesContainer .page .footer .page-no');
-    footers.forEach((el, idx) => {
-        el.textContent = `Seite ${calcPhotoPageNumber(idx)}`;
-    });
-}
-
-function addArrow(e, container) {
-    const old = container.querySelector('.marker-arrow'); if (old) old.remove();
-    const rect = container.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    const arrow = document.createElement('div');
-    arrow.className = 'marker-arrow';
-    arrow.style.left = x + '%';
-    arrow.style.top  = y + '%';
-    arrow.innerHTML = `
-        <svg viewBox="0 0 100 100" fill="red">
-            <path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/>
-            <path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/>
-        </svg>`;
-    container.appendChild(arrow);
-}
-
-function insertPhotoBox(imgSrc, gridId = null, descText = '', arrowPos = null) {
-    const box = document.createElement('div');
-    box.className = 'photo-box';
-    box.innerHTML = `
-        <div class="img-container" onclick="addArrow(event, this)">
-            <img src="${imgSrc}">
-        </div>
-        <input type="text" class="photo-desc" placeholder="Beschreibung..." value="${descText ? (''+descText).replace(/"/g,'&quot;') : ''}">
-    `;
-    
-    let grid;
-    if (gridId) {
-        grid = document.getElementById(gridId);
+function insertPhotoBox(src, gId=null, txt='', arr=null) {
+    const b = document.createElement('div'); b.className='photo-box';
+    b.innerHTML = `<span class="photo-number"></span><button class="delete-photo-btn no-print" onclick="deletePhoto(this)">×</button><div class="img-container" onclick="openPhotoEditor(this)"><img src="${src}"></div><input type="text" class="photo-desc" placeholder="Beschreibung..." value="${txt.replace(/"/g,'&quot;')}">`;
+    let g = gId ? document.getElementById(gId) : getOrCreateLastGrid(); if(!g) g=getOrCreateLastGrid(); g.appendChild(b);
+    if(arr) {
+        const a = document.createElement('div'); a.className='marker-arrow'; a.style.left=arr.x+'%'; a.style.top=arr.y+'%';
+        a.innerHTML = `<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>`;
+        b.querySelector('.img-container').appendChild(a);
     }
-    if (!grid) {
-        grid = getOrCreateLastGrid();
-    }
-    
-    grid.appendChild(box);
-
-    if (arrowPos && typeof arrowPos.x === 'number' && typeof arrowPos.y === 'number') {
-        const container = box.querySelector('.img-container');
-        const arrow = document.createElement('div');
-        arrow.className = 'marker-arrow';
-        arrow.style.left = arrowPos.x + '%';
-        arrow.style.top  = arrowPos.y + '%';
-        arrow.innerHTML = `
-            <svg viewBox="0 0 100 100" fill="red">
-                <path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/>
-                <path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/>
-            </svg>`;
-        container.appendChild(arrow);
-    }
+    const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'flex';
+    updatePhotoNumbers();
+}
+function scaleAndInsertPhoto(url, gId=null) {
+    const i = new Image(); i.onload = () => {
+        const max = 1600; let w = i.width, h = i.height;
+        if(w>h && w>max) { h*=max/w; w=max; } else if(h>max) { w*=max/h; h=max; }
+        const c = document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(i,0,0,w,h);
+        insertPhotoBox(c.toDataURL('image/jpeg', 0.8), gId);
+    }; i.src = url;
 }
 
-function scaleAndInsertPhoto(dataUrl, gridId = null) {
-    const img = new Image();
-    img.onload = () => {
-        // Reduziert auf 800px für max. Komprimierung
-        const maxSide = 800;
-        let { width, height } = img;
-        
-        if (width > height && width > maxSide) {
-            height = Math.round(height * (maxSide / width));
-            width = maxSide;
-        } else if (height >= width && height > maxSide) {
-            width = Math.round(width * (maxSide / height));
-            height = maxSide;
+function deletePhoto(btn) {
+    if (confirm('Möchten Sie dieses Foto wirklich löschen?')) {
+        const photoBox = btn.closest('.photo-box');
+        if (photoBox) {
+            const grid = photoBox.parentNode;
+            photoBox.remove();
+
+            if (grid && grid.classList.contains('photo-grid') && grid.children.length === 0) {
+                const page = grid.closest('.page');
+                if (page) { page.remove(); renumberPhotoPages(); }
+            }
+            updatePhotoNumbers();
+            if(document.querySelectorAll('.photo-box').length === 0) { const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'none'; }
         }
-        
-        const c = document.createElement('canvas');
-        c.width = width; 
-        c.height = height;
-        const cx = c.getContext('2d');
-        cx.drawImage(img, 0, 0, width, height);
-        
-        // 60% JPEG Qualität für winzige PDF Dateien (1-3MB)
-        const scaledDataUrl = cx.canvas.toDataURL('image/jpeg', 0.6);
-        insertPhotoBox(scaledDataUrl, gridId);
-    };
-    img.src = dataUrl;
+    }
 }
 
-/* =========================
-   Mailto (ohne Anhang)
-   ========================= */
+function togglePhotoNumbering() {
+    const checked = document.getElementById('checkPhotoNumbering')?.checked;
+    document.body.classList.toggle('show-photo-numbers', checked);
+}
+
+function updatePhotoNumbers() {
+    document.querySelectorAll('.photo-box').forEach((box, i) => {
+        const span = box.querySelector('.photo-number');
+        if(span) span.textContent = i + 1;
+    });
+}
+
 function sendEmail() {
-    const subject = buildReportBaseName();
+    const sbj = buildReportBaseName();
+    let body = 'Hallo, anbei der Bericht.\n\n';
+    
+    let summary = '';
+    const name = document.getElementById('name')?.value || '-';
+    const datum = document.getElementById('datum')?.value || '-';
+    const adresse = document.getElementById('adresse')?.value || '-';
+    const ort = document.getElementById('ort')?.value || '-';
 
-    const nameEl = document.getElementById('name');
-    const datumEl = document.getElementById('datum');
-    const adresseEl = document.getElementById('adresse');
-    const plzEl = document.getElementById('plz');
-    const ortEl = document.getElementById('ort');
-    const telEl = document.getElementById('telefon');
-    const befundEl = document.getElementById('befund');
-    const reparaturEl = document.getElementById('reparatur');
+    summary += `Kunde: ${name}\n`;
+    summary += `Datum: ${datum}\n`;
+    summary += `Adresse: ${adresse}, ${ort}\n\n`;
 
-    const name = nameEl?.value || '';
-    const datum = datumEl?.value || '';
-    const adresse = adresseEl?.value || '';
-    const plz = plzEl?.value || '';
-    const ort = ortEl?.value || '';
-    const tel = telEl?.value || '';
-    const befund = befundEl?.value || '';
-    const reparatur = reparaturEl?.value || '';
-
-    let body = '';
-    body += 'Leckortungsbericht\n';
-    body += '-------------------\n\n';
-    if (name) body += `Kunde / Name: ${name}\n`;
-    if (datum) body += `Datum: ${datum}\n`;
-    if (adresse || plz || ort) {
-        body += 'Einsatzadresse:\n';
-        body += `  ${adresse}\n`;
-        body += `  ${plz} ${ort}\n`;
-    }
-    if (tel) body += `Telefon: ${tel}\n`;
-    body += '\n';
-    if (befund) { body += 'Schadensanalyse & Befund:\n' + befund + '\n\n'; }
-    if (reparatur) { body += 'Erforderliche Reparaturarbeiten:\n' + reparatur + '\n\n'; }
-    body += '\n---\nGesendet vom Leckortungsbericht-Formular.';
-
-    const mailto = `mailto:kanal@brugger-entfeuchtung.at?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
-}
-
-/* =========================
-   Drucken & Speichern kombiniert
-   ========================= */
-function printAndSave() {
-    exportFullReport();
-    setTimeout(() => { window.print(); }, 800);
-}
-
-/* =========================
-   Vollständiges Speichern/Laden (.lok)
-   ========================= */
-function exportFullReport() {
-    const data = {
-        version: 1,
-        meta: { savedAt: new Date().toISOString() },
-        toggles: { sketchEnabled: !!(toggleSketch && toggleSketch.checked) },
-        byId: {},
-        inputsNoId: [],
-        textareasNoId: [],
-        selectsNoId: [],
-        checkStatesOrdered: [],
-        sketch: { png: null },
-        photos: []
-    };
-
-    document.querySelectorAll('input').forEach(inp => {
-        if (inp.type === 'checkbox') return;
-        if (inp.id) data.byId[inp.id] = inp.value;
-        else data.inputsNoId.push(inp.value);
-    });
-    document.querySelectorAll('textarea').forEach(ta => {
-        if (ta.id) data.byId[ta.id] = ta.value;
-        else data.textareasNoId.push(ta.value);
-    });
-    document.querySelectorAll('select').forEach(sel => {
-        if (sel.id) data.byId[sel.id] = sel.value;
-        else data.selectsNoId.push(sel.value);
-    });
-
-    const allChecks = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-    data.checkStatesOrdered = allChecks.map(c => !!c.checked);
-
-    try { data.sketch.png = document.getElementById('sketch-canvas').toDataURL('image/png'); }
-    catch (_) { data.sketch.png = null; }
-
-    const photoPages = Array.from(document.querySelectorAll('#photoPagesContainer .page'));
-    photoPages.forEach((page, pageIdx) => {
-        const grid = page.querySelector('.photo-grid');
-        if (!grid) return;
-        const boxes = Array.from(grid.querySelectorAll('.photo-box'));
-        const images = boxes.map(box => {
-            const img = box.querySelector('img');
-            const desc = box.querySelector('.photo-desc')?.value || '';
-            const arrow = box.querySelector('.marker-arrow');
-            let arrowPos = null;
-            if (arrow) {
-                const x = parseFloat((arrow.style.left || '0').replace('%','')) || 0;
-                const y = parseFloat((arrow.style.top  || '0').replace('%','')) || 0;
-                arrowPos = { x, y };
-            }
-            return { dataUrl: img?.src || '', description: desc, arrow: arrowPos };
-        });
-        data.photos.push({ index: pageIdx, images });
-    });
-
-    const safeFilename = buildReportBaseName().replace(/[<>:"/\\|?*]/g, '_');
-    const blob = new Blob([JSON.stringify(data)], { type:'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = safeFilename + '.lok';
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function importFullReport(inputEl) {
-    const file = inputEl.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            restoreFromData(data);
-            inputEl.value = '';
-        } catch (err) {
-            console.error(err);
-            alert('Datei konnte nicht geladen werden. Ist es eine gültige .lok-Datei?');
-        }
-    };
-    reader.readAsText(file);
-}
-
-function restoreFromData(data) {
-    if (!data || typeof data !== 'object') return;
-
-    if (data.byId) {
-        Object.keys(data.byId).forEach(id => {
+    let befundText = '';
+    if (currentApp === 'LO') {
+        befundText = 'Befund:\n' + (document.getElementById('befund')?.value || 'Keine Angabe');
+    } else if (currentApp === 'KB') {
+        befundText = 'Untersuchungsergebnis:\n' + (document.getElementById('kanal_befund')?.value || 'Keine Angabe');
+        const kbChecks = [];
+        ['kb_verstopfung', 'kb_reinigung', 'kb_tvinspektion', 'kb_ortung', 'kb_neuabnahme', 'kb_wartung'].forEach(id => {
             const el = document.getElementById(id);
-            if (!el) return;
-            if (el.tagName === 'SELECT' || el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'checkbox')) {
-                el.value = data.byId[id];
-                if (el.tagName === 'TEXTAREA') autoResize.call(el);
-            }
+            if(el && el.checked) kbChecks.push(el.nextElementSibling.innerText);
         });
+        if(kbChecks.length) befundText += '\n\nEinsatzdetails: ' + kbChecks.join(', ');
+        
+        const mat = document.getElementById('rohrmaterial')?.value;
+        const dn = document.getElementById('nennweite')?.value;
+        const len = document.getElementById('haltung_laenge')?.value;
+        if(mat || dn || len) befundText += `\nTech. Daten: ${mat||''} ${dn||''} ${len ? '('+len+'m)' : ''}`;
+    } else if (currentApp === 'RB') {
+        befundText = 'Erbrachte Leistungen:\n' + (document.getElementById('leistungen')?.value || 'Keine Angabe');
     }
+    summary += befundText;
 
-    if (Array.isArray(data.inputsNoId)) {
-        let idx = 0;
-        document.querySelectorAll('input').forEach(inp => {
-            if (inp.type === 'checkbox') return;
-            if (inp.id) return;
-            inp.value = data.inputsNoId[idx++] ?? '';
-        });
-    }
-    if (Array.isArray(data.textareasNoId)) {
-        let idx = 0;
-        document.querySelectorAll('textarea').forEach(ta => {
-            if (ta.id) return;
-            ta.value = data.textareasNoId[idx++] ?? '';
-            autoResize.call(ta);
-        });
-    }
-    if (Array.isArray(data.selectsNoId)) {
-        let idx = 0;
-        document.querySelectorAll('select').forEach(sel => {
-            if (sel.id) return;
-            sel.value = data.selectsNoId[idx++] ?? '';
-        });
-    }
+    body += '--- Zusammenfassung ---\n' + summary + '\n-----------------------\n\n';
 
-    if (Array.isArray(data.checkStatesOrdered)) {
-        const allChecks = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-        allChecks.forEach((c, i) => { c.checked = !!data.checkStatesOrdered[i]; });
-    }
-
-    applyReparaturState();
-    applyLeckortungState();
-    applyTemplateVisibility();
-    applyPoolState();
-
-    if (data.toggles && typeof data.toggles.sketchEnabled === 'boolean' && toggleSketch) {
-        toggleSketch.checked = data.toggles.sketchEnabled;
-        toggleSketch.dispatchEvent(new Event('change'));
-    }
-
-    if (data.sketch && data.sketch.png) {
-        const canvas = document.getElementById('sketch-canvas');
-        const img = new Image();
-        img.onload = () => { sketchCtx.drawImage(img, 0, 0, canvas.width, canvas.height); };
-        img.src = data.sketch.png;
-    }
-
-    const container = document.getElementById('photoPagesContainer');
-    container.innerHTML = '';
-    if (Array.isArray(data.photos) && data.photos.length) {
-        data.photos.forEach((p, pageIdx) => {
-            const page = document.createElement('div');
-            page.className = 'page';
-            
-            const gridId = `grid-restore-${pageIdx}-${Date.now()}`;
-            
-            page.innerHTML = `
-                <div class="header">
-                    <div class="header-left">
-                        <img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'">
-                        <h1>Fotodokumentation</h1>
-                    </div>
-                </div>
-                <div class="photo-grid" id="${gridId}"></div>
-                <div class="footer"><span>Brugger GmbH</span><span class="page-no">Seite ${calcPhotoPageNumber(pageIdx)}</span></div>
-            `;
-            container.appendChild(page);
-
-            if (Array.isArray(p.images)) {
-                p.images.forEach(imgObj => {
-                    insertPhotoBox(imgObj.dataUrl, gridId, imgObj.description, imgObj.arrow);
-                });
-            }
-        });
+    const notizenId = (currentApp === 'LO' || currentApp === 'KB') ? 'interne_notizen' : 'interne_notizen_rb';
+    const notizen = document.getElementById(notizenId)?.value.trim();
+    if (notizen) {
+        body += '--- Interne Notizen ---\n' + notizen + '\n-----------------------\n\n';
     }
     
+    body += 'Gesendet vom Brugger-Formular.';
+    const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
+    window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
+}
+
+function getReportData() {
+    const d = { appType: currentApp, version: 1, toggles: { sketchEnabled: !!document.getElementById('toggleSketch')?.checked, auftraggeberEnabled: !!document.getElementById('checkAuftraggeber')?.checked, photoNumberingEnabled: !!document.getElementById('checkPhotoNumbering')?.checked }, byId: {}, inputsNoId: [], textareasNoId: [], selectsNoId: [], checkStatesOrdered: [], sketch: {}, signature: {}, photos: [] };
+    document.querySelectorAll('#app-root input').forEach(i => { if(i.type==='checkbox'||i.type==='file') return; if(i.id) d.byId[i.id]=i.value; else d.inputsNoId.push(i.value); });
+    document.querySelectorAll('#app-root textarea').forEach(t => { if(t.id) d.byId[t.id]=t.value; else d.textareasNoId.push(t.value); });
+    document.querySelectorAll('#app-root select').forEach(s => { if(s.id) d.byId[s.id]=s.value; else d.selectsNoId.push(s.value); });
+    d.checkStatesOrdered = Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).map(c => !!c.checked);
+    if(currentApp==='LO' || currentApp==='KB') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
+    else { try{ d.signature.png=document.getElementById('signature-pad').toDataURL('image/png'); }catch(e){} }
+    document.querySelectorAll('#photoPagesContainer .page').forEach((p, idx) => {
+        const imgs = Array.from(p.querySelectorAll('.photo-box')).map(b => {
+            const arr = b.querySelector('.marker-arrow');
+            return { dataUrl: b.querySelector('img').src, description: b.querySelector('.photo-desc').value, arrow: arr ? { x: parseFloat(arr.style.left), y: parseFloat(arr.style.top) } : null };
+        });
+        if(imgs.length) d.photos.push({ index: idx, images: imgs });
+    });
+    return d;
+}
+
+function exportFullReport() {
+    const d = getReportData();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type:'application/json'}));
+    a.download = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok'; a.click();
+    showToast("Bericht gespeichert!", "success");
+}
+
+function importFromStart(inp) {
+    const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); setTimeout(()=>restoreFromData(d), 150); showToast("Bericht geladen", "success"); } catch(err) { showToast('Datei fehlerhaft.', 'error'); } };
+    r.readAsText(f); inp.value='';
+}
+function importFullReport(inp) {
+    const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
+    r.onload = e => { try { const d = JSON.parse(e.target.result); if(d.appType && d.appType!==currentApp) return showToast("Falscher Berichtstyp.", "error"); restoreFromData(d); showToast("Daten importiert", "success"); } catch(err) { showToast('Datei fehlerhaft.', 'error'); } };
+    r.readAsText(f); inp.value='';
+}
+function restoreFromData(d) {
+    if(!d || typeof d!=='object') return;
+    if(d.byId) Object.keys(d.byId).forEach(id => { const el = document.getElementById(id); if(el && el.type!=='checkbox') { el.value=d.byId[id]; if(el.tagName==='TEXTAREA') autoResize.call(el); } });
+    if(d.inputsNoId) { let i=0; document.querySelectorAll('#app-root input').forEach(el=>{ if(el.type!=='checkbox'&&el.type!=='file'&&!el.id) el.value=d.inputsNoId[i++]||''; }); }
+    if(d.textareasNoId) { let i=0; document.querySelectorAll('#app-root textarea').forEach(el=>{ if(!el.id) { el.value=d.textareasNoId[i++]||''; autoResize.call(el); } }); }
+    if(d.selectsNoId) { let i=0; document.querySelectorAll('#app-root select').forEach(el=>{ if(!el.id) el.value=d.selectsNoId[i++]||''; }); }
+    if(d.checkStatesOrdered) Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).forEach((c,i)=>c.checked=!!d.checkStatesOrdered[i]);
+    
+    if(d.toggles && typeof d.toggles.auftraggeberEnabled==='boolean' && document.getElementById('checkAuftraggeber')) { document.getElementById('checkAuftraggeber').checked=d.toggles.auftraggeberEnabled; toggleAuftraggeber(); }
+    if(d.toggles && typeof d.toggles.photoNumberingEnabled==='boolean' && document.getElementById('checkPhotoNumbering')) { document.getElementById('checkPhotoNumbering').checked=d.toggles.photoNumberingEnabled; togglePhotoNumbering(); }
+    
+    if(currentApp==='LO' || currentApp==='KB') {
+        applyReparaturState(); applyFlachdachState(); applyPoolState();
+        if(d.toggles && typeof d.toggles.sketchEnabled==='boolean' && document.getElementById('toggleSketch')) { document.getElementById('toggleSketch').checked=d.toggles.sketchEnabled; document.getElementById('toggleSketch').dispatchEvent(new Event('change')); }
+        if(d.sketch?.bg) { const i=new Image(); i.onload=()=>document.getElementById('sketch-bg-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.bg; }
+        if(d.sketch?.lines||d.sketch?.png) { const i=new Image(); i.onload=()=>document.getElementById('sketch-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.lines||d.sketch.png; }
+    } else {
+        updateDynamicRows();
+        if(d.signature?.png) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
+    }
+    
+    const c = document.getElementById('photoPagesContainer'); c.innerHTML='';
+    (d.photos||[]).forEach(p => {
+        const pg = document.createElement('div'); pg.className='page'; const gId = 'grid-restore-'+p.index;
+        pg.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title">Fotodokumentation</h1></div><div class="photo-grid" id="${gId}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        c.appendChild(pg); p.images.forEach(img => insertPhotoBox(img.dataUrl, gId, img.description, img.arrow));
+    });
     updateTitleWithAddress();
 }
+function debounce(fn, w) { let t; return function() { clearTimeout(t); t = setTimeout(()=>fn.apply(this, arguments), w); }; }
 
-/* =========================
-   Kleine Helfer
-   ========================= */
-function toggleSonstiges() {
-    const check = document.getElementById('checkSonstiges');
-    document.getElementById('inputSonstiges').style.display = check.checked ? 'block' : 'none';
+/* =========================================================
+   AUTO-SAVE & TOASTS
+   ========================================================= */
+function showToast(msg, type='info') {
+    let c = document.getElementById('toast-container');
+    if(!c) { c = document.createElement('div'); c.id='toast-container'; document.body.appendChild(c); }
+    const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+    c.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
 }
-function toggleSonstigesReparatur() {
-    const check = document.getElementById('checkSonstigesReparatur');
-    document.getElementById('inputSonstigesReparatur').style.display = check.checked ? 'block' : 'none';
+
+function saveToLocal() {
+    if(!currentApp) return;
+    const d = getReportData();
+    localStorage.setItem('brugger_autosave', JSON.stringify(d));
 }
-function toggleSonstigesBauteile() {
-    const check = document.getElementById('checkSonstigesBauteile');
-    const input = document.getElementById('inputSonstigesBauteile');
-    if (check && input) {
-        input.style.display = check.checked ? 'block' : 'none';
+
+function checkAutoSave() {
+    const saved = localStorage.getItem('brugger_autosave');
+    const btn = document.getElementById('btnRestoreAutosave');
+    if(saved && btn) {
+        btn.style.display = 'flex';
+        // Optional: Button Text mit Zeitstempel versehen
+        try { const d = JSON.parse(saved); if(d.appType) btn.innerHTML = `🔄 Entwurf (${d.appType}) wiederherstellen`; } catch(e){}
     }
 }
-function toggleSonstigesPool() {
-    const check = document.getElementById('checkSonstigesPool');
-    const input = document.getElementById('inputSonstigesPool');
-    if (check && input) {
-        input.style.display = check.checked ? 'block' : 'none';
+
+function restoreAutosave() {
+    const saved = localStorage.getItem('brugger_autosave');
+    if(!saved) return;
+    try {
+        const d = JSON.parse(saved);
+        startApp(d.appType);
+        setTimeout(() => { restoreFromData(d); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+    } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
+}
+
+// Init Check beim Laden der Seite
+window.addEventListener('DOMContentLoaded', checkAutoSave);
+
+/* =========================================================
+   PHOTO EDITOR & PWA
+   ========================================================= */
+let peCvs, peCtx, peImg, peHist=[], peMode='arrow', peColor='red', peActiveImgEl=null;
+
+function openPhotoEditor(container) {
+    peActiveImgEl = container.querySelector('img');
+    if(!peActiveImgEl) return;
+    const modal = document.getElementById('photoEditorModal');
+    peCvs = document.getElementById('photoEditorCanvas');
+    peCtx = peCvs.getContext('2d');
+    
+    const img = new Image();
+    img.onload = () => {
+        // Max size logic
+        let w=img.width, h=img.height;
+        const maxW=1200, maxH=1200;
+        if(w>maxW || h>maxH) { const r=Math.min(maxW/w, maxH/h); w*=r; h*=r; }
+        peCvs.width=w; peCvs.height=h;
+        peCtx.drawImage(img,0,0,w,h);
+        peImg = img; peHist = [peCvs.toDataURL()];
+        modal.style.display='flex';
+    };
+    img.src = peActiveImgEl.src;
+    
+    // Setup interactions
+    let drawing=false, sx, sy;
+    peCvs.onpointerdown = e => {
+        e.preventDefault(); drawing=true;
+        const r=peCvs.getBoundingClientRect(); sx=(e.clientX-r.left)*(peCvs.width/r.width); sy=(e.clientY-r.top)*(peCvs.height/r.height);
+        if(peMode==='text') {
+            const text = prompt("Text eingeben:", "");
+            if(text) {
+                peCtx.fillStyle = peColor; peCtx.font = "bold 40px Arial"; peCtx.fillText(text, sx, sy);
+                peHist.push(peCvs.toDataURL());
+            }
+            drawing=false;
+        }
+    };
+    peCvs.onpointermove = e => {
+        if(!drawing || peMode==='text') return; e.preventDefault();
+        const r=peCvs.getBoundingClientRect(); const cx=(e.clientX-r.left)*(peCvs.width/r.width), cy=(e.clientY-r.top)*(peCvs.height/r.height);
+        
+        // Restore last state
+        const img = new Image(); img.onload = () => {
+            peCtx.clearRect(0,0,peCvs.width,peCvs.height); peCtx.drawImage(img,0,0);
+            peCtx.beginPath(); peCtx.strokeStyle=peColor; peCtx.lineWidth=5; peCtx.fillStyle=peColor;
+            
+            if(peMode==='arrow') {
+                const headlen = 20; const angle = Math.atan2(cy-sy,cx-sx);
+                peCtx.moveTo(sx, sy); peCtx.lineTo(cx, cy); peCtx.stroke();
+                peCtx.beginPath(); peCtx.moveTo(cx, cy);
+                peCtx.lineTo(cx-headlen*Math.cos(angle-Math.PI/6), cy-headlen*Math.sin(angle-Math.PI/6));
+                peCtx.lineTo(cx-headlen*Math.cos(angle+Math.PI/6), cy-headlen*Math.sin(angle+Math.PI/6));
+                peCtx.fill();
+            } else if(peMode==='circle') {
+                peCtx.beginPath();
+                const rad = Math.sqrt(Math.pow(cx-sx,2)+Math.pow(cy-sy,2));
+                peCtx.arc(sx, sy, rad, 0, 2*Math.PI); peCtx.stroke();
+            }
+        }; img.src = peHist[peHist.length-1];
+    };
+    peCvs.onpointerup = () => { if(drawing && peMode!=='text') peHist.push(peCvs.toDataURL()); drawing=false; };
+}
+
+function setPE_Mode(m, el) { peMode=m; document.querySelectorAll('#photoEditorModal .mode-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setPE_Color(c, el) { peColor=c; document.querySelectorAll('#photoEditorModal .color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function undoPE() { if(peHist.length>1) { peHist.pop(); const i=new Image(); i.onload=()=>peCtx.drawImage(i,0,0); i.src=peHist[peHist.length-1]; } }
+function closePhotoEditor() { document.getElementById('photoEditorModal').style.display='none'; }
+function savePhotoEditor() { if(peActiveImgEl) peActiveImgEl.src = peCvs.toDataURL('image/jpeg', 0.8); closePhotoEditor(); }
+
+function setupPWA() {
+    const manifest = {
+        "name": "Brugger Berichte", "short_name": "Brugger", "start_url": ".", "display": "standalone",
+        "background_color": "#f3f4f6", "theme_color": "#b89b1e",
+        "icons": [{ "src": "Logo.PNG", "sizes": "192x192", "type": "image/png" }]
+    };
+    const stringManifest = JSON.stringify(manifest);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    document.getElementById('manifest-placeholder').href = URL.createObjectURL(blob);
+    
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        // Simple SW that caches current page
+        const swCode = `self.addEventListener('install',e=>e.waitUntil(caches.open('brugger-v1').then(c=>c.addAll(['./','index%20version%202.html','Logo.PNG']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob));
     }
+}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+function openSettings() {
+    document.getElementById('settingsModal').style.display = 'flex';
+    document.getElementById('settingsEmail').value = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
+}
+function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+function saveSettings() {
+    const email = document.getElementById('settingsEmail').value.trim();
+    if(email) localStorage.setItem('brugger_email', email); else localStorage.removeItem('brugger_email');
+    closeSettings(); showToast("Einstellungen gespeichert", "success");
 }
 </script>
 </body>
