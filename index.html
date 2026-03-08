@@ -304,12 +304,12 @@
            PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
-            html, body { background: #fff; padding: 0; margin: 0; color: #000; height: auto !important; overflow: visible !important; }
+            html, body { background: #fff; padding: 0; margin: 0; color: #000; height: auto !important; overflow: visible !important; font-size: 0 !important; }
             #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal, #photoEditorModal, #settingsModal, #toast-container { display: none !important; }
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
             /* Optimierte Seiteneinstellungen für iPad/Druck */
-            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; height: 285mm !important; padding: 0 10mm !important; page-break-after: auto !important; page-break-inside: avoid !important; border-radius: 0; overflow: hidden; position: relative; }
+            .page { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 100% !important; max-width: 210mm !important; height: 270mm !important; padding: 0 10mm !important; page-break-after: auto !important; page-break-inside: avoid !important; border-radius: 0; overflow: hidden; position: relative; font-size: 11px !important; float: none !important; }
             
             /* Seitenumbrüche explizit steuern */
             #sketchPage { page-break-before: always !important; }
