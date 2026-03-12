@@ -107,37 +107,38 @@
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); 
             border-radius: 2px; /* A4 Papier Look */
         }
-        .header { display: flex; flex-direction: column; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .header { display: flex; flex-direction: column; padding-bottom: 20px; margin-bottom: 20px; }
         .header-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 8px; }
         .logo { max-height: 60px; width: auto; object-fit: contain; }
-        .header-right { text-align: right; font-size: 10.5px; line-height: 1.4; color: var(--gray-600); }
-        .header-right strong { font-size: 13px; color: var(--gray-900); letter-spacing: 0.3px; display: inline-block; margin-bottom: 2px; }
+        .header-right { text-align: right; font-size: 12px; line-height: 1.4; color: var(--gray-600); }
+        .header-right strong { font-size: 15px; color: var(--gray-900); letter-spacing: 0.3px; display: inline-block; margin-bottom: 2px; }
         
         .header-title { 
-            margin: 0; font-size: 20px; color: var(--primary); 
+            margin: 0; font-size: 24px; color: var(--primary); 
             text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; 
             background: var(--primary-light); padding: 6px; border-radius: var(--radius-sm); 
             text-align: center; border: 1px solid rgba(184, 155, 30, 0.1);
         }
 
-        .section { margin-bottom: 10px; }
-        .section-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .section { margin-bottom: 20px; }
+        .section-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .section h2 { 
-            font-size: 11px; text-transform: uppercase; 
+            font-size: 12.5px; text-transform: uppercase; 
+            font-size: 14px; text-transform: uppercase; 
             color: var(--gray-900); 
-            padding: 5px 10px; margin: 0 0 8px 0; 
+            padding: 8px 12px; margin: 0 0 12px 0; 
             font-weight: 700; letter-spacing: 0.05em;
             background: var(--gray-100);
             border-left: 3px solid var(--primary);
             border-radius: 0 4px 4px 0;
         }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 8px; margin-top: 4px; }
-        .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 6px; margin-bottom: 6px; }
-        .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 6px; margin-bottom: 6px; }
-        .grid-header { font-size: 9px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; padding-left: 4px; letter-spacing: 0.5px; }
-        .label { font-size: 10px; font-weight: 700; margin-bottom: 2px; display: block; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.03em; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 15px; margin-top: 8px; }
+        .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 10px; margin-bottom: 10px; }
+        .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 10px; margin-bottom: 10px; }
+        .grid-header { font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; padding-left: 4px; letter-spacing: 0.5px; }
+        .label { font-size: 11px; font-weight: 700; margin-bottom: 5px; display: block; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.03em; }
         
         .gps-btn, .mic-btn {
             background: var(--gray-600); color: #fff; border: none; padding: 4px 8px; border-radius: var(--radius-sm); 
@@ -154,7 +155,9 @@
             width: 100%; 
             border: 1px solid #d1d5db; 
             padding: 7px 10px; 
-            font-size: 12px; 
+            font-size: 13.5px; 
+            padding: 10px 12px; 
+            font-size: 16px; /* Verhindert Auto-Zoom auf iOS/iPadOS */
             border-radius: var(--radius-sm); 
             background: #fff; 
             outline: none; 
@@ -171,9 +174,9 @@
         textarea { min-height: 40px; font-family: inherit; resize: none; overflow: hidden; line-height: 1.4; display: block; }
         .print-textarea-clone { display: none; }
 
-        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; }
-        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; }
-        .checkbox-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 0; font-size: 11px; color: var(--gray-900); }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
+        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; font-size: 12px; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 0; font-size: 12px; color: var(--gray-900); }
         .checkbox-item input { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--primary); border-radius: 3px; border: 1px solid var(--gray-400); }
 
         .sketch-container { 
@@ -191,7 +194,7 @@
 
         .signature-pad { width: 100%; height: 120px; border: 1px dashed var(--gray-400); border-radius: var(--radius-sm); background: #fff; touch-action: none; cursor: crosshair;}
         .signature-box { border: 1px solid var(--gray-200); background: var(--gray-50); padding: 10px; border-radius: var(--radius-sm); }
-        .legal-text { font-size: 9.5px; color: #555; line-height: 1.4; text-align: justify; margin: 15px 0; }
+        .legal-text { font-size: 11px; color: #555; line-height: 1.4; text-align: justify; margin: 15px 0; }
 
         .toolbar { 
             display: flex; gap: 10px; margin-bottom: 10px; align-items: center; 
@@ -200,9 +203,9 @@
             width: fit-content; margin-left: auto; margin-right: auto; 
         }
         .tool { width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; border-radius: 50%; transition: all 0.2s; }
-        .mode-tool { background: var(--gray-100); border: 1px solid transparent; color: var(--gray-600); }
-        .mode-tool:hover { background: var(--gray-200); }
-        .mode-tool.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(184, 155, 30, 0.4); transform: translateY(-1px); }
+        .mode-tool, .width-tool { background: var(--gray-100); border: 1px solid transparent; color: var(--gray-600); }
+        .mode-tool:hover, .width-tool:hover { background: var(--gray-200); }
+        .mode-tool.active, .width-tool.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(184, 155, 30, 0.4); transform: translateY(-1px); }
         .color-tool { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .color-tool.active { border: 2px solid #fff; transform: scale(1.2); box-shadow: 0 0 0 2px var(--gray-900); }
         .toolbar-divider { width: 2px; height: 24px; background: #ccc; margin: 0 4px; border-radius: 2px; flex-shrink: 0; }
@@ -242,7 +245,7 @@
             display: none;
         }
         body.show-photo-numbers .photo-number { display: block; }
-        .img-container { position: relative; width: 100%; height: 240px; background: #fdfdfd; margin-bottom: 8px; overflow: hidden; cursor: crosshair; border-radius: 4px; border: 1px solid #eee; }
+        .img-container { position: relative; width: 100%; height: 320px; background: #fdfdfd; margin-bottom: 8px; overflow: hidden; cursor: crosshair; border-radius: 4px; border: 1px solid #eee; }
         .img-container img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .marker-arrow { position: absolute; width: 40px; height: 40px; transform: translate(-100%, -100%); pointer-events: none; filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.4)); }
         .photo-desc { width: 100%; border: none; border-bottom: 1px solid var(--gray-200); font-size: 12px; padding: 4px 0; background: transparent; border-radius: 0; box-shadow: none; }
@@ -280,6 +283,7 @@
             #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
             .page { margin: 15px auto; }
             input, textarea, select { font-size: 16px; padding: 10px; }
+            input, textarea, select { padding: 10px; } /* font-size ist jetzt 16px als Basis */
             .sketch-container { height: 50vh; }
         }
 
@@ -297,7 +301,7 @@
             .material-grid input:nth-child(1) { grid-column: 1; } .material-grid input:nth-child(2) { grid-column: 2; } .material-grid input:nth-child(3) { grid-column: 1 / span 2; } 
             .toolbar { flex-wrap: nowrap; overflow-x: auto; padding: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .photo-grid { grid-template-columns: 1fr; }
-            .img-container { height: 220px; }
+            .img-container { height: 260px; }
         }
 
         /* =========================================
@@ -315,16 +319,19 @@
             #sketchPage { page-break-before: always !important; }
             #photoPagesContainer .page { page-break-before: always !important; }
             
-            .header { border-bottom: 2px solid #000; margin-bottom: 2px; padding-bottom: 2px; padding-top: 5mm; }
+            .header { border-bottom: none; margin-bottom: 30px; padding-bottom: 2px; padding-top: 5mm; }
             .header-top { margin-bottom: 0; }
-            .header-title { background: var(--primary-light) !important; color: var(--primary) !important; padding: 4px 0 !important; font-size: 16px !important; text-align: center !important; border-radius: 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: none !important; }
-            .section { margin-bottom: 2px; }
-            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 1px !important; font-size: 11px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .header-title { background: var(--primary-light) !important; color: var(--primary) !important; padding: 4px 0 !important; font-size: 18px !important; text-align: center !important; border-radius: 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: none !important; }
+            .section { margin-bottom: 15px; break-inside: avoid; }
+            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 8px !important; font-size: 12px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 8px !important; font-size: 14px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .grid, .address-grid { gap: 2px; margin-top: 1px; }
             .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
             textarea { display: none !important; }
-            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 10px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
-            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 10px !important; margin: 0 !important; border-radius: 0 !important; }
+            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
+            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; }
+            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 13px !important; line-height: 1.4 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
+            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 13px !important; margin: 0 !important; border-radius: 0 !important; }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 11px; height: 11px; margin-right: 4px; }
             input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
             .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
@@ -340,7 +347,7 @@
             .signature-pad { border: 1px solid #ccc !important; background: transparent !important; height: 80px !important; }
             .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
             .photo-box { border: none !important; box-shadow: none !important; padding: 0 !important; page-break-inside: avoid; }
-            .img-container { height: 50mm !important; border: none !important; background: transparent !important; }
+            .img-container { height: 85mm !important; border: none !important; background: transparent !important; }
             #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
@@ -358,6 +365,27 @@
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
         .toast.info { background: #3b82f6; }
+
+        /* CUSTOMER SEARCH */
+        .customer-search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-top: none;
+            z-index: 1001;
+            max-height: 250px;
+            overflow-y: auto;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            box-shadow: var(--shadow-lg);
+        }
+        .customer-search-results .result-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--gray-100); font-size: 12px; line-height: 1.4; }
+        .customer-search-results .result-item:hover { background: var(--primary-light); }
+        .customer-search-results .result-item:last-child { border-bottom: none; }
+        .customer-search-results .result-item small { color: var(--gray-600); }
     </style>
 </head>
 <body>
@@ -382,6 +410,8 @@
     <p style="color:#ccc; font-size:12px; margin-top:0; margin-bottom:15px;">Mit dem Finger/Maus den Bereich aufziehen</p>
     <canvas id="cropCanvas"></canvas>
     <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="control-btn secondary" onclick="rotateCropImage(-90)" title="Links drehen">⤴️</button>
+        <button class="control-btn secondary" onclick="rotateCropImage(90)" title="Rechts drehen">⤵️</button>
         <button class="control-btn" style="padding: 12px 20px; font-size: 13px;" onclick="confirmCrop()">✔ Einfügen</button>
         <button class="control-btn secondary" style="padding: 12px 20px; font-size: 13px;" onclick="closeCropModal()">✖ Abbrechen</button>
     </div>
@@ -393,8 +423,12 @@
     <div style="color:white; margin-bottom:10px; font-weight:bold;">Foto bearbeiten</div>
     <canvas id="photoEditorCanvas"></canvas>
     <div class="toolbar" style="margin-top:15px; background: #333; border:none;">
+        <div class="tool mode-tool" onclick="rotatePE(-90)" title="Links drehen">⤴️</div>
+        <div class="tool mode-tool" onclick="rotatePE(90)" title="Rechts drehen">⤵️</div>
+        <div class="toolbar-divider"></div>
         <div class="tool mode-tool active" onclick="setPE_Mode('arrow', this)" title="Pfeil">↗️</div>
         <div class="tool mode-tool" onclick="setPE_Mode('circle', this)" title="Kreis">⭕</div>
+        <div class="tool mode-tool" onclick="setPE_Mode('rect', this)" title="Rechteck">⬜</div>
         <div class="tool mode-tool" onclick="setPE_Mode('text', this)" title="Text">T</div>
         <div class="toolbar-divider"></div>
         <div class="tool color-tool active" style="background:red; border-color:white;" onclick="setPE_Color('red', this)"></div>
@@ -453,6 +487,11 @@
 
         <div class="section">
             <h2>Kundendaten & Einsatzort</h2>
+            <div class="no-print" style="position: relative; margin-bottom: 10px;">
+                <span class="label">KUNDEN SUCHEN & LADEN</span>
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <div id="mainCustomerResults" class="customer-search-results"></div>
+            </div>
             <div class="grid">
                 <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
                 <div><span class="label">Datum</span><input type="date" id="datum"></div>
@@ -479,6 +518,11 @@
             
             <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
                 <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+                <div class="no-print" style="position: relative; margin-bottom: 10px;">
+                    <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
+                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'billing')" autocomplete="off">
+                    <div id="billingCustomerResults" class="customer-search-results"></div>
+                </div>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -583,8 +627,8 @@
                 <textarea id="reparatur" placeholder="..."></textarea>
             </div>
             <div class="grid" style="margin-bottom: 8px;">
-                <div><span class="label">Betroffene Räume</span><input type="text" placeholder="..."></div>
-                <div><span class="label">Etage</span><input type="text" placeholder="..."></div>
+                <div><span class="label">Betroffene Räume</span><input type="text" class="print-toggle-empty" placeholder="..."></div>
+                <div><span class="label">Etage</span><input type="text" class="print-toggle-empty" placeholder="..."></div>
             </div>
             <div class="checkbox-group-3">
                 <label class="checkbox-item"><input type="checkbox"> <span>Ursache bereits behoben</span></label>
@@ -642,12 +686,19 @@
         <div class="toolbar no-print">
             <div class="tool mode-tool" id="touchToggleBtn" onclick="toggleTouch(this)" title="Zeichnen mit Finger aktivieren/deaktivieren">👆</div>
             <div class="toolbar-divider"></div>
+            <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
+            <div class="tool mode-tool" onclick="setMode('text', this)" title="Text">T</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool width-tool active" onclick="setWidth(2, this)" title="Dünn"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
+            <div class="tool width-tool" onclick="setWidth(5, this)" title="Mittel"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div>
+            <div class="tool width-tool" onclick="setWidth(10, this)" title="Dick"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg></div>
             <div class="toolbar-divider"></div>
             <div class="tool color-tool active" style="background:#000" onclick="setColor('#000', this)"></div>
             <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
@@ -655,13 +706,13 @@
             <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
+            <div class="tool mode-tool" onclick="undoSketch()" title="Rückgängig">↩️</div>
         </div>
 
         <div class="sketch-container">
             <canvas id="sketch-bg-canvas"></canvas>
             <canvas id="sketch-canvas"></canvas>
         </div>
-        <p style="font-size:11px; color:#555; margin-top:8px; font-weight:bold; text-align: center; background: #eee; padding: 5px; border-radius: 4px;">🔵 Wasser | 🔴 Heizung | 🟢 Abfluss</p>
         <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
     </div>
 
@@ -697,6 +748,11 @@
 
         <div class="section">
             <h2>Kundendaten & Einsatzort</h2>
+            <div class="no-print" style="position: relative; margin-bottom: 10px;">
+                <span class="label">KUNDEN SUCHEN & LADEN</span>
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <div id="mainCustomerResults" class="customer-search-results"></div>
+            </div>
             <div class="grid">
                 <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
                 <div><span class="label">Datum</span><input type="date" id="datum"></div>
@@ -758,7 +814,7 @@
                 <div><span class="label">Nennweite (DN)</span><select id="nennweite"><option value="">- wählen -</option><option>DN 50</option><option>DN 70</option><option>DN 100</option><option>DN 125</option><option>DN 150</option><option>DN 200</option><option>DN 250</option><option>DN 300</option><option>> DN 300</option></select></div>
             </div>
             <div class="grid" style="margin-bottom: 8px;">
-                <div><span class="label">Länge (m)</span><input type="number" id="haltung_laenge" placeholder="0.0" step="0.1"></div>
+                <div><span class="label">Länge (m)</span><input type="text" id="haltung_laenge" placeholder="0.0" step="0.1"></div>
                 <div></div>
             </div>
             <div class="grid">
@@ -819,12 +875,19 @@
         <div class="toolbar no-print">
             <div class="tool mode-tool" id="touchToggleBtn" onclick="toggleTouch(this)" title="Zeichnen mit Finger aktivieren/deaktivieren">👆</div>
             <div class="toolbar-divider"></div>
+            <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
+            <div class="tool mode-tool" onclick="setMode('text', this)" title="Text">T</div>
+            <div class="toolbar-divider"></div>
+            <div class="tool width-tool active" onclick="setWidth(2, this)" title="Dünn"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
+            <div class="tool width-tool" onclick="setWidth(5, this)" title="Mittel"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div>
+            <div class="tool width-tool" onclick="setWidth(10, this)" title="Dick"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg></div>
             <div class="toolbar-divider"></div>
             <div class="tool color-tool active" style="background:#000" onclick="setColor('#000', this)"></div>
             <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
@@ -832,13 +895,13 @@
             <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
+            <div class="tool mode-tool" onclick="undoSketch()" title="Rückgängig">↩️</div>
         </div>
 
         <div class="sketch-container">
             <canvas id="sketch-bg-canvas"></canvas>
             <canvas id="sketch-canvas"></canvas>
         </div>
-        <p style="font-size:11px; color:#555; margin-top:8px; font-weight:bold; text-align: center; background: #eee; padding: 5px; border-radius: 4px;">🔵 Wasser | 🔴 Heizung | 🟢 Abfluss</p>
         <div class="footer"><span>Brugger GmbH</span><span>Seite 2</span></div>
     </div>
 
@@ -874,6 +937,11 @@
 
         <div class="section">
             <h2>Kundendaten & Einsatzort</h2>
+            <div class="no-print" style="position: relative; margin-bottom: 10px;">
+                <span class="label">KUNDEN SUCHEN & LADEN</span>
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <div id="mainCustomerResults" class="customer-search-results"></div>
+            </div>
             <div class="grid">
                 <div><span class="label">Kunde / Mieter vor Ort</span><input type="text" id="name"></div>
                 <div><span class="label">Datum</span><input type="date" id="datum"></div>
@@ -900,6 +968,11 @@
             
             <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
                 <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+                <div class="no-print" style="position: relative; margin-bottom: 10px;">
+                    <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
+                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'billing')" autocomplete="off">
+                    <div id="billingCustomerResults" class="customer-search-results"></div>
+                </div>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -954,14 +1027,14 @@
                 <div>Bezeichnung</div>
             </div>
             <div id="material-container">
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
             </div>
         </div>
 
@@ -1046,6 +1119,17 @@ function preparePrintView() {
         }
         clone.innerHTML = el.value.replace(/\n/g, '<br>');
     });
+    
+    // Checkboxen: Nur ausgewählte anzeigen (für Pool und alle anderen Listen)
+    document.querySelectorAll('.checkbox-group, .checkbox-group-3').forEach(group => {
+        const inputs = Array.from(group.querySelectorAll('input[type="checkbox"]'));
+        const isAnyChecked = inputs.some(cb => cb.checked);
+        if (isAnyChecked) {
+            inputs.forEach(cb => {
+                if (!cb.checked) cb.closest('.checkbox-item').classList.add('no-print');
+            });
+        }
+    });
 
     // Felder Arbeitszeit, Ortungsgas, Fahrzeit, Fahrzone nur drucken wenn ausgefüllt
     const opts = [
@@ -1063,12 +1147,29 @@ function preparePrintView() {
         }
     });
 
+    // Generische Klasse um Felder auszublenden, wenn sie leer sind (z.B. Etage/Räume)
+    document.querySelectorAll('.print-toggle-empty').forEach(el => {
+        if(el.value.trim() === '') el.parentElement.classList.add('no-print');
+        else el.parentElement.classList.remove('no-print');
+    });
+
     // Fotobeschreibungen nur drucken, wenn sie ausgefüllt sind
     document.querySelectorAll('.photo-desc').forEach(desc => {
         if (desc.value.trim() === '') {
             desc.classList.add('no-print');
         } else {
             desc.classList.remove('no-print');
+        }
+    });
+
+    // Container 'Überprüfte Bauteile' (und Pool) im Druck ausblenden, wenn nichts angehakt ist
+    ['ueberpruefteBauteileContainer', 'poolBauteileContainer'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            const hasCheck = Array.from(el.querySelectorAll('input[type="checkbox"]')).some(c => c.checked);
+            const hasText = Array.from(el.querySelectorAll('input[type="text"]')).some(i => i.value.trim() !== '');
+            if(!hasCheck && !hasText) el.classList.add('no-print');
+            else el.classList.remove('no-print');
         }
     });
 }
@@ -1087,6 +1188,21 @@ function initCommon() {
     });
 
     window.addEventListener('beforeprint', preparePrintView);
+
+    // Listener to close customer search results when clicking outside
+    document.addEventListener('click', function(event) {
+        const mainResults = document.getElementById('mainCustomerResults');
+        const billingResults = document.getElementById('billingCustomerResults');
+        const mainSearch = document.getElementById('mainCustomerSearch');
+        const billingSearch = document.getElementById('billingCustomerSearch');
+
+        if (mainResults && !mainResults.contains(event.target) && event.target !== mainSearch) {
+            mainResults.style.display = 'none';
+        }
+        if (billingResults && !billingResults.contains(event.target) && event.target !== billingSearch) {
+            billingResults.style.display = 'none';
+        }
+    });
     
     checkAutoSave();
     setupPWA();
@@ -1221,20 +1337,25 @@ window.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('pointerup', () => isCrop=false); window.addEventListener('pointercancel', () => isCrop=false);
     }
 });
+
+function _refreshCropCanvas() {
+    document.getElementById('cropModal').style.display = 'flex';
+    const mw = window.innerWidth*0.95, mh = window.innerHeight*0.65;
+    let dw = mw, dh = mh;
+    if (cropImg.width/cropImg.height > mw/mh) dh = mw / (cropImg.width/cropImg.height); else dw = mh * (cropImg.width/cropImg.height);
+    cropCvs.width = dw; cropCvs.height = dh; cScale = cropImg.width/dw;
+    cx1 = 0; cy1 = 0; cx2 = dw; cy2 = dh; drawCrop();
+}
+
 function openCropModal(input) {
     if (!input.files || !input.files[0]) return;
     const reader = new FileReader();
     reader.onload = e => {
-        cropImg.onload = () => {
-            document.getElementById('cropModal').style.display = 'flex';
-            const mw = window.innerWidth*0.95, mh = window.innerHeight*0.65;
-            let dw = mw, dh = mh;
-            if (cropImg.width/cropImg.height > mw/mh) dh = mw / (cropImg.width/cropImg.height); else dw = mh * (cropImg.width/cropImg.height);
-            cropCvs.width = dw; cropCvs.height = dh; cScale = cropImg.width/dw;
-            cx1 = 0; cy1 = 0; cx2 = dw; cy2 = dh; drawCrop();
-        }; cropImg.src = e.target.result;
+        cropImg.onload = _refreshCropCanvas;
+        cropImg.src = e.target.result;
     }; reader.readAsDataURL(input.files[0]); input.value = '';
 }
+
 function drawCrop() {
     if(!cropCtx) return; cropCtx.clearRect(0,0,cropCvs.width,cropCvs.height); cropCtx.drawImage(cropImg,0,0,cropCvs.width,cropCvs.height);
     cropCtx.fillStyle = 'rgba(0,0,0,0.6)'; cropCtx.fillRect(0,0,cropCvs.width,cropCvs.height);
@@ -1242,6 +1363,21 @@ function drawCrop() {
     cropCtx.clearRect(x,y,w,h); cropCtx.drawImage(cropImg, x*cScale, y*cScale, w*cScale, h*cScale, x, y, w, h);
     cropCtx.strokeStyle='#fff'; cropCtx.lineWidth=2; cropCtx.setLineDash([5,5]); cropCtx.strokeRect(x,y,w,h); cropCtx.setLineDash([]);
 }
+
+function rotateCropImage(degrees) {
+    const rad = degrees * Math.PI / 180;
+    const w = cropImg.width;
+    const h = cropImg.height;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = h;
+    tempCanvas.height = w;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.translate(h / 2, w / 2);
+    tempCtx.rotate(rad);
+    tempCtx.drawImage(cropImg, -w / 2, -h / 2);
+    cropImg.src = tempCanvas.toDataURL();
+}
+
 function closeCropModal() { document.getElementById('cropModal').style.display='none'; }
 function confirmCrop() {
     let x=Math.min(cx1,cx2)*cScale, y=Math.min(cy1,cy2)*cScale, w=Math.abs(cx2-cx1)*cScale, h=Math.abs(cy2-cy1)*cScale;
@@ -1259,7 +1395,8 @@ function confirmCrop() {
 /* =========================================================
    LECKORTUNG INIT & LOGIK
    ========================================================= */
-let sketchCtx = null, cMode = 'freehand', cColor = '#000', cWidth = 2, isErase = false, touchOn = window.innerWidth <= 768; 
+let sketchCtx = null, cMode = 'freehand', cColor = '#000', cWidth = 2, isErase = false, touchOn = window.innerWidth <= 768, useGridSnap = true;
+let sketchHistory = [];
 
 function initLO() {
     applyReparaturState(); applyFlachdachState(); applyPoolState(); applyTemplateVisibility();
@@ -1279,6 +1416,8 @@ function initLO() {
     }
     const tb = document.getElementById('touchToggleBtn');
     if(tb && touchOn) { tb.classList.add('active'); tb.style.background="#d0e4f5"; tb.style.borderColor="#2b83b8"; }
+    const sb = document.getElementById('snapToggleBtn');
+    if(sb && useGridSnap) { sb.classList.add('active'); sb.style.background="#d0e4f5"; sb.style.borderColor="#2b83b8"; }
     const cvs = document.getElementById('sketch-canvas');
     if(cvs) sketchCtx = initDrawing(cvs);
 }
@@ -1320,8 +1459,39 @@ function applyTemplateVisibility() {
     window['toggle'+id] = () => { document.getElementById('input'+id).style.display = document.getElementById('check'+id).checked ? 'block' : 'none'; };
 });
 
+function undoSketch() {
+    if (sketchHistory.length <= 1) return showToast("Keine weiteren Aktionen zum Rückgängigmachen.", "info");
+    
+    sketchHistory.pop();
+    const lastState = sketchHistory[sketchHistory.length - 1];
+    
+    const cvs = document.getElementById('sketch-canvas');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = lastState;
+}
+
+function saveSketchState() {
+    const cvs = document.getElementById('sketch-canvas');
+    if (!cvs) return;
+    if (sketchHistory.length > 30) sketchHistory.shift(); // Limit history
+    sketchHistory.push(cvs.toDataURL());
+}
+
 function toggleTouch(el) { touchOn = !touchOn; el.classList.toggle('active', touchOn); el.style.background=touchOn?"#d0e4f5":"#fff"; el.style.borderColor=touchOn?"#2b83b8":"#ccc"; }
+function toggleGridSnap(el) { useGridSnap = !useGridSnap; el.classList.toggle('active', useGridSnap); el.style.background=useGridSnap?"#d0e4f5":"#fff"; el.style.borderColor=useGridSnap?"#2b83b8":"#ccc"; }
 function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setWidth(w, el) {
+    cWidth = w;
+    if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]'));
+    document.querySelectorAll('.width-tool').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
 function setColor(c, el) { cColor = c; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 
@@ -1329,23 +1499,79 @@ function initDrawing(cvs) {
     const ctx = cvs.getContext('2d', {willReadFrequently:true});
     let draw=false, sx=0, sy=0, snap;
     const bgCvs = document.getElementById('sketch-bg-canvas');
-    function rs() {
-        const r = cvs.getBoundingClientRect();
-        [cvs, bgCvs].forEach(c => { const t = c.toDataURL(); c.width=r.width; c.height=r.height; const i=new Image(); i.onload=()=>c.getContext('2d').drawImage(i,0,0,c.width,c.height); i.src=t; });
-    }
+    function rs() { const r = cvs.getBoundingClientRect(); [cvs, bgCvs].forEach(c => { if(!c) return; const t = c.toDataURL(); c.width=r.width; c.height=r.height; const i=new Image(); i.onload=()=>c.getContext('2d').drawImage(i,0,0,c.width,c.height); i.src=t; }); }
     setTimeout(rs, 100); window.addEventListener('resize', debounce(rs, 200));
-    function gp(e) { const r = cvs.getBoundingClientRect(); const cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY; return {x:(cx-r.left)*(cvs.width/r.width), y:(cy-r.top)*(cvs.height/r.height)}; }
-    cvs.addEventListener('pointerdown', e => { if(e.pointerType==='touch' && !touchOn) return; e.preventDefault(); draw=true; const p=gp(e); sx=p.x; sy=p.y; snap=ctx.getImageData(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(sx,sy); });
+    setTimeout(() => { sketchHistory = [cvs.toDataURL()]; }, 200);
+    function gp(e, snapOn = false) {
+        const r = cvs.getBoundingClientRect();
+        const cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY;
+        let x = (cx-r.left)*(cvs.width/r.width);
+        let y = (cy-r.top)*(cvs.height/r.height);
+        if (snapOn) {
+            const gridSize = 10 * (cvs.width / r.width); // 10px grid from CSS
+            if (gridSize > 0) {
+                x = Math.round(x / gridSize) * gridSize;
+                y = Math.round(y / gridSize) * gridSize;
+            }
+        }
+        return {x: x, y: y};
+    }
+    cvs.addEventListener('pointerdown', e => {
+        if(e.pointerType==='touch' && !touchOn) return;
+        e.preventDefault();
+        const snapActive = useGridSnap && cMode !== 'freehand' && !isErase;
+        const p = gp(e, snapActive);
+        sx=p.x; sy=p.y;
+
+        if (cMode === 'text') {
+            const text = prompt("Text eingeben:", "");
+            if (text) {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = cColor;
+                ctx.font = "bold 16px Arial";
+                ctx.fillText(text, sx, sy);
+                saveSketchState();
+            }
+            draw = false; return;
+        }
+
+        draw=true; snap=ctx.getImageData(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(sx,sy);
+    });
     cvs.addEventListener('pointermove', e => {
-        if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault(); const p=gp(e);
+        if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault();
+        const snapActive = useGridSnap && cMode !== 'freehand' && !isErase;
+        const p = gp(e, snapActive);
         if(isErase){ ctx.globalCompositeOperation='destination-out'; ctx.lineWidth=15; ctx.lineTo(p.x,p.y); ctx.stroke(); }
         else if(cMode==='freehand'){ ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth; ctx.strokeStyle=cColor; ctx.lineTo(p.x,p.y); ctx.stroke(); }
-        else { ctx.putImageData(snap,0,0); ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth; ctx.strokeStyle=cColor; ctx.beginPath(); if(cMode==='line'){ ctx.moveTo(sx,sy); ctx.lineTo(p.x,p.y); }else if(cMode==='rect'){ ctx.rect(sx,sy,p.x-sx,p.y-sy); }else if(cMode==='circle'){ ctx.arc(sx,sy,Math.sqrt(Math.pow(p.x-sx,2)+Math.pow(p.y-sy,2)),0,2*Math.PI); } ctx.stroke(); }
+        else {
+            ctx.putImageData(snap,0,0); ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth; ctx.strokeStyle=cColor; ctx.beginPath();
+            if(cMode==='line'){ ctx.moveTo(sx,sy); ctx.lineTo(p.x,p.y); }
+            else if(cMode==='arrow'){
+                const headLen = 10 + (cWidth*2); const angle = Math.atan2(p.y-sy,p.x-sx);
+                ctx.moveTo(sx,sy); ctx.lineTo(p.x,p.y);
+                ctx.lineTo(p.x-headLen*Math.cos(angle-Math.PI/6),p.y-headLen*Math.sin(angle-Math.PI/6));
+                ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-headLen*Math.cos(angle+Math.PI/6),p.y-headLen*Math.sin(angle+Math.PI/6));
+            }
+            else if(cMode==='rect'){ ctx.rect(sx,sy,p.x-sx,p.y-sy); }
+            else if(cMode==='circle'){ ctx.arc(sx,sy,Math.sqrt(Math.pow(p.x-sx,2)+Math.pow(p.y-sy,2)),0,2*Math.PI); }
+            ctx.stroke();
+        }
     });
-    ['pointerup','pointercancel'].forEach(ev => window.addEventListener(ev, e => { if(e.pointerType==='touch'&&!touchOn) return; draw=false; }));
+    ['pointerup','pointercancel'].forEach(ev => window.addEventListener(ev, e => {
+        if(e.pointerType==='touch'&&!touchOn) return;
+        if (draw) saveSketchState();
+        draw=false;
+    }));
     return ctx;
 }
-function clearSketch() { [document.getElementById('sketch-canvas'), document.getElementById('sketch-bg-canvas')].forEach(c=>{ if(c)c.getContext('2d').clearRect(0,0,c.width,c.height); }); }
+function clearSketch() {
+    [document.getElementById('sketch-canvas'), document.getElementById('sketch-bg-canvas')].forEach(c => {
+        if(c) {
+            c.getContext('2d').clearRect(0,0,c.width,c.height);
+            if (c.id === 'sketch-canvas') setTimeout(() => { sketchHistory = [c.toDataURL()]; }, 50);
+        }
+    });
+}
 
 /* =========================================================
    KANALBERICHT INIT (KB)
@@ -1360,6 +1586,8 @@ function initKB() {
             renumberPhotoPages();
         });
     }
+    const sb = document.getElementById('snapToggleBtn');
+    if(sb && useGridSnap) { sb.classList.add('active'); sb.style.background="#d0e4f5"; sb.style.borderColor="#2b83b8"; }
     const cvs = document.getElementById('sketch-canvas'); if(cvs) sketchCtx = initDrawing(cvs);
 }
 
@@ -1466,47 +1694,15 @@ function updatePhotoNumbers() {
 
 function sendEmail() {
     const sbj = buildReportBaseName();
-    let body = 'Hallo, anbei der Bericht.\n\n';
-    
-    let summary = '';
-    const name = document.getElementById('name')?.value || '-';
-    const datum = document.getElementById('datum')?.value || '-';
-    const adresse = document.getElementById('adresse')?.value || '-';
-    const ort = document.getElementById('ort')?.value || '-';
-
-    summary += `Kunde: ${name}\n`;
-    summary += `Datum: ${datum}\n`;
-    summary += `Adresse: ${adresse}, ${ort}\n\n`;
-
-    let befundText = '';
-    if (currentApp === 'LO') {
-        befundText = 'Befund:\n' + (document.getElementById('befund')?.value || 'Keine Angabe');
-    } else if (currentApp === 'KB') {
-        befundText = 'Untersuchungsergebnis:\n' + (document.getElementById('kanal_befund')?.value || 'Keine Angabe');
-        const kbChecks = [];
-        ['kb_verstopfung', 'kb_reinigung', 'kb_tvinspektion', 'kb_ortung', 'kb_neuabnahme', 'kb_wartung'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el && el.checked) kbChecks.push(el.nextElementSibling.innerText);
-        });
-        if(kbChecks.length) befundText += '\n\nEinsatzdetails: ' + kbChecks.join(', ');
-        
-        const mat = document.getElementById('rohrmaterial')?.value;
-        const dn = document.getElementById('nennweite')?.value;
-        const len = document.getElementById('haltung_laenge')?.value;
-        if(mat || dn || len) befundText += `\nTech. Daten: ${mat||''} ${dn||''} ${len ? '('+len+'m)' : ''}`;
-    } else if (currentApp === 'RB') {
-        befundText = 'Erbrachte Leistungen:\n' + (document.getElementById('leistungen')?.value || 'Keine Angabe');
-    }
-    summary += befundText;
-
-    body += '--- Zusammenfassung ---\n' + summary + '\n-----------------------\n\n';
+    let body = '';
 
     const notizenId = (currentApp === 'LO' || currentApp === 'KB') ? 'interne_notizen' : 'interne_notizen_rb';
     const notizen = document.getElementById(notizenId)?.value.trim();
     if (notizen) {
-        body += '--- Interne Notizen ---\n' + notizen + '\n-----------------------\n\n';
+        body += notizen + '\n\n';
     }
     
+    body += 'BITTE BERICHT ALS PDF ANHÄNGEN.\n\n';
     body += 'Gesendet vom Brugger-Formular.';
     const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
     window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
@@ -1531,8 +1727,9 @@ function getReportData() {
 }
 
 function exportFullReport() {
+    saveCustomers(); // Save customer data on export
     const d = getReportData();
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type:'application/json'}));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], {type:'application/octet-stream'}));
     a.download = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok'; a.click();
     showToast("Bericht gespeichert!", "success");
 }
@@ -1577,6 +1774,96 @@ function restoreFromData(d) {
     updateTitleWithAddress();
 }
 function debounce(fn, w) { let t; return function() { clearTimeout(t); t = setTimeout(()=>fn.apply(this, arguments), w); }; }
+
+/* =========================================================
+   CUSTOMER DATABASE (SAVE & SEARCH)
+   ========================================================= */
+function saveCustomers() {
+    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+
+    const save = (prefix) => {
+        const name = document.getElementById(prefix + 'name')?.value.trim();
+        const adr = document.getElementById(prefix + 'adresse')?.value.trim();
+        if (!name && !adr) return;
+
+        const telId = prefix ? prefix + 'tel' : 'telefon';
+        const customerData = {
+            name: name,
+            adresse: adr,
+            plz: document.getElementById(prefix + 'plz')?.value.trim(),
+            ort: document.getElementById(prefix + 'ort')?.value.trim(),
+            telefon: document.getElementById(telId)?.value.trim()
+        };
+
+        const existingIndex = customers.findIndex(c => c.name === customerData.name && c.plz === customerData.plz);
+        if (existingIndex > -1) {
+            customers[existingIndex] = { ...customers[existingIndex], ...customerData };
+        } else {
+            customerData.id = Date.now() + Math.random();
+            customers.push(customerData);
+        }
+    };
+
+    save(''); // Main customer
+    if (document.getElementById('checkAuftraggeber')?.checked) {
+        save('auftraggeber_'); // Billing customer
+    }
+
+    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+}
+
+function handleCustomerSearch(input, type) {
+    const searchTerm = input.value.toLowerCase();
+    const resultsContainer = document.getElementById(type === 'main' ? 'mainCustomerResults' : 'billingCustomerResults');
+    const customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    resultsContainer.innerHTML = '';
+    if (searchTerm.length < 2) { resultsContainer.style.display = 'none'; return; }
+
+    const filtered = customers.filter(c => (c.name && c.name.toLowerCase().includes(searchTerm)) || (c.adresse && c.adresse.toLowerCase().includes(searchTerm)) || (c.ort && c.ort.toLowerCase().includes(searchTerm)));
+    if (filtered.length === 0) { resultsContainer.style.display = 'none'; return; }
+
+    filtered.slice(0, 10).forEach(customer => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+        
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${customer.name || ''}</strong><br><small>${customer.adresse || ''}, ${customer.plz || ''} ${customer.ort || ''}</small>`;
+        
+        const delBtn = document.createElement('div');
+        delBtn.innerText = '🗑️'; delBtn.title = 'Löschen';
+        delBtn.style.cssText = 'padding:5px; cursor:pointer; opacity:0.6; font-size:14px;';
+        delBtn.onmouseover = () => delBtn.style.opacity = 1; delBtn.onmouseout = () => delBtn.style.opacity = 0.6;
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomer(customer.id, type); };
+        
+        div.onclick = () => selectCustomer(customer.id, type);
+        div.appendChild(info); div.appendChild(delBtn);
+        resultsContainer.appendChild(div);
+    });
+    resultsContainer.style.display = 'block';
+}
+
+function deleteCustomer(id, type) {
+    if(!confirm("Diesen Eintrag wirklich löschen?")) return;
+    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    customers = customers.filter(c => c.id !== id);
+    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+    const input = document.getElementById(type === 'main' ? 'mainCustomerSearch' : 'billingCustomerSearch');
+    if(input) handleCustomerSearch(input, type);
+    showToast("Eintrag gelöscht", "info");
+}
+
+function selectCustomer(customerId, type) {
+    const customer = (JSON.parse(localStorage.getItem('brugger_customers')) || []).find(c => c.id === customerId);
+    if (!customer) return;
+    const prefix = type === 'main' ? '' : 'auftraggeber_';
+    const telId = type === 'main' ? 'telefon' : 'auftraggeber_tel';
+    ['name', 'adresse', 'plz', 'ort'].forEach(f => { if(document.getElementById(prefix + f)) document.getElementById(prefix + f).value = customer[f] || ''; });
+    if(document.getElementById(telId)) document.getElementById(telId).value = customer.telefon || '';
+    document.getElementById(type === 'main' ? 'mainCustomerResults' : 'billingCustomerResults').style.display = 'none';
+    document.getElementById(type === 'main' ? 'mainCustomerSearch' : 'billingCustomerSearch').value = '';
+    updateTitleWithAddress(); showToast("Kundendaten eingefügt", "success");
+}
 
 /* =========================================================
    AUTO-SAVE & TOASTS
@@ -1678,6 +1965,8 @@ function openPhotoEditor(container) {
                 peCtx.beginPath();
                 const rad = Math.sqrt(Math.pow(cx-sx,2)+Math.pow(cy-sy,2));
                 peCtx.arc(sx, sy, rad, 0, 2*Math.PI); peCtx.stroke();
+            } else if(peMode==='rect') {
+                peCtx.strokeRect(sx, sy, cx-sx, cy-sy);
             }
         }; img.src = peHist[peHist.length-1];
     };
@@ -1690,9 +1979,29 @@ function undoPE() { if(peHist.length>1) { peHist.pop(); const i=new Image(); i.o
 function closePhotoEditor() { document.getElementById('photoEditorModal').style.display='none'; }
 function savePhotoEditor() { if(peActiveImgEl) peActiveImgEl.src = peCvs.toDataURL('image/jpeg', 0.4); closePhotoEditor(); }
 
+function rotatePE(degrees) {
+    if (!peCvs || !peCtx) return;
+    const rad = degrees * Math.PI / 180;
+    const w = peCvs.width;
+    const h = peCvs.height;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w;
+    tempCanvas.height = h;
+    tempCanvas.getContext('2d').drawImage(peCvs, 0, 0);
+    peCvs.width = h;
+    peCvs.height = w;
+    peCtx.save();
+    peCtx.translate(h / 2, w / 2);
+    peCtx.rotate(rad);
+    peCtx.drawImage(tempCanvas, -w / 2, -h / 2);
+    peCtx.restore();
+    peHist.push(peCvs.toDataURL());
+}
+
 function setupPWA() {
+    const currentPage = location.pathname.split('/').pop() || 'index.html';
     const manifest = {
-        "name": "Brugger Berichte", "short_name": "Brugger", "start_url": ".", "display": "standalone",
+        "name": "Brugger Berichte", "short_name": "Brugger", "start_url": currentPage, "display": "standalone",
         "background_color": "#f3f4f6", "theme_color": "#b89b1e",
         "icons": [{ "src": "Logo.PNG", "sizes": "192x192", "type": "image/png" }]
     };
@@ -1701,8 +2010,8 @@ function setupPWA() {
     document.getElementById('manifest-placeholder').href = URL.createObjectURL(blob);
     
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-        // Simple SW that caches current page
-        const swCode = `self.addEventListener('install',e=>e.waitUntil(caches.open('brugger-v1').then(c=>c.addAll(['./','index%20version%202.html','Logo.PNG']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+        // Simple SW that caches current page dynamically
+        const swCode = `self.addEventListener('install',e=>e.waitUntil(caches.open('brugger-v1').then(c=>c.addAll(['./','${currentPage}','Logo.PNG']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
         const swBlob = new Blob([swCode], {type: 'application/javascript'});
         navigator.serviceWorker.register(URL.createObjectURL(swBlob));
     }
