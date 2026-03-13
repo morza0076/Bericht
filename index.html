@@ -435,7 +435,7 @@
     <div class="menu-box" id="login-container">
         <img src="Logo.PNG" alt="Brugger Logo" onerror="this.style.display='none'">
         <h1>Geschützter Bereich</h1>
-        <input type="password" inputmode="numeric" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px;" onkeyup="if(event.key==='Enter') attemptLogin()">
+        <input type="tel" inputmode="numeric" pattern="[0-9]*" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px; -webkit-text-security: disc; text-security: disc;" onkeyup="if(event.key==='Enter') attemptLogin()">
         <button class="menu-btn" onclick="attemptLogin()">🔓 Entsperren</button>
         <p id="loginError" style="color:#ef4444; display:none; margin-top:10px; font-weight:bold;">PIN falsch!</p>
     </div>
