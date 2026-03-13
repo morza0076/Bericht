@@ -139,32 +139,36 @@
             padding: 10mm 10mm; 
             margin: 0 auto 20px auto; 
             position: relative; 
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); 
-            border-radius: 2px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); 
+            border-radius: 4px;
         }
-        .header { display: flex; flex-direction: column; padding-bottom: 20px; margin-bottom: 20px; }
-        .header-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 8px; }
-        .logo { max-height: 60px; width: auto; object-fit: contain; }
-        .header-right { text-align: right; font-size: 12px; line-height: 1.4; color: var(--gray-600); }
-        .header-right strong { font-size: 15px; color: var(--gray-900); letter-spacing: 0.3px; display: inline-block; margin-bottom: 2px; }
+        .header { 
+            display: flex; flex-direction: column; padding-bottom: 30px; margin-bottom: 35px; 
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 25px; }
+        .logo { max-height: 80px; width: auto; object-fit: contain; }
+        .header-right { text-align: right; font-size: 13px; line-height: 1.2; color: var(--gray-600); }
+        .header-right strong { font-size: 18px; color: var(--primary); letter-spacing: 0.5px; display: block; margin-bottom: 0px; }
         
         .header-title { 
-            margin: 0; font-size: 24px; color: var(--primary); 
-            text-transform: uppercase; font-weight: 800; letter-spacing: 0.05em; 
-            background: var(--primary-light); padding: 6px; border-radius: var(--radius-sm); 
-            text-align: center; border: 1px solid rgba(184, 155, 30, 0.1);
+            margin: 0; font-size: 32px; color: var(--gray-900); 
+            text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; 
+            background: transparent; padding: 0; 
+            text-align: left; border: none;
         }
 
         .section { margin-bottom: 20px; }
         .section-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .section h2 { 
             font-size: 12.5px; text-transform: uppercase; 
-            color: var(--gray-900); 
-            padding: 8px 12px; margin: 0 0 12px 0; 
+            color: var(--primary); 
+            padding: 0 0 8px 0; margin: 0 0 15px 0; 
             font-weight: 700; letter-spacing: 0.05em;
-            background: var(--gray-100);
-            border-left: 3px solid var(--primary);
-            border-radius: 0 4px 4px 0;
+            background: transparent;
+            border-left: none;
+            border-bottom: 2px solid var(--gray-100);
+            border-radius: 0;
         }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -188,21 +192,21 @@
 
         input, textarea, select { 
             width: 100%; 
-            border: 1px solid #d1d5db; 
-            padding: 7px 10px; 
-            font-size: 13.5px; 
+            border: 1px solid var(--gray-200); 
+            padding: 10px 12px; 
+            font-size: 14px; 
             border-radius: var(--radius-sm); 
             background: var(--input-bg); 
             outline: none; 
             color: var(--gray-900); 
             margin: 0; 
             transition: border-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
         }
         input:focus, textarea:focus, select:focus {
             border-color: var(--primary); 
-            background: var(--input-bg); 
-            box-shadow: 0 0 0 3px rgba(184, 155, 30, 0.2); 
+            background: #fff; 
+            box-shadow: 0 0 0 3px rgba(184, 155, 30, 0.15); 
         }
         textarea { min-height: 40px; font-family: inherit; resize: none; overflow: hidden; line-height: 1.4; display: block; }
         .print-textarea-clone { display: none; }
@@ -327,11 +331,16 @@
             #sketchPage { page-break-before: always !important; }
             #photoPagesContainer .page { page-break-before: always !important; }
             
-            .header { border-bottom: none; margin-bottom: 30px; padding-bottom: 2px; padding-top: 5mm; }
-            .header-top { margin-bottom: 0; }
-            .header-title { background: var(--primary-light) !important; color: var(--primary) !important; padding: 4px 0 !important; font-size: 18px !important; text-align: center !important; border-radius: 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: none !important; }
+            .header { border-bottom: 1px solid #ccc !important; margin-bottom: 30px; padding-bottom: 10px; padding-top: 5mm; }
+            .header-top { margin-bottom: 15px; }
+            .header-title { background: transparent !important; color: #000 !important; padding: 0 !important; font-size: 24px !important; text-align: left !important; border: none !important; }
+            .header-right strong { color: #000 !important; }
             .section { margin-bottom: 2px; }
-            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; border-left: none !important; padding: 0 !important; margin-bottom: 1px !important; font-size: 12px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .section h2 { background: transparent !important; color: #000 !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 5px !important; font-size: 12px !important; }
+            #mainPage .section:first-of-type > h2 {
+                background: #fff !important;
+                border-bottom: none !important;
+            }
             .grid, .address-grid, .grid-3 { gap: 2px; margin-top: 1px; }
             .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
             textarea { display: none !important; }
@@ -374,6 +383,50 @@
         .customer-search-results .result-item:hover { background: var(--primary-light); }
         .customer-search-results .result-item:last-child { border-bottom: none; }
         .customer-search-results .result-item small { color: var(--gray-600); }
+
+        /* TOGGLE SWITCH */
+        .toggle-switch {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+            user-select: none;
+        }
+        .toggle-switch input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-switch .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+            background-color: var(--gray-200);
+            border-radius: 28px;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-switch .switch::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            top: 4px;
+            left: 4px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked + .switch {
+            background-color: var(--primary);
+        }
+        .toggle-switch input:checked + .switch::before {
+            transform: translateX(22px);
+        }
     </style>
 </head>
 <body>
@@ -400,6 +453,7 @@
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
         <div style="margin-top: 20px; cursor: pointer; color: #666; font-size: 12px; text-decoration: underline;" onclick="openSettings()">⚙️ E-Mail Einstellungen</div>
+        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 3.1</div>
     </div>
 </div>
 
@@ -447,9 +501,10 @@
         <input type="email" id="settingsEmail" placeholder="kanal@brugger-entfeuchtung.at" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
         <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Name des Technikers (für Berichte):</label>
         <input type="text" id="settingsTechnician" placeholder="Max Mustermann" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
-        <label class="checkbox-item" style="margin-bottom: 15px; font-weight: bold; color:#374151;">
-            <input type="checkbox" id="settingsDarkMode" style="width: 16px; height: 16px;">
+        <label class="toggle-switch" style="margin-bottom: 15px; font-weight: bold; color:#374151;">
             <span>🌙 Dark Mode (Dunkles Design)</span>
+            <input type="checkbox" id="settingsDarkMode">
+            <span class="switch"></span>
         </label>
         <div style="display:flex; justify-content:flex-end; gap:10px;">
             <button class="control-btn secondary" onclick="closeSettings()">Abbrechen</button>
@@ -491,7 +546,7 @@
             <h2>Kundendaten & Einsatzort</h2>
             <div class="no-print" style="position: relative; margin-bottom: 10px;">
                 <span class="label">KUNDEN SUCHEN & LADEN</span>
-                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'main')" autocomplete="off">
                 <div id="mainCustomerResults" class="customer-search-results"></div>
             </div>
             <div class="grid">
@@ -522,7 +577,7 @@
                 <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
-                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'billing')" autocomplete="off">
+                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
                     <div id="billingCustomerResults" class="customer-search-results"></div>
                 </div>
                 <div class="grid">
@@ -759,7 +814,7 @@
             <h2>Kundendaten & Einsatzort</h2>
             <div class="no-print" style="position: relative; margin-bottom: 10px;">
                 <span class="label">KUNDEN SUCHEN & LADEN</span>
-                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'main')" autocomplete="off">
                 <div id="mainCustomerResults" class="customer-search-results"></div>
             </div>
             <div class="grid">
@@ -948,7 +1003,7 @@
             <h2>Kundendaten & Einsatzort</h2>
             <div class="no-print" style="position: relative; margin-bottom: 10px;">
                 <span class="label">KUNDEN SUCHEN & LADEN</span>
-                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'main')" autocomplete="off">
                 <div id="mainCustomerResults" class="customer-search-results"></div>
             </div>
             <div class="grid">
@@ -979,7 +1034,7 @@
                 <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
-                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'billing')" autocomplete="off">
+                    <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
                     <div id="billingCustomerResults" class="customer-search-results"></div>
                 </div>
                 <div class="grid">
@@ -1113,7 +1168,7 @@
             <h2>Kundendaten & Einsatzort</h2>
             <div class="no-print" style="position: relative; margin-bottom: 10px;">
                 <span class="label">KUNDEN SUCHEN & LADEN</span>
-                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="handleCustomerSearch(this, 'main')" autocomplete="off">
+                <input type="search" id="mainCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'main')" autocomplete="off">
                 <div id="mainCustomerResults" class="customer-search-results"></div>
             </div>
             <div class="grid">
@@ -1419,6 +1474,11 @@ function preparePrintView() {
     });
 }
 
+function cleanupAfterPrint() {
+    document.querySelectorAll('.print-textarea-clone').forEach(el => el.remove());
+    document.querySelectorAll('.no-print.temp-hide').forEach(el => el.classList.remove('no-print', 'temp-hide'));
+}
+
 function initCommon() {
     document.querySelectorAll('input[type="date"]').forEach(input => {
         try { input.valueAsDate = new Date(); } catch (e) { input.value = new Date().toISOString().split('T')[0]; }
@@ -1433,6 +1493,11 @@ function initCommon() {
     });
 
     window.addEventListener('beforeprint', preparePrintView);
+    window.addEventListener('afterprint', cleanupAfterPrint);
+    registerCleanup(() => {
+        window.removeEventListener('beforeprint', preparePrintView);
+        window.removeEventListener('afterprint', cleanupAfterPrint);
+    });
 
     document.addEventListener('click', function(event) {
         const mainResults = document.getElementById('mainCustomerResults');
@@ -2172,7 +2237,7 @@ function getOrCreateLastGrid() {
     const c = document.getElementById('photoPagesContainer'); const grids = c.querySelectorAll('.photo-grid');
     let l = grids.length ? grids[grids.length-1] : null;
     if(!l || l.children.length >= 4) {
-        const p = document.createElement('div'); p.className = 'page'; const id = 'grid-'+Date.now();
+        const p = document.createElement('div'); p.className = 'page'; const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
         p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${currentApp==='DL'?'style="background: #e0f2fe; color: #0284c7; border-color: #bae6fd;"':''}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
         c.appendChild(p); renumberPhotoPages(); return document.getElementById(id);
     }
@@ -2251,7 +2316,7 @@ function getReportData() {
     document.querySelectorAll('#app-root select').forEach(s => { if(s.id) d.byId[s.id]=s.value; else d.selectsNoId.push(s.value); });
     d.checkStatesOrdered = Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).map(c => !!c.checked);
     if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
-    else { try{ d.signature.png=document.getElementById('signature-pad').toDataURL('image/png'); }catch(e){} }
+    else { try{ if(sigCanvas) d.signature.png=sigCanvas.toDataURL('image/png'); }catch(e){} }
     document.querySelectorAll('#photoPagesContainer .page').forEach((p, idx) => {
         const imgs = Array.from(p.querySelectorAll('.photo-box')).map(b => {
             const arr = b.querySelector('.marker-arrow');
@@ -2311,7 +2376,7 @@ function restoreFromData(d) {
         if(d.sketch?.lines||d.sketch?.png) { const i=new Image(); i.onload=()=>document.getElementById('sketch-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.lines||d.sketch.png; }
     } else {
         updateDynamicRows();
-        if(d.signature?.png) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
+        if(d.signature?.png && sigCtx) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
     }
     
     const c = document.getElementById('photoPagesContainer'); c.innerHTML='';
@@ -2324,6 +2389,10 @@ function restoreFromData(d) {
     updateTitleWithAddress();
 }
 function debounce(fn, w) { let t; return function() { clearTimeout(t); t = setTimeout(()=>fn.apply(this, arguments), w); }; }
+
+// Globale Variablen für Signatur
+let sigCanvas = null;
+let sigCtx = null;
 
 /* =========================================================
    CUSTOMER DATABASE
@@ -2344,6 +2413,8 @@ function saveCustomers() {
     if (document.getElementById('checkAuftraggeber')?.checked) save('auftraggeber_');
     localStorage.setItem('brugger_customers', JSON.stringify(customers));
 }
+
+const debouncedCustomerSearch = debounce(handleCustomerSearch, 200);
 
 function handleCustomerSearch(input, type) {
     const searchTerm = input.value.toLowerCase();
@@ -2547,13 +2618,47 @@ function rotatePE(degrees) {
 }
 
 function setupPWA() {
-    // PWA / Service Worker deaktiviert, um Caching-Probleme zu vermeiden
+    // PWA / Service Worker mit Network-First Strategie (löst Caching-Probleme + ermöglicht Offline)
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-                registration.unregister();
-            }
-        });
+        const swCode = `
+            const CACHE_NAME = 'brugger-offline-v5'; // Cache-Version erhöht
+            const PRECACHE_ASSETS = ['./', 'Logo.PNG'];
+
+            self.addEventListener('install', e => {
+                e.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then(cache => cache.addAll(PRECACHE_ASSETS))
+                        .then(() => self.skipWaiting())
+                );
+            });
+
+            self.addEventListener('activate', e => {
+                e.waitUntil(
+                    caches.keys().then(keys => Promise.all(
+                        keys.map(key => {
+                            if (key !== CACHE_NAME) return caches.delete(key);
+                        })
+                    )).then(() => self.clients.claim())
+                );
+            });
+
+            self.addEventListener('fetch', e => {
+                if (e.request.method !== 'GET') return;
+                e.respondWith(
+                    fetch(e.request)
+                        .then(res => {
+                            const resClone = res.clone();
+                            caches.open(CACHE_NAME).then(c => c.put(e.request, resClone));
+                            return res;
+                        })
+                        .catch(() => caches.match(e.request)) // Fallback auf Cache
+                );
+            });
+        `;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
+            .then(() => console.log('Offline-Modus mit Pre-Caching aktiviert'))
+            .catch(e => console.error('SW Error', e));
     }
 }
 
