@@ -189,6 +189,7 @@
         .mic-btn:hover { background: #fff; border-color: var(--gray-400); }
         .mic-btn.recording { background: #e74c3c; color: white; border-color: #c0392b; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         input, textarea, select { 
             width: 100%; 
@@ -247,7 +248,11 @@
         .toolbar-divider { width: 2px; height: 24px; background: #ccc; margin: 0 4px; border-radius: 2px; flex-shrink: 0; }
 
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .photo-box { position: relative; border: 1px solid var(--gray-200); padding: 8px; text-align: center; background: var(--page-bg); border-radius: var(--radius-sm); break-inside: avoid; page-break-inside: avoid; box-shadow: var(--shadow-sm); }
+        .photo-box { position: relative; border: 1px solid var(--gray-200); padding: 8px; text-align: center; background: var(--page-bg); border-radius: var(--radius-sm); break-inside: avoid; page-break-inside: avoid; box-shadow: var(--shadow-sm); cursor: grab; transition: transform 0.1s; }
+        .photo-box:active { cursor: grabbing; }
+        .photo-box.dragging { opacity: 0.5; transform: scale(0.95); border: 2px dashed var(--primary); z-index: 100; }
+        .photo-box.drag-over { border-left: 4px solid var(--primary); }
+        .photo-box.drag-over-right { border-right: 4px solid var(--primary); }
         .delete-photo-btn {
             position: absolute; top: 4px; right: 4px; z-index: 10; width: 26px; height: 26px; border: none;
             background: rgba(0, 0, 0, 0.5); color: white; border-radius: 50%; font-size: 18px; font-weight: bold;
@@ -347,7 +352,10 @@
             .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
             input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 11px; height: 11px; margin-right: 4px; }
-            input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+            input[type="date"]::-webkit-calendar-picker-indicator,
+            input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none !important; }
+            .worker-grid, .material-grid, .grid, .grid-3, .checkbox-group, .checkbox-group-3, .signature-box, .photo-box { break-inside: avoid !important; }
+            h2, .section-header-flex, .label { break-after: avoid !important; }
             .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
             .grid-header { color: #000; border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
             .is-empty-row { display: none !important; }
@@ -363,8 +371,24 @@
             #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
-            .checkbox-group:has(input:checked) .checkbox-item:not(:has(input:checked)),
-            .checkbox-group-3:has(input:checked) .checkbox-item:not(:has(input:checked)) {
+            .checkbox-item:not(:has(input:checked)) {
+                display: none !important;
+            }
+            
+            .checkbox-group:not(:has(input:checked)),
+            .checkbox-group-3:not(:has(input:checked)) {
+                display: none !important;
+            }
+            
+            h2:has(+ .checkbox-group:not(:has(input:checked))),
+            h2:has(+ .checkbox-group-3:not(:has(input:checked))),
+            .label:has(+ .checkbox-group:not(:has(input:checked))),
+            .label:has(+ .checkbox-group-3:not(:has(input:checked))) {
+                display: none !important;
+            }
+            
+            #ueberpruefteBauteileContainer:not(:has(input:checked)),
+            #poolBauteileContainer:not(:has(input:checked)) {
                 display: none !important;
             }
         }
@@ -431,11 +455,16 @@
 </head>
 <body>
 
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-family:sans-serif;">
+    <div style="width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+    <div style="font-size: 18px; font-weight: bold; letter-spacing: 1px;">Fotos werden verarbeitet...</div>
+</div>
+
 <div id="start-screen">
     <div class="menu-box" id="login-container">
         <img src="Logo.PNG" alt="Brugger Logo" onerror="this.style.display='none'">
         <h1>Geschützter Bereich</h1>
-        <input type="tel" inputmode="numeric" pattern="[0-9]*" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px; -webkit-text-security: disc; text-security: disc;" onkeyup="if(event.key==='Enter') attemptLogin()">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px;" onkeyup="if(event.key==='Enter') attemptLogin()">
         <button class="menu-btn" onclick="attemptLogin()">🔓 Entsperren</button>
         <p id="loginError" style="color:#ef4444; display:none; margin-top:10px; font-weight:bold;">PIN falsch!</p>
     </div>
@@ -501,14 +530,62 @@
         <input type="email" id="settingsEmail" placeholder="kanal@brugger-entfeuchtung.at" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
         <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Name des Technikers (für Berichte):</label>
         <input type="text" id="settingsTechnician" placeholder="Max Mustermann" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+            
+            <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Kundendatenbank</h4>
+                <div style="display:flex; gap:10px;">
+                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="exportCustomers()">⬆️ Exportieren</button>
+                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="document.getElementById('importCustomersInput').click()">⬇️ Importieren</button>
+                    <input type="file" id="importCustomersInput" accept=".json" style="display:none" onchange="importCustomers(this)">
+                </div>
+            </div>
+
+            <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Textvorlagen</h4>
+                <button class="control-btn secondary" style="width:100%; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="openTemplateManager()">✏️ Vorlagen bearbeiten</button>
+            </div>
+
         <label class="toggle-switch" style="margin-bottom: 15px; font-weight: bold; color:#374151;">
             <span>🌙 Dark Mode (Dunkles Design)</span>
             <input type="checkbox" id="settingsDarkMode">
             <span class="switch"></span>
         </label>
         <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button class="control-btn secondary" onclick="closeSettings()">Abbrechen</button>
+            <button class="control-btn secondary" onclick="closeSettings()">Schließen</button>
             <button class="control-btn" onclick="saveSettings()">Speichern</button>
+        </div>
+    </div>
+</div>
+
+<div id="templateManagerModal" class="no-print" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10003; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:25px; border-radius:12px; width:95%; max-width:600px; max-height:90vh; display:flex; flex-direction:column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        <h3 style="margin-top:0; margin-bottom:15px; color:#111827;">Textvorlagen verwalten</h3>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select id="tmSelect" style="flex:1; padding:8px; border-radius:4px; font-size:14px; border:1px solid #d1d5db;" onchange="loadSelectedTemplate()">
+                <option value="new">+ Neue Vorlage erstellen</option>
+            </select>
+            <button class="control-btn secondary" style="padding:8px 12px; box-shadow:none;" onclick="deleteSelectedTemplate()" title="Löschen">🗑️</button>
+        </div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:15px;">
+            <div>
+                <label style="font-size:11px; font-weight:bold; color:#374151;">Titel (Für die Auswahl)</label>
+                <input type="text" id="tmTitle" placeholder="z.B. Heizungsschaden Kurz" style="padding:8px; border:1px solid #d1d5db; border-radius:4px;">
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:bold; color:#374151;">Kategorie</label>
+                <select id="tmCategory" style="padding:8px; border:1px solid #d1d5db; border-radius:4px;">
+                    <option value="leckortung">Leckortung</option>
+                    <option value="flachdach">Flachdach</option>
+                </select>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column;">
+                <label style="font-size:11px; font-weight:bold; color:#374151;">Textbaustein (Wird in den Befund eingefügt)</label>
+                <textarea id="tmText" style="flex:1; min-height:200px; padding:8px; border:1px solid #d1d5db; border-radius:4px;" placeholder="Hier kommt der Text hin..."></textarea>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="control-btn secondary" onclick="closeTemplateManager()">Schließen</button>
+            <button class="control-btn" onclick="saveTemplate()">💾 Vorlage Speichern</button>
         </div>
     </div>
 </div>
@@ -526,7 +603,7 @@
         <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
         <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 
     <div class="page" id="mainPage">
@@ -539,7 +616,13 @@
                     Tel: +43 316 471771 | office@brugger-entfeuchtung.at
                 </div>
             </div>
-            <h1 class="header-title">Leckortungsbericht</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1 class="header-title">Leckortungsbericht</h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="label" style="margin: 0;">Projekt-Nr.</span>
+                    <input type="text" id="projekt_nr" class="print-toggle-empty" placeholder="..." style="width: 140px; font-weight: bold;">
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -606,6 +689,7 @@
                     <button type="button" class="no-print mic-btn" onclick="toggleDictation(this, 'befund')">🎤 Diktieren</button>
                 </div>
             </div>
+
             <div id="aiAnalysisOptions" class="no-print" style="display:none; margin-bottom: 10px; background: #f0f9ff; padding: 10px; border: 1px solid #bae6fd; border-radius: 4px;">
                 <span class="label" style="color: #0284c7; margin-bottom: 8px;">Zu verwendende Textbausteine für KI-Analyse:</span>
                 <div id="aiTemplateCheckboxes" class="checkbox-group"></div>
@@ -651,6 +735,10 @@
                         <div><span class="label">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input"></div>
                         <div><span class="label">Fahrzone</span><select id="fahrzone_select"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
                     </div>
+                </div>
+                <div class="grid" style="margin-top:8px; gap:8px;">
+                    <div><span class="label">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input"></div>
+                    <div></div>
                 </div>
             </div>
         </div>
@@ -698,14 +786,14 @@
                 <label class="checkbox-item"><input type="checkbox"> <span>Ursache bereits behoben</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Druckabfall</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeit</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Tracergas</span></label>
+                <label class="checkbox-item"><input type="checkbox" onchange="let el = document.getElementById('ortungsgas_select'); if(el){ el.value = this.checked ? '5' : '0'; el.dispatchEvent(new Event('change')); }"> <span>Tracergas</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Endoskopie</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Rohrkamera</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Druckprüfung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Absperrblase</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Nebelverfahren</span></label>
-                <label class="checkbox-item"><input type="checkbox"> <span>Luminatspülung</span></label>
+                <label class="checkbox-item"><input type="checkbox" onchange="let el = document.getElementById('faerbemittel_input'); if(el){ el.value = this.checked ? '10' : ''; el.dispatchEvent(new Event('input')); }"> <span>Luminatspülung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeitsmessung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Akustik</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Stemmarbeiten</span></label>
@@ -794,7 +882,7 @@
         <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
         <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 
     <div class="page" id="mainPage">
@@ -807,7 +895,13 @@
                     Tel: +43 316 471771 | office@brugger-entfeuchtung.at
                 </div>
             </div>
-            <h1 class="header-title">Kanalreinigungs- & Inspektionsbericht</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1 class="header-title">Kanalreinigungs- & Inspektionsbericht</h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="label" style="margin: 0;">Projekt-Nr.</span>
+                    <input type="text" id="projekt_nr" class="print-toggle-empty" placeholder="..." style="width: 140px; font-weight: bold;">
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -982,7 +1076,7 @@
         </label>
         <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 
     <div class="page" id="mainPage">
@@ -996,7 +1090,13 @@
                     Tel: +43 316 471771 | office@brugger-entfeuchtung.at
                 </div>
             </div>
-            <h1 class="header-title">Regiebericht</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1 class="header-title">Regiebericht</h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="label" style="margin: 0;">Projekt-Nr.</span>
+                    <input type="text" id="projekt_nr" class="print-toggle-empty" placeholder="..." style="width: 140px; font-weight: bold;">
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -1148,7 +1248,7 @@
         <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
         <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="location.reload()">🏠 ZUM HAUPTMENÜ</button>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 
     <div class="page" id="mainPage">
@@ -1161,7 +1261,13 @@
                     Tel: +43 316 471771 | office@brugger-entfeuchtung.at
                 </div>
             </div>
-            <h1 class="header-title" style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);">Datenlogger Auswertung</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1 class="header-title" style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);">Datenlogger Auswertung</h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="label" style="margin: 0;">Projekt-Nr.</span>
+                    <input type="text" id="projekt_nr" class="print-toggle-empty" placeholder="..." style="width: 140px; font-weight: bold;">
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -1218,8 +1324,8 @@
                 <div><span class="label">Gerätename</span><input type="text" id="dl_name" placeholder="z.B. Datenlogger 5"></div>
             </div>
             <div class="grid" style="margin-top: 8px;">
-                <div><span class="label">Startzeit</span><input type="text" id="dl_start" placeholder="TT.MM.JJJJ HH:MM"></div>
-                <div><span class="label">Endzeit</span><input type="text" id="dl_ende" placeholder="TT.MM.JJJJ HH:MM"></div>
+                <div><span class="label">Startzeit</span><input type="datetime-local" id="dl_start"></div>
+                <div><span class="label">Endzeit</span><input type="datetime-local" id="dl_ende"></div>
             </div>
         </div>
 
@@ -1388,16 +1494,63 @@ const DEFAULT_TEMPLATES = [
    ========================================================= */
 let currentApp = null;
 let appCleanupFuncs = []; // Liste für Cleanup-Funktionen (Event Listeners)
+let hasUnsavedChanges = false;
+const DB_NAME = 'BruggerAppDB';
+const STORE_NAME = 'autosaveStore';
+
+const initDB = () => new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e);
+});
+
+async function idbSet(key, val) {
+    try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).put(val, key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => reject(tx.error);
+        });
+    } catch(e) { console.error("IDB Set Error", e); }
+}
+
+async function idbGet(key) {
+    try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(tx.error);
+        });
+    } catch(e) { console.error("IDB Get Error", e); return null; }
+}
 
 function attemptLogin() {
     const pw = document.getElementById('loginPassword');
-    if (pw && pw.value === '4582') {
+    if (pw && pw.value && pw.value.trim() === '4582') {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('menu-container').style.display = 'block';
     } else {
         document.getElementById('loginError').style.display = 'block';
         if(pw) { pw.value = ''; pw.focus(); }
     }
+}
+
+window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'Sie haben ungespeicherte Änderungen.';
+    }
+});
+
+function goHome() {
+    if (hasUnsavedChanges && !confirm("Möchten Sie den aktuellen Bericht wirklich verwerfen? Ungespeicherte Änderungen gehen verloren.")) return;
+    hasUnsavedChanges = false;
+    location.reload();
 }
 
 function registerCleanup(fn) { appCleanupFuncs.push(fn); }
@@ -1422,6 +1575,7 @@ function startApp(type) {
         if (type === 'RB') initRB();
         if (type === 'DL') initDL();
         updateTitleWithAddress();
+        hasUnsavedChanges = false;
     } catch (e) {
         alert("Fehler beim Starten: " + e.message);
         console.error(e);
@@ -1457,19 +1611,24 @@ function preparePrintView() {
         { id: 'arbeitszeit_input', def: '' },
         { id: 'ortungsgas_select', def: '0' },
         { id: 'fahrzeit_input', def: '' },
-        { id: 'fahrzone_select', def: '' }
+        { id: 'fahrzone_select', def: '' },
+        { id: 'faerbemittel_input', def: '' }
     ];
     opts.forEach(o => {
         const el = document.getElementById(o.id);
         if(el && el.parentElement) {
             const val = el.value.trim();
-            if(val === o.def || val === '- wählen -') el.parentElement.classList.add('no-print');
+            if(val === o.def || val === '- wählen -') el.parentElement.classList.add('no-print', 'temp-hide');
             else el.parentElement.classList.remove('no-print');
         }
     });
 
+    document.querySelectorAll('.print-toggle-empty').forEach(el => {
+        if (el.value.trim() === '') el.parentElement.classList.add('no-print', 'temp-hide');
+    });
+
     document.querySelectorAll('.photo-desc').forEach(desc => {
-        if (desc.value.trim() === '') desc.classList.add('no-print');
+        if (desc.value.trim() === '') desc.classList.add('no-print', 'temp-hide');
         else desc.classList.remove('no-print');
     });
 }
@@ -1487,7 +1646,7 @@ function initCommon() {
         el.addEventListener('input', autoResize);
         if(el.value) autoResize.call(el);
     });
-    ['name', 'adresse', 'plz', 'ort', 'auftraggeber_name', 'auftraggeber_adresse', 'auftraggeber_plz', 'auftraggeber_ort'].forEach(id => {
+    ['name', 'adresse', 'plz', 'ort', 'auftraggeber_name', 'auftraggeber_adresse', 'auftraggeber_plz', 'auftraggeber_ort', 'projekt_nr'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updateTitleWithAddress);
     });
@@ -1521,6 +1680,7 @@ function buildReportBaseName() {
     const adr = document.getElementById('adresse')?.value.trim() || '';
     const plz = document.getElementById('plz')?.value.trim() || '';
     const ort = document.getElementById('ort')?.value.trim() || '';
+    const pnr = document.getElementById('projekt_nr')?.value.trim() || '';
     
     let baseTitle = 'Bericht';
     if (currentApp === 'KB') baseTitle = 'Kanalreinigungs- & Inspektionsbericht';
@@ -1531,6 +1691,7 @@ function buildReportBaseName() {
     }
 
     let titleParts = [];
+    if (pnr) titleParts.push(`Projekt ${pnr}`);
     if (`${plz} ${ort}`.trim()) titleParts.push(`${plz} ${ort}`.trim());
     if (adr) titleParts.push(adr);
     return titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle;
@@ -1736,6 +1897,7 @@ function saveSketchState() {
     if (!cvs) return;
     if (sketchHistory.length > 30) sketchHistory.shift();
     sketchHistory.push(cvs.toDataURL());
+    hasUnsavedChanges = true; saveToLocal();
 }
 
 function toggleTouch(el) { touchOn = !touchOn; el.classList.toggle('active', touchOn); el.style.background=touchOn?"#d0e4f5":"#fff"; el.style.borderColor=touchOn?"#2b83b8":"#ccc"; }
@@ -1832,7 +1994,7 @@ function clearSketch() {
     [document.getElementById('sketch-canvas'), document.getElementById('sketch-bg-canvas')].forEach(c => {
         if(c) {
             c.getContext('2d').clearRect(0,0,c.width,c.height);
-            if (c.id === 'sketch-canvas') setTimeout(() => { sketchHistory = [c.toDataURL()]; }, 50);
+            if (c.id === 'sketch-canvas') setTimeout(() => { sketchHistory = [c.toDataURL()]; hasUnsavedChanges = true; saveToLocal(); }, 50);
         }
     });
 }
@@ -1931,8 +2093,16 @@ function generateLOAnalysis() {
 
     // 2. Überprüfte Bereiche
     let checkedAreas = [];
-    document.querySelectorAll('#ueberpruefteBauteileContainer input:checked').forEach(c => checkedAreas.push(c.nextElementSibling.innerText.trim()));
-    document.querySelectorAll('#poolBauteileContainer input:checked').forEach(c => checkedAreas.push(c.nextElementSibling.innerText.trim() + " (Pool)"));
+    document.querySelectorAll('#ueberpruefteBauteileContainer input:checked').forEach(c => {
+        let text = c.nextElementSibling.innerText.trim();
+        if (text === 'Sonstiges') { const val = document.getElementById('inputSonstigesBauteile')?.value.trim(); if (val) text = val; }
+        checkedAreas.push(text);
+    });
+    document.querySelectorAll('#poolBauteileContainer input:checked').forEach(c => {
+        let text = c.nextElementSibling.innerText.trim();
+        if (text === 'Sonstiges') { const val = document.getElementById('inputSonstigesPool')?.value.trim(); if (val) text = val; }
+        checkedAreas.push(text + " (Pool)");
+    });
     
     if (checkedAreas.length > 0) {
         sections.push(`Überprüfte Bereiche:\nEs erfolgte eine Überprüfung der ${checkedAreas.join(', ')}.`);
@@ -2013,7 +2183,7 @@ function initRB() {
         registerCleanup(() => ['pointerup','pointercancel'].forEach(ev => window.removeEventListener(ev, endHandler)));
     }
 }
-function clearSignature() { if(sigCanvas && sigCtx) sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); }
+function clearSignature() { if(sigCanvas && sigCtx) { sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height); hasUnsavedChanges = true; saveToLocal(); } }
 function updateDynamicRows() {
     ['worker-container','material-container'].forEach(id => {
         const c = document.getElementById(id); if(!c) return;
@@ -2033,6 +2203,14 @@ function handleLogFileUpload(inp) {
         if(el) { el.value = e.target.result; showToast("Datei geladen", "success"); }
     };
     r.readAsText(f);
+}
+
+function formatToDatetimeLocal(dtStr) {
+    const p = dtStr.trim().split(/[\sT]+/);
+    if(p.length < 2) return dtStr;
+    const d = p[0].split('.');
+    if(d.length === 3) return `${d[2]}-${d[1].padStart(2,'0')}-${d[0].padStart(2,'0')}T${p[1].substring(0,5)}`;
+    return dtStr;
 }
 
 function parsePastedData() {
@@ -2112,8 +2290,8 @@ function parsePastedData() {
         if (!isNaN(abs_hum)) values.abs_hum.push(abs_hum);
     }
 
-    if (firstTime) document.getElementById('dl_start').value = firstTime;
-    if (lastTime) document.getElementById('dl_ende').value = lastTime;
+    if (firstTime) document.getElementById('dl_start').value = formatToDatetimeLocal(firstTime);
+    if (lastTime) document.getElementById('dl_ende').value = formatToDatetimeLocal(lastTime);
 
     const calculateAndFill = (key, id_prefix) => {
         const arr = values[key];
@@ -2151,15 +2329,9 @@ function generateAIAnalysis() {
     const startStr = document.getElementById('dl_start')?.value;
     const endStr = document.getElementById('dl_ende')?.value;
     if (startStr && endStr) {
-        const parseDt = (s) => {
-            const p = s.trim().split(/[\sT]+/);
-            if(p.length < 2) return null;
-            const d = p[0].split('.').map(Number), t = p[1].split(':').map(Number);
-            if(d.length===3 && t.length>=2) return new Date(d[2], d[1]-1, d[0], t[0], t[1]);
-            return null;
-        };
-        const d1 = parseDt(startStr), d2 = parseDt(endStr);
-        if(d1 && d2 && d2 > d1) {
+        const d1 = new Date(startStr);
+        const d2 = new Date(endStr);
+        if(!isNaN(d1) && !isNaN(d2) && d2 > d1) {
             const diffMs = d2 - d1;
             const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             const hrs = Math.round((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -2243,14 +2415,85 @@ function getOrCreateLastGrid() {
     }
     return l;
 }
-function handlePhotos(inp) { Array.from(inp.files).forEach(f => { const r = new FileReader(); r.onload=e=>scaleAndInsertPhoto(e.target.result); r.readAsDataURL(f); }); inp.value=''; }
+async function handlePhotos(inp) { 
+    if(!inp.files || !inp.files.length) return;
+    document.getElementById('loadingOverlay').style.display='flex';
+    const files = Array.from(inp.files);
+    for (let f of files) {
+        await new Promise(resolve => {
+            const r = new FileReader(); 
+            r.onload = e => scaleAndInsertPhoto(e.target.result, null, '', null, resolve); 
+            r.readAsDataURL(f); 
+        });
+    }
+    inp.value=''; 
+    document.getElementById('loadingOverlay').style.display='none';
+}
 function calcPhotoPageNumber(idx) { return ((currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') && document.getElementById('toggleSketch')?.checked ? 3 : 2) + idx; }
 function renumberPhotoPages() { document.querySelectorAll('#photoPagesContainer .page .footer .page-no').forEach((el, i) => el.textContent = `Seite ${calcPhotoPageNumber(i)}`); }
 
-function insertPhotoBox(src, gId=null, txt='', arr=null) {
+let draggedPhotoBox = null;
+function handleDragStart(e) { draggedPhotoBox = this; setTimeout(() => this.classList.add('dragging'), 0); }
+function handleDragEnd(e) { 
+    this.classList.remove('dragging'); 
+    document.querySelectorAll('.photo-box').forEach(b => b.classList.remove('drag-over', 'drag-over-right')); 
+    if (draggedPhotoBox) repackPhotoPages();
+    draggedPhotoBox = null;
+}
+function handleDragOver(e) {
+    e.preventDefault();
+    if (this === draggedPhotoBox) return;
+    const rect = this.getBoundingClientRect();
+    const relX = e.clientX - rect.left;
+    if (relX > rect.width / 2) { this.classList.remove('drag-over'); this.classList.add('drag-over-right'); }
+    else { this.classList.remove('drag-over-right'); this.classList.add('drag-over'); }
+}
+function handleDragLeave(e) { this.classList.remove('drag-over', 'drag-over-right'); }
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over', 'drag-over-right');
+    if (this !== draggedPhotoBox) {
+        const rect = this.getBoundingClientRect();
+        const relX = e.clientX - rect.left;
+        if (relX > rect.width / 2) this.parentNode.insertBefore(draggedPhotoBox, this.nextSibling);
+        else this.parentNode.insertBefore(draggedPhotoBox, this);
+    }
+}
+
+function repackPhotoPages() {
+    const boxes = Array.from(document.querySelectorAll('.photo-box'));
+    const container = document.getElementById('photoPagesContainer');
+    const numPages = Math.max(1, Math.ceil(boxes.length / 4));
+    const existingPages = Array.from(container.querySelectorAll('.page'));
+    for (let i = 0; i < numPages; i++) {
+        let p;
+        if (i < existingPages.length) p = existingPages[i];
+        else {
+            p = document.createElement('div'); p.className = 'page';
+            const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + i);
+            const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
+            p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+            container.appendChild(p);
+        }
+    }
+    const grids = container.querySelectorAll('.photo-grid');
+    boxes.forEach((box, i) => { const targetGrid = grids[Math.floor(i / 4)]; if (box.parentNode !== targetGrid) targetGrid.appendChild(box); });
+    const finalPages = container.querySelectorAll('.page');
+    for (let i = numPages; i < finalPages.length; i++) finalPages[i].remove();
+    if(boxes.length === 0) container.innerHTML = '';
+    updatePhotoNumbers(); renumberPhotoPages(); hasUnsavedChanges = true; saveToLocal();
+}
+
+function insertPhotoBox(src, gId=null, txt='', arr=null, skipRepack=false) {
     const b = document.createElement('div'); b.className='photo-box';
+    b.draggable = true;
+    b.addEventListener('dragstart', handleDragStart); b.addEventListener('dragend', handleDragEnd);
+    b.addEventListener('dragover', handleDragOver); b.addEventListener('dragleave', handleDragLeave);
+    b.addEventListener('drop', handleDrop);
     b.innerHTML = `<span class="photo-number"></span><button class="delete-photo-btn no-print" onclick="deletePhoto(this)">×</button><div class="img-container" onclick="openPhotoEditor(this)"><img src="${src}"></div><input type="text" class="photo-desc" placeholder="Beschreibung..." value="${txt.replace(/"/g,'&quot;')}">`;
-    let g = gId ? document.getElementById(gId) : getOrCreateLastGrid(); if(!g) g=getOrCreateLastGrid(); g.appendChild(b);
+    let g = gId ? document.getElementById(gId) : null;
+    if(!g) { const grids = document.querySelectorAll('.photo-grid'); if(grids.length > 0) g = grids[grids.length-1]; else g = getOrCreateLastGrid(); }
+    g.appendChild(b);
     if(arr) {
         const a = document.createElement('div'); a.className='marker-arrow'; a.style.left=arr.x+'%'; a.style.top=arr.y+'%';
         a.innerHTML = `<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>`;
@@ -2258,13 +2501,16 @@ function insertPhotoBox(src, gId=null, txt='', arr=null) {
     }
     const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'flex';
     updatePhotoNumbers();
+    hasUnsavedChanges = true; saveToLocal();
+    if(!skipRepack) repackPhotoPages();
 }
-function scaleAndInsertPhoto(url, gId=null) {
+function scaleAndInsertPhoto(url, gId=null, txt='', arr=null, cb=null) {
     const i = new Image(); i.onload = () => {
         const max = 700; let w = i.width, h = i.height;
         if(w>h && w>max) { h*=max/w; w=max; } else if(h>max) { w*=max/h; h=max; }
         const c = document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(i,0,0,w,h);
-        insertPhotoBox(c.toDataURL('image/jpeg', 0.4), gId);
+        insertPhotoBox(c.toDataURL('image/webp', 0.6), gId, txt, arr);
+        if(cb) cb();
     }; i.src = url;
 }
 
@@ -2272,14 +2518,11 @@ function deletePhoto(btn) {
     if (confirm('Möchten Sie dieses Foto wirklich löschen?')) {
         const photoBox = btn.closest('.photo-box');
         if (photoBox) {
-            const grid = photoBox.parentNode;
             photoBox.remove();
-            if (grid && grid.classList.contains('photo-grid') && grid.children.length === 0) {
-                const page = grid.closest('.page');
-                if (page) { page.remove(); renumberPhotoPages(); }
+            repackPhotoPages();
+            if(document.querySelectorAll('.photo-box').length === 0) { 
+                const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'none'; 
             }
-            updatePhotoNumbers();
-            if(document.querySelectorAll('.photo-box').length === 0) { const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'none'; }
         }
     }
 }
@@ -2315,6 +2558,7 @@ function getReportData() {
     document.querySelectorAll('#app-root textarea').forEach(t => { if(t.id) d.byId[t.id]=t.value; else d.textareasNoId.push(t.value); });
     document.querySelectorAll('#app-root select').forEach(s => { if(s.id) d.byId[s.id]=s.value; else d.selectsNoId.push(s.value); });
     d.checkStatesOrdered = Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).map(c => !!c.checked);
+
     if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
     else { try{ if(sigCanvas) d.signature.png=sigCanvas.toDataURL('image/png'); }catch(e){} }
     document.querySelectorAll('#photoPagesContainer .page').forEach((p, idx) => {
@@ -2342,6 +2586,7 @@ async function exportFullReport() {
             const writable = await handle.createWritable();
             await writable.write(jsonStr);
             await writable.close();
+            hasUnsavedChanges = false;
             showToast("Bericht gespeichert!", "success");
             return;
         }
@@ -2349,12 +2594,13 @@ async function exportFullReport() {
 
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([jsonStr], {type:'application/octet-stream'}));
     a.download = fileName; a.click();
+    hasUnsavedChanges = false;
     showToast("Bericht gespeichert!", "success");
 }
 
 function importFromStart(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
-    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
     r.readAsText(f); inp.value='';
 }
 
@@ -2384,8 +2630,10 @@ function restoreFromData(d) {
         const pg = document.createElement('div'); pg.className='page'; const gId = 'grid-restore-'+p.index;
         const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
         pg.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${gId}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
-        c.appendChild(pg); p.images.forEach(img => insertPhotoBox(img.dataUrl, gId, img.description, img.arrow));
+        c.appendChild(pg); 
+        p.images.forEach(img => insertPhotoBox(img.dataUrl, gId, img.description, img.arrow, true));
     });
+    repackPhotoPages();
     updateTitleWithAddress();
 }
 function debounce(fn, w) { let t; return function() { clearTimeout(t); t = setTimeout(()=>fn.apply(this, arguments), w); }; }
@@ -2461,6 +2709,26 @@ function selectCustomer(customerId, type) {
     updateTitleWithAddress(); showToast("Kundendaten eingefügt", "success");
 }
 
+function exportCustomers() {
+    const customers = localStorage.getItem('brugger_customers') || '[]';
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(new Blob([customers], {type:'application/json'}));
+    a.download = 'Brugger_Kunden_' + new Date().toISOString().split('T')[0] + '.json'; 
+    a.click();
+    showToast("Kundenliste exportiert", "success");
+}
+
+function importCustomers(inp) {
+    const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
+    r.onload = e => {
+        try { const data = JSON.parse(e.target.result); if(Array.isArray(data)) {
+            let existing = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+            data.forEach(newCust => { const idx = existing.findIndex(c => c.name === newCust.name && c.plz === newCust.plz); if(idx > -1) existing[idx] = {...existing[idx], ...newCust}; else existing.push(newCust); });
+            localStorage.setItem('brugger_customers', JSON.stringify(existing)); showToast("Kundenliste importiert", "success");
+        } } catch(err) { showToast("Ungültige Datei", "error"); }
+    }; r.readAsText(f); inp.value = '';
+}
+
 /* =========================================================
    AUTO-SAVE & TOASTS
    ========================================================= */
@@ -2473,35 +2741,28 @@ function showToast(msg, type='info') {
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
 }
 
-function saveToLocal() {
+async function saveToLocal() {
     if(!currentApp) return;
     const d = getReportData();
-    try {
-        localStorage.setItem('brugger_autosave', JSON.stringify(d));
-    } catch (e) {
-        if (e.name === 'QuotaExceededError' || e.code === 22) {
-            // Speicher voll - Autosave stillschweigend ignorieren oder Loggen, um Absturz zu verhindern
-            console.warn("Autosave fehlgeschlagen: Speicher voll (zu viele Fotos?)");
-        }
-    }
+    hasUnsavedChanges = true;
+    await idbSet('brugger_autosave', d);
 }
 
-function checkAutoSave() {
-    const saved = localStorage.getItem('brugger_autosave');
+async function checkAutoSave() {
+    const saved = await idbGet('brugger_autosave');
     const btn = document.getElementById('btnRestoreAutosave');
     if(saved && btn) {
         btn.style.display = 'flex';
-        try { const d = JSON.parse(saved); if(d.appType) btn.innerHTML = `🔄 Entwurf (${d.appType}) wiederherstellen`; } catch(e){}
+        try { if(saved.appType) btn.innerHTML = `🔄 Entwurf (${saved.appType}) wiederherstellen`; } catch(e){}
     }
 }
 
-function restoreAutosave() {
-    const saved = localStorage.getItem('brugger_autosave');
+async function restoreAutosave() {
+    const saved = await idbGet('brugger_autosave');
     if(!saved) return;
     try {
-        const d = JSON.parse(saved);
-        startApp(d.appType);
-        setTimeout(() => { restoreFromData(d); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+        startApp(saved.appType);
+        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; showToast('Entwurf wiederhergestellt', 'success'); }, 200);
     } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
 }
 
@@ -2603,7 +2864,10 @@ function setPE_Mode(m, el) { peMode=m; document.querySelectorAll('#photoEditorMo
 function setPE_Color(c, el) { peColor=c; document.querySelectorAll('#photoEditorModal .color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function undoPE() { if(peHist.length>1) { peHist.pop(); const i=new Image(); i.onload=()=>peCtx.drawImage(i,0,0); i.src=peHist[peHist.length-1]; } }
 function closePhotoEditor() { document.getElementById('photoEditorModal').style.display='none'; }
-function savePhotoEditor() { if(peActiveImgEl) peActiveImgEl.src = peCvs.toDataURL('image/jpeg', 0.4); closePhotoEditor(); }
+function savePhotoEditor() { 
+    if(peActiveImgEl) { peActiveImgEl.src = peCvs.toDataURL('image/webp', 0.6); hasUnsavedChanges = true; saveToLocal(); } 
+    closePhotoEditor(); 
+}
 
 function rotatePE(degrees) {
     if (!peCvs || !peCtx) return;
@@ -2693,9 +2957,39 @@ function loadTemplates() {
     } catch(e) { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); }
 }
 
+/* =========================================================
+   TEMPLATE MANAGER
+   ========================================================= */
+function openTemplateManager() { closeSettings(); document.getElementById('templateManagerModal').style.display = 'flex'; refreshTemplateSelect(); }
+function closeTemplateManager() { document.getElementById('templateManagerModal').style.display = 'none'; }
+function refreshTemplateSelect() {
+    const sel = document.getElementById('tmSelect'); sel.innerHTML = '<option value="new">+ Neue Vorlage erstellen</option>';
+    textTemplates.forEach((t, i) => sel.innerHTML += `<option value="${i}">${t.title} (${t.category})</option>`);
+    loadSelectedTemplate();
+}
+function loadSelectedTemplate() {
+    const val = document.getElementById('tmSelect').value;
+    if (val === 'new') { document.getElementById('tmTitle').value = ''; document.getElementById('tmText').value = ''; document.getElementById('tmCategory').value = 'leckortung'; } 
+    else { const t = textTemplates[val]; document.getElementById('tmTitle').value = t.title; document.getElementById('tmText').value = t.text; document.getElementById('tmCategory').value = t.category; }
+}
+function saveTemplate() {
+    const title = document.getElementById('tmTitle').value.trim(); const text = document.getElementById('tmText').value.trim(); const category = document.getElementById('tmCategory').value;
+    if(!title || !text) return showToast("Bitte Titel und Text eingeben", "error");
+    const val = document.getElementById('tmSelect').value; const newTpl = { id: title.toLowerCase().replace(/[^a-z0-9]/g, '_'), category, title, text };
+    if (val === 'new') textTemplates.push(newTpl); else textTemplates[val] = newTpl;
+    localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gespeichert", "success"); refreshTemplateSelect();
+    if(currentApp === 'LO') applyTemplateVisibility();
+}
+function deleteSelectedTemplate() {
+    const val = document.getElementById('tmSelect').value; if(val === 'new') return;
+    if(confirm("Vorlage wirklich löschen?")) { textTemplates.splice(val, 1); localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gelöscht", "info"); refreshTemplateSelect(); if(currentApp === 'LO') applyTemplateVisibility(); }
+}
+
 function hardResetApp() {
     if(confirm("ACHTUNG: Dies löscht alle gespeicherten Daten (Einstellungen, Entwürfe, Vorlagen) und setzt die App komplett zurück.\n\nDies hilft oft, wenn die App nicht mehr reagiert.\n\nFortfahren?")) {
+        hasUnsavedChanges = false;
         try { localStorage.clear(); } catch(e){}
+        try { indexedDB.deleteDatabase(DB_NAME); } catch(e){}
         try { if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){ for(let r of rs) r.unregister(); }); } catch(e){}
         location.reload();
     }
