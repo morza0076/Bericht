@@ -152,7 +152,7 @@
         .header-right strong { font-size: 18px; color: var(--primary); letter-spacing: 0.5px; display: block; margin-bottom: 0px; }
         
         .header-title { 
-            margin: 0; font-size: 32px; color: var(--gray-900); 
+            margin: 0; font-size: 28px; color: var(--gray-900); 
             text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; 
             background: transparent; padding: 0; 
             text-align: left; border: none;
@@ -161,7 +161,7 @@
         .section { margin-bottom: 20px; }
         .section-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .section h2 { 
-            font-size: 12.5px; text-transform: uppercase; 
+            font-size: 11.5px; text-transform: uppercase; 
             color: var(--primary); 
             padding: 0 0 8px 0; margin: 0 0 15px 0; 
             font-weight: 700; letter-spacing: 0.05em;
@@ -173,6 +173,7 @@
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
         .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 15px; margin-top: 8px; }
         .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 10px; margin-bottom: 10px; }
         .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 10px; margin-bottom: 10px; }
@@ -212,8 +213,8 @@
         textarea { min-height: 40px; font-family: inherit; resize: none; overflow: hidden; line-height: 1.4; display: block; }
         .print-textarea-clone { display: none; }
 
-        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
-        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; font-size: 12px; }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; align-content: start; }
+        .checkbox-group-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; font-size: 12px; align-content: start; }
         .checkbox-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 0; font-size: 12px; color: var(--gray-900); }
         .checkbox-item input { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--primary); border-radius: 3px; border: 1px solid var(--gray-400); }
 
@@ -310,7 +311,7 @@
             .header-top { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
             .header-right { text-align: left; font-size: 11px; }
             .header-title { font-size: 18px; text-align: left; padding: 8px; }
-            .grid, .address-grid, .grid-3 { grid-template-columns: 1fr; gap: 10px; }
+            .grid, .address-grid, .grid-3, .grid-1-2 { grid-template-columns: 1fr; gap: 10px; }
             .checkbox-group-3, .checkbox-group { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); } 
             .grid-header { display: none; } 
             .worker-grid { grid-template-columns: 1fr 1fr; background: #fff; padding: 8px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; }
@@ -326,7 +327,7 @@
            PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
-            html, body { background: #fff; padding: 0; margin: 0; color: #000; height: auto !important; overflow: visible !important; font-size: 0 !important; }
+            html, body { background: #fff; padding: 0; margin: 0; height: auto !important; overflow: visible !important; font-size: 0 !important; }
             #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal, #photoEditorModal, #settingsModal, #toast-container { display: none !important; }
             .logo { background: transparent !important; } /* Logo-Hintergrund im Druck entfernen */
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
@@ -336,40 +337,39 @@
             #sketchPage { page-break-before: always !important; break-before: page !important; }
             #photoPagesContainer .page { page-break-before: always !important; break-before: page !important; }
             
-            .header { border-bottom: 1px solid #ccc !important; margin-bottom: 30px; padding-bottom: 10px; padding-top: 5mm; }
-            .header-top { margin-bottom: 15px; }
             .header { border-bottom: 1px solid #ccc !important; margin-bottom: 15px !important; padding-bottom: 5px !important; padding-top: 5mm; }
             .header-top { margin-bottom: 10px !important; }
-            .header-title { background: transparent !important; color: #000 !important; padding: 0 !important; font-size: 24px !important; text-align: left !important; border: none !important; }
-            .header-right strong { color: #000 !important; }
+            .header-title { background: transparent !important; padding: 0 !important; font-size: 18px !important; text-align: left !important; border: none !important; }
+            .header-right { font-size: 10px !important; line-height: 1.1 !important; color: var(--gray-600) !important; }
+            .header-right strong { font-size: 13px !important; margin-bottom: 0 !important; color: var(--primary) !important; }
+            .logo { max-height: 55px !important; }
             .section { margin-bottom: 2px; }
-            .section h2 { background: transparent !important; color: #000 !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 5px !important; font-size: 12px !important; }
-            .section h2 { background: transparent !important; color: #000 !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 3px !important; font-size: 11.5px !important; }
+            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 3px !important; font-size: 10.5px !important; }
             #mainPage .section:first-of-type > h2 {
                 background: #fff !important;
                 border-bottom: none !important;
             }
-            .grid, .address-grid, .grid-3 { gap: 2px; margin-top: 1px; }
+            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 2px; margin-top: 1px; }
             .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
             textarea { display: none !important; }
-            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; color: #000 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
-            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; color: #000 !important; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; }
-            input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 11px; height: 11px; margin-right: 4px; }
+            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; color: inherit !important; }
+            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; height: auto !important; min-height: 0 !important; line-height: 1.1 !important; color: inherit !important; }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; }
             .checkbox-item { font-size: 9.5px !important; padding: 0 !important; margin: 0 !important; gap: 3px !important; line-height: 1.1 !important; }
             .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 2px !important; }
+            #boxArbeitszeitOrtungsgas { gap: 2px !important; }
             input[type="date"]::-webkit-calendar-picker-indicator,
             input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none !important; }
-            .worker-grid, .material-grid, .grid, .grid-3, .checkbox-group, .checkbox-group-3, .signature-box, .photo-box { break-inside: avoid !important; }
+            .worker-grid, .material-grid, .grid, .grid-3, .grid-1-2, .checkbox-group, .checkbox-group-3, .signature-box, .photo-box { break-inside: avoid !important; }
             h2, .section-header-flex, .label { break-after: avoid !important; }
             .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
-            .grid-header { color: #000; border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
+            .grid-header { border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
             .is-empty-row { display: none !important; }
             
             .sketch-container { border: none !important; background: transparent !important; box-shadow: none !important; height: 170mm !important; background-image: none !important; margin-top: 0 !important; }
             #sketch-canvas { position: static !important; width: 100% !important; height: 100% !important; }
             
-            .signature-box { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 10px; color: #000 !important; }
+            .signature-box { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 10px; }
             .signature-pad { border: 1px solid #ccc !important; background: transparent !important; height: 80px !important; }
             .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
             .photo-box { border: none !important; box-shadow: none !important; padding: 0 !important; page-break-inside: avoid; }
@@ -377,7 +377,8 @@
             #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
-            .checkbox-item:not(:has(input:checked)) {
+            .checkbox-group .checkbox-item:not(:has(input:checked)),
+            .checkbox-group-3 .checkbox-item:not(:has(input:checked)) {
                 display: none !important;
             }
             
@@ -388,6 +389,7 @@
             
             h2:has(+ .checkbox-group:not(:has(input:checked))),
             h2:has(+ .checkbox-group-3:not(:has(input:checked))),
+            h2:has(+ .grid > .checkbox-group:not(:has(input:checked))),
             .label:has(+ .checkbox-group:not(:has(input:checked))),
             .label:has(+ .checkbox-group-3:not(:has(input:checked))) {
                 display: none !important;
@@ -703,10 +705,10 @@
             <textarea id="befund" placeholder="Ergebnisse der Ortung..."></textarea>
         </div>
 
-        <div class="section grid">
+        <div class="section grid-1-2">
             <div>
                 <h2>Maßnahmen</h2>
-                <div class="checkbox-group" id="lo_measures_group">
+                <div class="checkbox-group" id="lo_measures_group" style="grid-template-columns: 1fr;">
                     <label class="checkbox-item"><input type="checkbox"> <span>Trocknung</span></label>
                     <label class="checkbox-item"><input type="checkbox"> <span>Sanierung</span></label>
                     <label class="checkbox-item"><input type="checkbox"> <span>Verstopfungsbehebung</span></label>
@@ -715,36 +717,30 @@
                 </div>
                 <input type="text" id="inputSonstiges" placeholder="..." style="display:none; margin-top:6px;">
                 <div id="flachdachTextOptions" class="no-print" style="margin-top:8px; display:none;">
-                    <span class="label">Textvorlage für Befund einfügen</span>
-                    <select id="flachdachTemplate" onchange="insertTemplate()">
+                    <span class="label" style="font-size: 10px; margin-bottom: 2px;">Textvorlage einfügen</span>
+                    <select id="flachdachTemplate" onchange="insertTemplate()" style="padding: 4px 8px; font-size: 12px; height: auto;">
                         <option value="">- Vorlage wählen -</option>
                     </select>
                 </div>
             </div>
             <div>
                 <h2>Leistungen</h2>
-                <div class="checkbox-group" id="lo_services_group">
-                    <label class="checkbox-item"><input type="checkbox" id="checkLOPauschale"> <span>LO Pauschale</span></label>
-                    <label class="checkbox-item"><input type="checkbox" id="checkLeckortung"> <span>Leckortung</span></label>
-                    <label class="checkbox-item"><input type="checkbox" id="checkOptLeckortung"> <span>opt. Leckortung</span></label>
-                    <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
-                    <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
-                    <label class="checkbox-item"><input type="checkbox" id="checkPool"> <span>Pool LO</span></label>
-                </div>
-                
-                <div class="grid" style="margin-top:8px;">
-                    <div class="grid" id="boxArbeitszeitOrtungsgas" style="gap: 8px; margin:0;">
-                        <div><span class="label">Arbeitszeit</span><input type="text" placeholder="z.B. 1.5 Std" id="arbeitszeit_input"></div>
-                        <div><span class="label">Ortungsgas</span><select id="ortungsgas_select"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></div>
+                <div class="grid" style="grid-template-columns: 1fr 1.5fr;">
+                    <div class="checkbox-group" id="lo_services_group" style="grid-template-columns: 1fr;">
+                        <label class="checkbox-item"><input type="checkbox" id="checkLOPauschale"> <span>LO Pauschale</span></label>
+                        <label class="checkbox-item"><input type="checkbox" id="checkLeckortung"> <span>Leckortung</span></label>
+                        <label class="checkbox-item"><input type="checkbox" id="checkOptLeckortung"> <span>opt. Leckortung</span></label>
+                        <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
+                        <label class="checkbox-item"><input type="checkbox" id="checkFlachdach"> <span>Flachdach-Prüf.</span></label>
+                        <label class="checkbox-item"><input type="checkbox" id="checkPool"> <span>Pool LO</span></label>
                     </div>
-                    <div class="grid" style="gap: 8px; margin:0;">
-                        <div><span class="label">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input"></div>
-                        <div><span class="label">Fahrzone</span><select id="fahrzone_select"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                    <div id="boxArbeitszeitOrtungsgas" style="display: grid; grid-template-columns: 1fr; gap: 6px; align-content: start;">
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Arbeitszeit</span><input type="text" placeholder="z.B. 1.5 Std" id="arbeitszeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzone</span><select id="fahrzone_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Ortungsgas</span><select id="ortungsgas_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
                     </div>
-                </div>
-                <div class="grid" style="margin-top:8px; gap:8px;">
-                    <div><span class="label">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input"></div>
-                    <div></div>
                 </div>
             </div>
         </div>
@@ -763,6 +759,10 @@
                     <label class="checkbox-item"><input type="checkbox" id="checkSonstigesBauteile" onclick="toggleSonstigesBauteile()"> <span>Sonstiges</span></label>
                 </div>
                 <input type="text" id="inputSonstigesBauteile" placeholder="..." style="display:none; margin-top:6px;">
+                <div style="margin-top: 8px;">
+                    <span class="label" style="font-size: 10px; color: var(--gray-600);">Notizen zu überprüften Bauteilen</span>
+                    <textarea id="bauteile_notizen" class="print-toggle-empty" placeholder="Besonderheiten, Auffälligkeiten..." style="min-height: 35px;"></textarea>
+                </div>
             </div>
 
             <div id="poolBauteileContainer" style="display:none; margin-bottom: 8px; border: 1px solid #cee3f0; padding: 8px; border-radius: 4px; background: #eef5f9;">
@@ -775,6 +775,10 @@
                     <label class="checkbox-item"><input type="checkbox" id="checkSonstigesPool" onclick="toggleSonstigesPool()"> <span>Sonstiges</span></label>
                 </div>
                 <input type="text" id="inputSonstigesPool" placeholder="..." style="display:none; margin-top:6px;">
+                <div style="margin-top: 8px;">
+                    <span class="label" style="font-size: 10px; color: #2b83b8;">Notizen zu Pool Bauteilen</span>
+                    <textarea id="pool_notizen" class="print-toggle-empty" placeholder="Besonderheiten, Auffälligkeiten..." style="min-height: 35px;"></textarea>
+                </div>
             </div>
 
             <div id="reparaturWorks" style="margin-bottom: 8px; display:none;">
@@ -806,6 +810,11 @@
                 <label class="checkbox-item"><input type="checkbox" id="checkSonstigesReparatur" onclick="toggleSonstigesReparatur()"> <span>Sonstiges</span></label>
             </div>
             <input type="text" id="inputSonstigesReparatur" placeholder="..." style="display:none; margin-top:6px;">
+            
+            <div style="margin-top: 12px;">
+                <span class="label" style="font-size: 10px; color: var(--gray-600);">Notizen / Bemerkungen</span>
+                <textarea id="reparatur_notizen" class="print-toggle-empty" placeholder="Weitere Feststellungen, Besonderheiten..." style="min-height: 40px;"></textarea>
+            </div>
         </div>
 
         <div class="section no-print" style="margin-top: 15px; border: 1px dashed #2b83b8; padding: 10px; border-radius: var(--radius); background: #f0f7fb;">
@@ -978,7 +987,7 @@
                 <div><span class="label">Nennweite (DN)</span><select id="nennweite"><option value="">- wählen -</option><option>DN 50</option><option>DN 70</option><option>DN 100</option><option>DN 125</option><option>DN 150</option><option>DN 200</option><option>DN 250</option><option>DN 300</option><option>> DN 300</option></select></div>
             </div>
             <div class="grid" style="margin-bottom: 8px;">
-                <div><span class="label">Länge (m)</span><input type="text" id="haltung_laenge" placeholder="0.0" step="0.1"></div>
+                <div><span class="label">Länge (m)</span><input type="number" id="haltung_laenge" placeholder="0.0" step="0.1"></div>
                 <div></div>
             </div>
             <div class="grid">
@@ -1197,14 +1206,14 @@
                 <div>Bezeichnung</div>
             </div>
             <div id="material-container">
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
-                <div class="material-grid"><input type="text" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0" style="text-align:center;"><input type="text" placeholder="Stk/Lfm"><input type="text" placeholder="..."></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
+                <div class="material-grid"><input type="number" step="0.5" placeholder="0"><input type="text"><input type="text"></div>
             </div>
         </div>
 
@@ -2038,7 +2047,7 @@ function applyFlachdachState() {
     const cf = document.getElementById('checkFlachdach')?.checked;
     const h1 = document.querySelector('#mainPage .header-title');
     if(h1) h1.textContent = cf ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
-    ['reparaturSection','sketchPage','boxArbeitszeitOrtungsgas'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = cf ? 'none' : ''; });
+    ['reparaturSection','sketchPage'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = cf ? 'none' : ''; });
     if(cf) { const ts = document.getElementById('toggleSketch'); if(ts){ ts.checked=false; document.body.classList.remove('sketch-enabled'); } }
     applyTemplateVisibility(); renumberPhotoPages(); updateTitleWithAddress();
 }
@@ -2110,8 +2119,19 @@ function generateLOAnalysis() {
         checkedAreas.push(text + " (Pool)");
     });
     
+    const bauteileNotizen = document.getElementById('bauteile_notizen')?.value.trim();
+    const poolNotizen = document.getElementById('pool_notizen')?.value.trim();
+
     if (checkedAreas.length > 0) {
-        sections.push(`Überprüfte Bereiche:\nEs erfolgte eine Überprüfung der ${checkedAreas.join(', ')}.`);
+        let txt = `Überprüfte Bereiche:\nEs erfolgte eine Überprüfung der ${checkedAreas.join(', ')}.`;
+        if (bauteileNotizen) txt += `\nNotizen Bauteile: ${bauteileNotizen}`;
+        if (poolNotizen) txt += `\nNotizen Pool: ${poolNotizen}`;
+        sections.push(txt);
+    } else if (bauteileNotizen || poolNotizen) {
+        let txt = "Überprüfte Bereiche (Notizen):";
+        if (bauteileNotizen) txt += `\n- ${bauteileNotizen}`;
+        if (poolNotizen) txt += `\n- Pool: ${poolNotizen}`;
+        sections.push(txt);
     }
 
     // 3. Feststellungen / Verfahren
@@ -2119,6 +2139,11 @@ function generateLOAnalysis() {
     document.querySelectorAll('#lo_repair_checks_group input:checked').forEach(c => findings.push(c.nextElementSibling.innerText.trim()));
     if (findings.length > 0) {
         sections.push(`Feststellungen / Durchführung:\n${findings.join(', ')}.`);
+    }
+
+    const repNotizen = document.getElementById('reparatur_notizen')?.value.trim();
+    if (repNotizen) {
+        sections.push(`Weitere Notizen / Bemerkungen:\n${repNotizen}`);
     }
 
     // 4. Textbausteine (Templates)
