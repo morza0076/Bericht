@@ -2598,17 +2598,32 @@ function updatePhotoNumbers() {
     });
 }
 
-function sendEmail() {
-    const sbj = buildReportBaseName();
-    let body = '';
-    const notizenId = (currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') ? 'interne_notizen' : 'interne_notizen_rb';
-    const notizen = document.getElementById(notizenId)?.value.trim();
-    if (notizen) body += notizen + '\n\n';
+async function sendEmail() {
+    if (currentApp === 'DL') {
+        const raw = document.getElementById('dl_pasted_data');
+        if (raw) raw.value = '';
+    }
+    // 1. Bericht als Datei (.lok) speichern
+    await exportFullReport();
     
-    body += 'BITTE BERICHT ALS PDF ANHÄNGEN.\n\n';
-    body += 'Gesendet vom Brugger-Formular.';
-    const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
-    window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
+    // 2. Drucken-Dialog für PDF-Erstellung öffnen
+    setTimeout(() => {
+        window.print();
+        
+        // 3. E-Mail Fenster im Anschluss öffnen
+        setTimeout(() => {
+            const sbj = buildReportBaseName();
+            let body = '';
+            const notizenId = (currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') ? 'interne_notizen' : 'interne_notizen_rb';
+            const notizen = document.getElementById(notizenId)?.value.trim();
+            if (notizen) body += notizen + '\n\n';
+            
+            body += 'BITTE DAS SOEBEN ERSTELLTE PDF HIER ANHÄNGEN.\n\n';
+            body += 'Gesendet vom Brugger-Formular.';
+            const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
+            window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
+        }, 800);
+    }, 800);
 }
 
 function getReportData() {
