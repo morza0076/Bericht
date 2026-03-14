@@ -1874,8 +1874,16 @@ function confirmCrop() {
 /* =========================================================
    SKIZZEN & ZEICHNEN
    ========================================================= */
-let sketchCtx = null, cMode = 'freehand', cColor = '#000', cWidth = 2, isErase = false, touchOn = window.innerWidth <= 768, useGridSnap = true;
+let sketchCtx = null, cMode = 'freehand', cColor = '#000', cWidth = 2, isErase = false, touchOn = true, useGridSnap = true;
 let sketchHistory = [];
+
+function toggleTouch(el) { 
+    touchOn = !touchOn; 
+    el.classList.toggle('active', touchOn); 
+    el.style.background=touchOn?"#d0e4f5":"#fff"; 
+    el.style.borderColor=touchOn?"#2b83b8":"#ccc"; 
+    document.querySelectorAll('#sketch-bg-canvas, #sketch-canvas').forEach(c => { if(c) c.style.touchAction = touchOn ? 'none' : 'auto'; });
+}
 
 function setupSketchListeners() {
     const ts = document.getElementById('toggleSketch');
@@ -1883,7 +1891,10 @@ function setupSketchListeners() {
         document.body.classList.remove('sketch-enabled');
         ts.addEventListener('change', () => {
             document.body.classList.toggle('sketch-enabled', ts.checked);
-            if (document.getElementById('sketchPage')) document.getElementById('sketchPage').style.display = ts.checked ? '' : 'none';
+            if (document.getElementById('sketchPage')) {
+                document.getElementById('sketchPage').style.display = ts.checked ? '' : 'none';
+                if(ts.checked) setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+            }
             renumberPhotoPages();
         });
     }
@@ -1915,7 +1926,6 @@ function saveSketchState() {
     hasUnsavedChanges = true; saveToLocal();
 }
 
-function toggleTouch(el) { touchOn = !touchOn; el.classList.toggle('active', touchOn); el.style.background=touchOn?"#d0e4f5":"#fff"; el.style.borderColor=touchOn?"#2b83b8":"#ccc"; }
 function toggleGridSnap(el) { useGridSnap = !useGridSnap; el.classList.toggle('active', useGridSnap); el.style.background=useGridSnap?"#d0e4f5":"#fff"; el.style.borderColor=useGridSnap?"#2b83b8":"#ccc"; }
 function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function setWidth(w, el) { cWidth = w; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.width-tool').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
@@ -1930,6 +1940,7 @@ function initDrawing(cvs) {
     function rs() { 
         if(!document.body.contains(cvs)) return; 
         const r = cvs.getBoundingClientRect(); 
+        if(r.width === 0 || r.height === 0) return;
         const dpr = window.devicePixelRatio || 1;
         [cvs, bgCvs].forEach(c => { 
             if(!c) return; const t = c.toDataURL(); c.width=r.width * dpr; c.height=r.height * dpr; 
@@ -1970,14 +1981,31 @@ function initDrawing(cvs) {
             draw = false; return;
         }
 
-        draw=true; snap=ctx.getImageData(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(sx,sy);
+        draw=true; snap=ctx.getImageData(0,0,cvs.width,cvs.height); 
+        ctx.beginPath(); ctx.moveTo(sx,sy);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     });
     cvs.addEventListener('pointermove', e => {
         if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault();
         const snapActive = useGridSnap && cMode !== 'freehand' && !isErase;
         const p = gp(e, snapActive);
-        if(isErase){ ctx.globalCompositeOperation='destination-out'; ctx.lineWidth=15; ctx.lineTo(p.x,p.y); ctx.stroke(); }
-        else if(cMode==='freehand'){ ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth * (window.devicePixelRatio||1); ctx.strokeStyle=cColor; ctx.lineTo(p.x,p.y); ctx.stroke(); }
+        if(isErase){ 
+            ctx.globalCompositeOperation='destination-out'; 
+            ctx.lineWidth=15; 
+            ctx.lineTo(p.x,p.y); 
+            ctx.stroke(); 
+            ctx.beginPath(); 
+            ctx.moveTo(p.x,p.y); 
+        }
+        else if(cMode==='freehand'){ 
+            ctx.globalCompositeOperation='source-over'; 
+            ctx.lineWidth=cWidth * (window.devicePixelRatio||1); 
+            ctx.strokeStyle=cColor; 
+            ctx.lineTo(p.x,p.y); 
+            ctx.stroke(); 
+            ctx.beginPath(); 
+            ctx.moveTo(p.x,p.y); 
+        }
         else {
             ctx.putImageData(snap,0,0); ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth * (window.devicePixelRatio||1); ctx.strokeStyle=cColor; ctx.beginPath();
             if(cMode==='line'){ ctx.moveTo(sx,sy); ctx.lineTo(p.x,p.y); }
