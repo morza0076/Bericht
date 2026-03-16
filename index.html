@@ -219,13 +219,16 @@
         .checkbox-item input { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: var(--primary); border-radius: 3px; border: 1px solid var(--gray-400); }
 
         .sketch-container { 
-            position: relative; width: 100%; height: 420px; 
+            position: relative; width: 100%; height: 600px; 
             border: 1px solid var(--gray-200); border-radius: var(--radius-sm); 
             background-color: var(--canvas-bg); 
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); 
             overflow: hidden; 
-            background-image: linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px); 
-            background-size: 10px 10px; background-position: -1px -1px; margin-top: 8px;
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px); 
+            background-size: 20px 20px; background-position: -1px -1px; margin-top: 8px;
+        }
+        body.is-flachdach .sketch-container {
+            background-size: 10px 10px;
         }
         #sketch-bg-canvas, #sketch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair;}
         #sketch-canvas { z-index: 2; } #sketch-bg-canvas { z-index: 1; }
@@ -303,7 +306,7 @@
             #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
             .page { margin: 15px auto; }
             input, textarea, select { font-size: 16px; padding: 10px; }
-            .sketch-container { height: 50vh; }
+            .sketch-container { height: 65vh; }
         }
 
         @media screen and (max-width: 768px) {
@@ -354,7 +357,6 @@
             textarea { display: none !important; }
             .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; color: inherit !important; }
             input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; height: auto !important; min-height: 0 !important; line-height: 1.1 !important; color: inherit !important; }
-            input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; accent-color: black !important; filter: grayscale(100%) !important; }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; accent-color: var(--primary) !important; }
             .checkbox-item { font-size: 9.5px !important; padding: 0 !important; margin: 0 !important; gap: 3px !important; line-height: 1.1 !important; }
             .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 2px !important; }
@@ -609,10 +611,15 @@
             <button class="control-btn secondary" style="padding:8px 14px; border:2px solid transparent; font-size:16px;" onclick="cStampRotation=180; updateStampRotationBtn(this)">⬇️</button>
             <button class="control-btn secondary" style="padding:8px 14px; border:2px solid transparent; font-size:16px;" onclick="cStampRotation=270; updateStampRotationBtn(this)">⬅️</button>
         </div>
-        <div style="margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px;" id="stampSizeContainer">
-            <span style="font-size:12px; font-weight:bold; color:#374151;">Größe:</span>
-            <input type="range" id="stampSizeSlider" min="0.3" max="3" step="0.1" value="0.4" oninput="updateStampSizeSlider(this.value)" style="flex:1; max-width:200px; accent-color: var(--primary);">
-            <span id="stampSizeDisplay" style="font-size:12px; color:#374151; width:30px; text-align:right;">0.4x</span>
+        <div style="margin-bottom:10px; display:flex; justify-content:center; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:bold; color:#374151; width:45px;">Breite:</span>
+            <input type="range" id="stampScaleXSlider" min="0.2" max="3.5" step="0.1" value="0.5" oninput="updateStampScaleX(this.value)" style="flex:1; max-width:200px; accent-color: var(--primary);">
+            <span id="stampScaleXDisplay" style="font-size:12px; color:#374151; width:35px; text-align:right;">0.5x</span>
+        </div>
+        <div style="margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:bold; color:#374151; width:45px;">Tiefe:</span>
+            <input type="range" id="stampScaleYSlider" min="0.2" max="3.5" step="0.1" value="0.5" oninput="updateStampScaleY(this.value)" style="flex:1; max-width:200px; accent-color: var(--primary);">
+            <span id="stampScaleYDisplay" style="font-size:12px; color:#374151; width:35px; text-align:right;">0.5x</span>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
             <button class="control-btn secondary" onclick="selectSketchObject('wc')">🚽 WC</button>
@@ -624,6 +631,8 @@
             <button class="control-btn secondary" onclick="selectSketchObject('badewanne')">🛁 Badewanne</button>
             <button class="control-btn secondary" onclick="selectSketchObject('tuer_links')">🚪 Tür (L)</button>
             <button class="control-btn secondary" onclick="selectSketchObject('tuer_rechts')">🚪 Tür (R)</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('kreis_05')">⭕ Kreis 0,5</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('quadrat_05')">⬜ Quadrat 0,5</button>
         </div>
         <p style="font-size:12px; color:#666; margin-bottom:15px;">Nach der Auswahl einfach auf die Skizze tippen, um das Objekt zu platzieren.</p>
         <button class="control-btn secondary" style="width:100%;" onclick="closeObjectMenu()">Abbrechen</button>
@@ -902,6 +911,7 @@
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('measure', this)" title="Maßband">📐</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
@@ -1111,6 +1121,7 @@
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('measure', this)" title="Maßband">📐</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
@@ -1545,6 +1556,7 @@
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
+            <div class="tool mode-tool" onclick="setMode('measure', this)" title="Maßband">📐</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
@@ -2019,7 +2031,8 @@ function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:n
 
 let cStampType = '';
 let cStampRotation = 0;
-let cStampScale = 0.4;
+let cStampScaleX = 0.5;
+let cStampScaleY = 0.5;
 
 function updateStampRotationBtn(btn) {
     const container = document.getElementById('stampRotationContainer');
@@ -2028,10 +2041,15 @@ function updateStampRotationBtn(btn) {
     btn.style.borderColor = 'var(--primary)';
 }
 
-function updateStampSizeSlider(val) {
-    cStampScale = parseFloat(val);
-    const display = document.getElementById('stampSizeDisplay');
-    if(display) display.innerText = cStampScale.toFixed(1) + 'x';
+function updateStampScaleX(val) {
+    cStampScaleX = parseFloat(val);
+    const display = document.getElementById('stampScaleXDisplay');
+    if(display) display.innerText = cStampScaleX.toFixed(1) + 'x';
+}
+function updateStampScaleY(val) {
+    cStampScaleY = parseFloat(val);
+    const display = document.getElementById('stampScaleYDisplay');
+    if(display) display.innerText = cStampScaleY.toFixed(1) + 'x';
 }
 
 function openObjectMenu(el) {
@@ -2046,13 +2064,16 @@ function openObjectMenu(el) {
     }
     cStampRotation = 0;
 
-    const sizeSlider = document.getElementById('stampSizeSlider');
-    const sizeDisplay = document.getElementById('stampSizeDisplay');
-    if(sizeSlider && sizeDisplay) {
-        sizeSlider.value = 0.4;
-        sizeDisplay.innerText = '0.4x';
-    }
-    cStampScale = 0.4;
+    const scaleXSlider = document.getElementById('stampScaleXSlider');
+    const scaleXDisplay = document.getElementById('stampScaleXDisplay');
+    if(scaleXSlider && scaleXDisplay) { scaleXSlider.value = 0.5; scaleXDisplay.innerText = '0.5x'; }
+    
+    const scaleYSlider = document.getElementById('stampScaleYSlider');
+    const scaleYDisplay = document.getElementById('stampScaleYDisplay');
+    if(scaleYSlider && scaleYDisplay) { scaleYSlider.value = 0.5; scaleYDisplay.innerText = '0.5x'; }
+    
+    cStampScaleX = 0.5;
+    cStampScaleY = 0.5;
 }
 
 function closeObjectMenu() {
@@ -2073,7 +2094,7 @@ function drawStamp(ctx, x, y, type, rot) {
     ctx.translate(x, y);
     ctx.rotate(rot * Math.PI / 180);
     ctx.scale(dpr, dpr);
-    ctx.scale(dpr * cStampScale, dpr * cStampScale);
+    ctx.scale(dpr * cStampScaleX, dpr * cStampScaleY);
     ctx.beginPath();
     
     ctx.lineWidth = cWidth;
@@ -2155,13 +2176,20 @@ function drawStamp(ctx, x, y, type, rot) {
         ctx.beginPath();
         ctx.setLineDash([4, 4]); ctx.arc(25, 0, 50, Math.PI, -Math.PI / 2); ctx.stroke();
         ctx.setLineDash([]);
+    } else if (type === 'kreis_05') {
+        ctx.beginPath();
+        ctx.arc(0, 0, 20, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+    } else if (type === 'quadrat_05') {
+        ctx.fillRect(-20, -20, 40, 40);
+        ctx.strokeRect(-20, -20, 40, 40);
     }
     ctx.restore();
 }
 
 function initDrawing(cvs) {
     const ctx = cvs.getContext('2d', {willReadFrequently:true});
-    let draw=false, sx=0, sy=0, snap;
+    let draw=false, sx=0, sy=0, lx=0, ly=0, snap;
     let currentPath = [];
     const bgCvs = document.getElementById('sketch-bg-canvas');
     
@@ -2187,7 +2215,8 @@ function initDrawing(cvs) {
         let x = (cx-r.left)*(cvs.width/r.width);
         let y = (cy-r.top)*(cvs.height/r.height);
         if (snapOn) {
-            const gridSize = 10 * (cvs.width / r.width); 
+            let baseGrid = document.body.classList.contains('is-flachdach') ? 10 : 20;
+            const gridSize = baseGrid * (cvs.width / r.width); 
             if (gridSize > 0) { x = Math.round(x / gridSize) * gridSize; y = Math.round(y / gridSize) * gridSize; }
         }
         return {x: x, y: y};
@@ -2198,6 +2227,7 @@ function initDrawing(cvs) {
         const snapActive = useGridSnap && cMode !== 'freehand' && cMode !== 'highlight' && !isErase;
         const p = gp(e, snapActive);
         sx=p.x; sy=p.y;
+        lx=p.x; ly=p.y;
 
         if (cMode === 'text') {
             const text = prompt("Text eingeben:", "");
@@ -2226,14 +2256,26 @@ function initDrawing(cvs) {
 
         ctx.beginPath(); ctx.moveTo(sx,sy);
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+        // Ermöglicht das sofortige Löschen durch einfaches Antippen (ohne Wischen)
+        if (isErase) {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = (cWidth * 6) * (window.devicePixelRatio || 1);
+            ctx.lineTo(sx, sy + 0.1);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+        }
     });
     cvs.addEventListener('pointermove', e => {
         if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault();
         const snapActive = useGridSnap && cMode !== 'freehand' && cMode !== 'highlight' && !isErase;
         const p = gp(e, snapActive);
+        lx = p.x; ly = p.y;
         if(isErase){ 
             ctx.globalCompositeOperation='destination-out'; 
             ctx.lineWidth=15; 
+            ctx.lineWidth = (cWidth * 6) * (window.devicePixelRatio || 1); 
             ctx.lineTo(p.x,p.y); 
             ctx.stroke(); 
             ctx.beginPath(); 
@@ -2282,13 +2324,100 @@ function initDrawing(cvs) {
             }
             else if(cMode==='rect'){ ctx.rect(sx,sy,p.x-sx,p.y-sy); }
             else if(cMode==='circle'){ ctx.arc(sx,sy,Math.sqrt(Math.pow(p.x-sx,2)+Math.pow(p.y-sy,2)),0,2*Math.PI); }
+            else if(cMode==='measure'){
+                const dpr = window.devicePixelRatio||1;
+                const angle = Math.atan2(p.y-sy,p.x-sx);
+                const tickLen = 8 * dpr;
+                
+                ctx.moveTo(sx, sy); 
+                ctx.lineTo(p.x, p.y);
+                
+                ctx.moveTo(sx - tickLen*Math.sin(angle), sy + tickLen*Math.cos(angle));
+                ctx.lineTo(sx + tickLen*Math.sin(angle), sy - tickLen*Math.cos(angle));
+                ctx.moveTo(p.x - tickLen*Math.sin(angle), p.y + tickLen*Math.cos(angle));
+                ctx.lineTo(p.x + tickLen*Math.sin(angle), p.y - tickLen*Math.cos(angle));
+                ctx.stroke();
+                
+                const dist = Math.sqrt(Math.pow(p.x-sx,2)+Math.pow(p.y-sy,2));
+                const textX = (sx+p.x)/2;
+                const textY = (sy+p.y)/2;
+                let baseGrid = document.body.classList.contains('is-flachdach') ? 10 : 20;
+                let gridOnCanvas = baseGrid * (cvs.width / cvs.getBoundingClientRect().width);
+                let lengthMeters = (dist / gridOnCanvas).toFixed(1) + " m";
+                
+                ctx.save();
+                ctx.translate(textX, textY);
+                let textAngle = angle;
+                if (textAngle > Math.PI/2 || textAngle < -Math.PI/2) textAngle += Math.PI;
+                ctx.rotate(textAngle);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.font = `bold ${14 * dpr}px Arial`;
+                const txtWidth = ctx.measureText(lengthMeters).width;
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.fillRect(-txtWidth/2 - 2, -18 * dpr, txtWidth + 4, 18 * dpr);
+                ctx.fillStyle = cColor;
+                ctx.fillText(lengthMeters, 0, -4 * dpr);
+                ctx.restore();
+            }
             ctx.stroke();
         }
     });
     
     const endHandler = e => {
         if(e.pointerType==='touch'&&!touchOn) return;
-        if (draw) saveSketchState();
+        if (draw) {
+            if (cMode === 'measure' && (sx !== lx || sy !== ly)) {
+                const dist = Math.sqrt(Math.pow(lx-sx,2)+Math.pow(ly-sy,2));
+                let baseGrid = document.body.classList.contains('is-flachdach') ? 10 : 20;
+                let gridOnCanvas = baseGrid * (cvs.width / cvs.getBoundingClientRect().width);
+                let autoLength = (dist / gridOnCanvas).toFixed(1) + " m";
+                
+                const customText = prompt("Maß eingeben:", autoLength);
+                if (customText !== null) {
+                    ctx.putImageData(snap, 0, 0);
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.lineWidth = cWidth * (window.devicePixelRatio||1);
+                    ctx.strokeStyle = cColor;
+                    ctx.beginPath();
+                    
+                    const dpr = window.devicePixelRatio||1;
+                    const angle = Math.atan2(ly-sy,lx-sx);
+                    const tickLen = 8 * dpr;
+                    
+                    ctx.moveTo(sx, sy); 
+                    ctx.lineTo(lx, ly);
+                    
+                    ctx.moveTo(sx - tickLen*Math.sin(angle), sy + tickLen*Math.cos(angle));
+                    ctx.lineTo(sx + tickLen*Math.sin(angle), sy - tickLen*Math.cos(angle));
+                    ctx.moveTo(lx - tickLen*Math.sin(angle), ly + tickLen*Math.cos(angle));
+                    ctx.lineTo(lx + tickLen*Math.sin(angle), ly - tickLen*Math.cos(angle));
+                    ctx.stroke();
+                    
+                    if (customText.trim() !== "") {
+                        const textX = (sx+lx)/2;
+                        const textY = (sy+ly)/2;
+                        ctx.save();
+                        ctx.translate(textX, textY);
+                        let textAngle = angle;
+                        if (textAngle > Math.PI/2 || textAngle < -Math.PI/2) textAngle += Math.PI;
+                        ctx.rotate(textAngle);
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.font = `bold ${14 * dpr}px Arial`;
+                        const txtWidth = ctx.measureText(customText).width;
+                        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                        ctx.fillRect(-txtWidth/2 - 2, -18 * dpr, txtWidth + 4, 18 * dpr);
+                        ctx.fillStyle = cColor;
+                        ctx.fillText(customText, 0, -4 * dpr);
+                        ctx.restore();
+                    }
+                } else {
+                    ctx.putImageData(snap, 0, 0);
+                }
+            }
+            saveSketchState();
+        }
         draw=false;
     };
     ['pointerup','pointercancel'].forEach(ev => window.addEventListener(ev, endHandler));
@@ -2339,8 +2468,12 @@ function applyFlachdachState() {
     const cf = document.getElementById('checkFlachdach')?.checked;
     const h1 = document.querySelector('#mainPage .header-title');
     if(h1) h1.textContent = cf ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
-    ['reparaturSection','sketchPage'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = cf ? 'none' : ''; });
-    if(cf) { const ts = document.getElementById('toggleSketch'); if(ts){ ts.checked=false; document.body.classList.remove('sketch-enabled'); } }
+    ['reparaturSection'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = cf ? 'none' : ''; });
+    if(cf) { 
+        document.body.classList.add('is-flachdach');
+    } else {
+        document.body.classList.remove('is-flachdach');
+    }
     applyTemplateVisibility(); renumberPhotoPages(); updateTitleWithAddress();
 }
 function applyTemplateVisibility() {
@@ -2387,6 +2520,12 @@ function generateLOAnalysis() {
     if(!befund) return;
 
     let sections = [];
+    
+    const formatList = (arr) => {
+        if (arr.length === 0) return "";
+        if (arr.length === 1) return arr[0];
+        return arr.slice(0, -1).join(', ') + " und " + arr[arr.length - 1];
+    };
 
     // 1. Header Info
     const tech = localStorage.getItem('brugger_techniker');
@@ -2394,9 +2533,9 @@ function generateLOAnalysis() {
     const rooms = document.getElementById('lo_rooms')?.value.trim();
     
     let headerInfo = [];
-    if (tech) headerInfo.push(`Techniker: ${tech}`);
-    if (floor || rooms) headerInfo.push(`Betroffener Bereich: ${[floor, rooms].filter(Boolean).join(', ')}`);
-    if (headerInfo.length) sections.push(headerInfo.join('\n'));
+    if (tech) headerInfo.push(`Der Einsatz wurde durch unseren Techniker ${tech} durchgeführt.`);
+    if (floor || rooms) headerInfo.push(`Die Untersuchungen konzentrierten sich auf den betroffenen Bereich: ${[floor, rooms].filter(Boolean).join(', ')}.`);
+    if (headerInfo.length) sections.push(headerInfo.join(' '));
 
     // 2. Überprüfte Bereiche
     let checkedAreas = [];
@@ -2408,21 +2547,21 @@ function generateLOAnalysis() {
     document.querySelectorAll('#poolBauteileContainer input:checked').forEach(c => {
         let text = c.nextElementSibling.innerText.trim();
         if (text === 'Sonstiges') { const val = document.getElementById('inputSonstigesPool')?.value.trim(); if (val) text = val; }
-        checkedAreas.push(text + " (Pool)");
+        checkedAreas.push(text + " (Poolanlage)");
     });
     
     const bauteileNotizen = document.getElementById('bauteile_notizen')?.value.trim();
     const poolNotizen = document.getElementById('pool_notizen')?.value.trim();
 
     if (checkedAreas.length > 0) {
-        let txt = `Überprüfte Bereiche:\nEs erfolgte eine Überprüfung der ${checkedAreas.join(', ')}.`;
-        if (bauteileNotizen) txt += `\nNotizen Bauteile: ${bauteileNotizen}`;
-        if (poolNotizen) txt += `\nNotizen Pool: ${poolNotizen}`;
+        let txt = `Im Zuge der Leckortung erfolgte eine detaillierte Überprüfung folgender Bauteile und Leitungsnetze: ${formatList(checkedAreas)}.`;
+        if (bauteileNotizen) txt += `\n\nBezüglich der überprüften Bauteile wurde zudem Folgendes festgehalten: ${bauteileNotizen}`;
+        if (poolNotizen) txt += `\n\nErgänzende Anmerkung zur Poolanlage: ${poolNotizen}`;
         sections.push(txt);
     } else if (bauteileNotizen || poolNotizen) {
-        let txt = "Überprüfte Bereiche (Notizen):";
+        let txt = "Hinweise zu den überprüften Bereichen:";
         if (bauteileNotizen) txt += `\n- ${bauteileNotizen}`;
-        if (poolNotizen) txt += `\n- Pool: ${poolNotizen}`;
+        if (poolNotizen) txt += `\n- Poolanlage: ${poolNotizen}`;
         sections.push(txt);
     }
 
@@ -2430,12 +2569,14 @@ function generateLOAnalysis() {
     let findings = [];
     document.querySelectorAll('#lo_repair_checks_group input:checked').forEach(c => findings.push(c.nextElementSibling.innerText.trim()));
     if (findings.length > 0) {
-        sections.push(`Feststellungen / Durchführung:\n${findings.join(', ')}.`);
+        sections.push(`Zur technischen Eingrenzung und Verifikation der Schadensursache kamen folgende messtechnische Verfahren und Prüfmethoden zum Einsatz: ${formatList(findings)}.`);
     }
 
     const repNotizen = document.getElementById('reparatur_notizen')?.value.trim();
     if (repNotizen) {
-        sections.push(`Weitere Notizen / Bemerkungen:\n${repNotizen}`);
+        let formattedNotes = repNotizen;
+        if (!/[.!?]$/.test(formattedNotes)) formattedNotes += ".";
+        sections.push(`Detaillierte Feststellungen während der Ortung:\n${formattedNotes}`);
     }
 
     // 4. Textbausteine (Templates)
@@ -2470,14 +2611,14 @@ function generateLOAnalysis() {
     let measures = [];
     document.querySelectorAll('#lo_measures_group input:checked').forEach(c => measures.push(c.nextElementSibling.innerText.trim()));
     if (measures.length > 0) {
-        sections.push(`Empfohlene Maßnahmen:\n${measures.join(', ')}.`);
+        sections.push(`Um weitere Folgeschäden abzuwenden und den Ursprungszustand fachgerecht wiederherzustellen, werden folgende Maßnahmen dringend empfohlen: ${formatList(measures)}.`);
     }
 
     // Set Text
     if (sections.length > 0) {
         befund.value = sections.join('\n\n');
         autoResize.call(befund);
-        showToast("Berichtsvorschlag erstellt", "success");
+        showToast("Professioneller Berichtstext generiert", "success");
     } else {
         showToast("Bitte wählen Sie zuerst Checkboxen oder Bereiche aus.", "info");
     }
