@@ -827,6 +827,17 @@
                 </div>
             </div>
             <textarea id="interne_notizen" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+            
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #bae6fd;">
+                <label class="checkbox-item" style="font-weight: bold; color: #dc2626;">
+                    <input type="checkbox" id="check_folgetermin" onchange="document.getElementById('folgetermin_container').style.display = this.checked ? 'block' : 'none'">
+                    <span>⚠️ Baustelle nicht abgeschlossen - Folgetermin erforderlich</span>
+                </label>
+                <div id="folgetermin_container" style="display:none; margin-top: 8px;">
+                    <span class="label" style="color: #dc2626;">Infos zum Folgetermin</span>
+                    <input type="text" id="folgetermin_text" placeholder="z.B. Nächste Woche, Material fehlt, Kunde ruft an...">
+                </div>
+            </div>
         </div>
 
         <div class="section no-print" style="margin-top: 15px;">
@@ -1022,6 +1033,17 @@
                 </div>
             </div>
             <textarea id="interne_notizen" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+            
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #bae6fd;">
+                <label class="checkbox-item" style="font-weight: bold; color: #dc2626;">
+                    <input type="checkbox" id="check_folgetermin" onchange="document.getElementById('folgetermin_container').style.display = this.checked ? 'block' : 'none'">
+                    <span>⚠️ Baustelle nicht abgeschlossen - Folgetermin erforderlich</span>
+                </label>
+                <div id="folgetermin_container" style="display:none; margin-top: 8px;">
+                    <span class="label" style="color: #dc2626;">Infos zum Folgetermin</span>
+                    <input type="text" id="folgetermin_text" placeholder="z.B. Nächste Woche, Material fehlt, Kunde ruft an...">
+                </div>
+            </div>
         </div>
 
         <div class="section no-print" style="margin-top: 15px;">
@@ -1227,6 +1249,17 @@
                 </div>
             </div>
             <textarea id="interne_notizen_rb" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+            
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #bae6fd;">
+                <label class="checkbox-item" style="font-weight: bold; color: #dc2626;">
+                    <input type="checkbox" id="check_folgetermin" onchange="document.getElementById('folgetermin_container').style.display = this.checked ? 'block' : 'none'">
+                    <span>⚠️ Baustelle nicht abgeschlossen - Folgetermin erforderlich</span>
+                </label>
+                <div id="folgetermin_container" style="display:none; margin-top: 8px;">
+                    <span class="label" style="color: #dc2626;">Infos zum Folgetermin</span>
+                    <input type="text" id="folgetermin_text" placeholder="z.B. Nächste Woche, Material fehlt, Kunde ruft an...">
+                </div>
+            </div>
         </div>
 
         <div class="section" style="margin-top: 20px;">
@@ -1430,6 +1463,17 @@
                 </div>
             </div>
             <textarea id="interne_notizen" placeholder="Notizen für das Büro / die E-Mail..."></textarea>
+            
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #bae6fd;">
+                <label class="checkbox-item" style="font-weight: bold; color: #dc2626;">
+                    <input type="checkbox" id="check_folgetermin" onchange="document.getElementById('folgetermin_container').style.display = this.checked ? 'block' : 'none'">
+                    <span>⚠️ Baustelle nicht abgeschlossen - Folgetermin erforderlich</span>
+                </label>
+                <div id="folgetermin_container" style="display:none; margin-top: 8px;">
+                    <span class="label" style="color: #dc2626;">Infos zum Folgetermin</span>
+                    <input type="text" id="folgetermin_text" placeholder="z.B. Nächste Woche, Material fehlt, Kunde ruft an...">
+                </div>
+            </div>
         </div>
 
         <div class="section no-print" style="margin-top: 15px;">
@@ -2613,8 +2657,20 @@ async function sendEmail() {
         
         // 3. E-Mail Fenster im Anschluss öffnen
         setTimeout(() => {
-            const sbj = buildReportBaseName();
+            let sbj = buildReportBaseName();
+            const folgeterminChecked = document.getElementById('check_folgetermin')?.checked;
+            const folgeterminText = document.getElementById('folgetermin_text')?.value.trim();
+            
+            if (folgeterminChecked) {
+                sbj = 'WICHTIG (Folgetermin) - ' + sbj;
+            }
+
             let body = '';
+            if (folgeterminChecked) {
+                body += `🚨 ACHTUNG: BAUSTELLE NICHT ABGESCHLOSSEN 🚨\n`;
+                body += `Folgetermin / Info: ${folgeterminText || 'Bitte vereinbaren'}\n\n`;
+            }
+
             const notizenId = (currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') ? 'interne_notizen' : 'interne_notizen_rb';
             const notizen = document.getElementById(notizenId)?.value.trim();
             if (notizen) body += notizen + '\n\n';
@@ -2687,6 +2743,10 @@ function restoreFromData(d) {
     if(d.selectsNoId) { let i=0; document.querySelectorAll('#app-root select').forEach(el=>{ if(!el.id) el.value=d.selectsNoId[i++]||''; }); }
     if(d.checkStatesOrdered) Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).forEach((c,i)=>c.checked=!!d.checkStatesOrdered[i]);
     
+    if (document.getElementById('check_folgetermin')) {
+        document.getElementById('folgetermin_container').style.display = document.getElementById('check_folgetermin').checked ? 'block' : 'none';
+    }
+
     if(d.toggles && typeof d.toggles.auftraggeberEnabled==='boolean' && document.getElementById('checkAuftraggeber')) { document.getElementById('checkAuftraggeber').checked=d.toggles.auftraggeberEnabled; toggleAuftraggeber(); }
     if(d.toggles && typeof d.toggles.photoNumberingEnabled==='boolean' && document.getElementById('checkPhotoNumbering')) { document.getElementById('checkPhotoNumbering').checked=d.toggles.photoNumberingEnabled; togglePhotoNumbering(); }
     
