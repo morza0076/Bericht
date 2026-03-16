@@ -599,6 +599,37 @@
     </div>
 </div>
 
+<div id="sketchObjectModal" class="no-print" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10003; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:25px; border-radius:12px; width:90%; max-width:400px; text-align:center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        <h3 style="margin-top:0; margin-bottom:15px; color:#111827;">Objekt einfügen</h3>
+        <div style="margin-bottom:20px; display:flex; justify-content:center; gap:10px;" id="stampRotationContainer">
+            <span style="font-size:12px; font-weight:bold; align-self:center; color:#374151;">Ausrichtung:</span>
+            <button class="control-btn secondary" style="padding:8px 14px; border:2px solid var(--primary); font-size:16px;" onclick="cStampRotation=0; updateStampRotationBtn(this)">⬆️</button>
+            <button class="control-btn secondary" style="padding:8px 14px; border:2px solid transparent; font-size:16px;" onclick="cStampRotation=90; updateStampRotationBtn(this)">➡️</button>
+            <button class="control-btn secondary" style="padding:8px 14px; border:2px solid transparent; font-size:16px;" onclick="cStampRotation=180; updateStampRotationBtn(this)">⬇️</button>
+            <button class="control-btn secondary" style="padding:8px 14px; border:2px solid transparent; font-size:16px;" onclick="cStampRotation=270; updateStampRotationBtn(this)">⬅️</button>
+        </div>
+        <div style="margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px;" id="stampSizeContainer">
+            <span style="font-size:12px; font-weight:bold; color:#374151;">Größe:</span>
+            <input type="range" id="stampSizeSlider" min="0.3" max="3" step="0.1" value="0.4" oninput="updateStampSizeSlider(this.value)" style="flex:1; max-width:200px; accent-color: var(--primary);">
+            <span id="stampSizeDisplay" style="font-size:12px; color:#374151; width:30px; text-align:right;">0.4x</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+            <button class="control-btn secondary" onclick="selectSketchObject('wc')">🚽 WC</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('waschtisch')">🚰 Waschtisch</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('dusche_eckig')">🚿 Dusche (Eckig)</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('dusche_halbrund')">🚿 Dusche (Rund)</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('waschmaschine')">🧺 Waschmaschine</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('spuele')">🍽️ Küchenspüle</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('badewanne')">🛁 Badewanne</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('tuer_links')">🚪 Tür (L)</button>
+            <button class="control-btn secondary" onclick="selectSketchObject('tuer_rechts')">🚪 Tür (R)</button>
+        </div>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">Nach der Auswahl einfach auf die Skizze tippen, um das Objekt zu platzieren.</p>
+        <button class="control-btn secondary" style="width:100%;" onclick="closeObjectMenu()">Abbrechen</button>
+    </div>
+</div>
+
 <div id="app-root"></div>
 
 <template id="tpl-lo">
@@ -869,11 +900,13 @@
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
+            <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
             <div class="tool mode-tool" onclick="setMode('text', this)" title="Text">T</div>
+            <div class="tool mode-tool" onclick="openObjectMenu(this)" title="Objekte (WC, etc.) einfügen">🛋️</div>
             <div class="toolbar-divider"></div>
             <div class="tool width-tool active" onclick="setWidth(2, this)" title="Dünn"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
             <div class="tool width-tool" onclick="setWidth(5, this)" title="Mittel"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div>
@@ -883,6 +916,7 @@
             <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
             <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
             <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
+            <div class="tool color-tool" style="background:#FFD700" onclick="setColor('#FFD700', this)"></div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
             <div class="tool mode-tool" onclick="undoSketch()" title="Rückgängig">↩️</div>
@@ -1075,11 +1109,13 @@
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
+            <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
             <div class="tool mode-tool" onclick="setMode('text', this)" title="Text">T</div>
+            <div class="tool mode-tool" onclick="openObjectMenu(this)" title="Objekte (WC, etc.) einfügen">🛋️</div>
             <div class="toolbar-divider"></div>
             <div class="tool width-tool active" onclick="setWidth(2, this)" title="Dünn"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
             <div class="tool width-tool" onclick="setWidth(5, this)" title="Mittel"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div>
@@ -1089,6 +1125,7 @@
             <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
             <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
             <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
+            <div class="tool color-tool" style="background:#FFD700" onclick="setColor('#FFD700', this)"></div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
             <div class="tool mode-tool" onclick="undoSketch()" title="Rückgängig">↩️</div>
@@ -1506,11 +1543,13 @@
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
+            <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
             <div class="tool mode-tool" onclick="setMode('line', this)" title="Gerade Linie">📏</div>
             <div class="tool mode-tool" onclick="setMode('arrow', this)" title="Pfeil">↗️</div>
             <div class="tool mode-tool" onclick="setMode('rect', this)" title="Rechteck">⬜</div>
             <div class="tool mode-tool" onclick="setMode('circle', this)" title="Kreis">⭕</div>
             <div class="tool mode-tool" onclick="setMode('text', this)" title="Text">T</div>
+            <div class="tool mode-tool" onclick="openObjectMenu(this)" title="Objekte (WC, etc.) einfügen">🛋️</div>
             <div class="toolbar-divider"></div>
             <div class="tool width-tool active" onclick="setWidth(2, this)" title="Dünn"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
             <div class="tool width-tool" onclick="setWidth(5, this)" title="Mittel"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div>
@@ -1520,6 +1559,7 @@
             <div class="tool color-tool" style="background:#0000FF" onclick="setColor('#0000FF', this)"></div>
             <div class="tool color-tool" style="background:#FF0000" onclick="setColor('#FF0000', this)"></div>
             <div class="tool color-tool" style="background:#00AA00" onclick="setColor('#00AA00', this)"></div>
+            <div class="tool color-tool" style="background:#FFD700" onclick="setColor('#FFD700', this)"></div>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool" onclick="setEraser(this)" title="Radiergummi">🧽</div>
             <div class="tool mode-tool" onclick="undoSketch()" title="Rückgängig">↩️</div>
@@ -1977,9 +2017,152 @@ function setWidth(w, el) { cWidth = w; if(isErase) setMode('freehand', document.
 function setColor(c, el) { cColor = c; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 
+let cStampType = '';
+let cStampRotation = 0;
+let cStampScale = 0.4;
+
+function updateStampRotationBtn(btn) {
+    const container = document.getElementById('stampRotationContainer');
+    if(!container) return;
+    container.querySelectorAll('button').forEach(b => b.style.borderColor = 'transparent');
+    btn.style.borderColor = 'var(--primary)';
+}
+
+function updateStampSizeSlider(val) {
+    cStampScale = parseFloat(val);
+    const display = document.getElementById('stampSizeDisplay');
+    if(display) display.innerText = cStampScale.toFixed(1) + 'x';
+}
+
+function openObjectMenu(el) {
+    document.getElementById('sketchObjectModal').style.display = 'flex';
+    document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); 
+    if(el) el.classList.add('active');
+    
+    const rotBtns = document.querySelectorAll('#stampRotationContainer button');
+    if(rotBtns.length) {
+        rotBtns.forEach(b => b.style.borderColor = 'transparent');
+        rotBtns[0].style.borderColor = 'var(--primary)';
+    }
+    cStampRotation = 0;
+
+    const sizeSlider = document.getElementById('stampSizeSlider');
+    const sizeDisplay = document.getElementById('stampSizeDisplay');
+    if(sizeSlider && sizeDisplay) {
+        sizeSlider.value = 0.4;
+        sizeDisplay.innerText = '0.4x';
+    }
+    cStampScale = 0.4;
+}
+
+function closeObjectMenu() {
+    document.getElementById('sketchObjectModal').style.display = 'none';
+}
+
+function selectSketchObject(type) {
+    cMode = 'stamp';
+    cStampType = type;
+    isErase = false;
+    closeObjectMenu();
+    showToast("Tippen Sie auf die Skizze, um das Objekt zu platzieren", "info");
+}
+
+function drawStamp(ctx, x, y, type, rot) {
+    const dpr = window.devicePixelRatio || 1;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot * Math.PI / 180);
+    ctx.scale(dpr, dpr);
+    ctx.scale(dpr * cStampScale, dpr * cStampScale);
+    ctx.beginPath();
+    
+    ctx.lineWidth = cWidth;
+    ctx.fillStyle = '#ffffff'; 
+    
+    if (type === 'wc') {
+        ctx.fillRect(-15, -25, 30, 15);
+        ctx.strokeRect(-15, -25, 30, 15);
+        ctx.beginPath();
+        ctx.ellipse(0, 5, 14, 20, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+    } else if (type === 'waschtisch') {
+        ctx.fillRect(-30, -20, 60, 40);
+        ctx.strokeRect(-30, -20, 60, 40);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 22, 12, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, -12, 3, 0, Math.PI * 2);
+        ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+    } else if (type === 'dusche_eckig') {
+        ctx.fillRect(-30, -30, 60, 60);
+        ctx.strokeRect(-30, -30, 60, 60);
+        ctx.beginPath();
+        ctx.moveTo(-30, -30); ctx.lineTo(30, 30);
+        ctx.moveTo(30, -30); ctx.lineTo(-30, 30); ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke();
+    } else if (type === 'dusche_halbrund') {
+        ctx.beginPath();
+        ctx.moveTo(-30, -30); ctx.lineTo(30, -30);
+        ctx.arc(-30, -30, 60, 0, Math.PI / 2);
+        ctx.lineTo(-30, -30); ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-10, -10, 4, 0, Math.PI * 2); ctx.stroke();
+    } else if (type === 'waschmaschine') {
+        ctx.fillRect(-25, -25, 50, 50);
+        ctx.strokeRect(-25, -25, 50, 50);
+        ctx.beginPath();
+        ctx.moveTo(-25, -10); ctx.lineTo(25, -10); ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 7, 12, 0, Math.PI * 2); ctx.stroke();
+    } else if (type === 'spuele') {
+        ctx.fillRect(-40, -20, 80, 40);
+        ctx.strokeRect(-40, -20, 80, 40);
+        ctx.strokeRect(-35, -15, 35, 30);
+        ctx.beginPath();
+        for(let i=10; i<=35; i+=6) { ctx.moveTo(i, -15); ctx.lineTo(i, 15); }
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-17.5, -15, 3, 0, Math.PI * 2);
+        ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+    } else if (type === 'badewanne') {
+        ctx.fillRect(-50, -20, 100, 40);
+        ctx.strokeRect(-50, -20, 100, 40);
+        ctx.beginPath();
+        ctx.moveTo(-30, -14); ctx.lineTo(30, -14);
+        ctx.quadraticCurveTo(44, -14, 44, 0); ctx.quadraticCurveTo(44, 14, 30, 14);
+        ctx.lineTo(-30, 14);
+        ctx.quadraticCurveTo(-44, 14, -44, 0); ctx.quadraticCurveTo(-44, -14, -30, -14);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-30, 0, 3, 0, Math.PI * 2);
+        ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+    } else if (type === 'tuer_rechts') {
+        ctx.fillRect(-25, -5, 50, 10);
+        ctx.beginPath();
+        ctx.moveTo(-25, 0); ctx.lineTo(-25, -50);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]); ctx.arc(-25, 0, 50, -Math.PI / 2, 0); ctx.stroke();
+        ctx.setLineDash([]);
+    } else if (type === 'tuer_links') {
+        ctx.fillRect(-25, -5, 50, 10);
+        ctx.beginPath();
+        ctx.moveTo(25, 0); ctx.lineTo(25, -50);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]); ctx.arc(25, 0, 50, Math.PI, -Math.PI / 2); ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    ctx.restore();
+}
+
 function initDrawing(cvs) {
     const ctx = cvs.getContext('2d', {willReadFrequently:true});
     let draw=false, sx=0, sy=0, snap;
+    let currentPath = [];
     const bgCvs = document.getElementById('sketch-bg-canvas');
     
     function rs() { 
@@ -2012,7 +2195,7 @@ function initDrawing(cvs) {
     cvs.addEventListener('pointerdown', e => {
         if(e.pointerType==='touch' && !touchOn) return;
         e.preventDefault();
-        const snapActive = useGridSnap && cMode !== 'freehand' && !isErase;
+        const snapActive = useGridSnap && cMode !== 'freehand' && cMode !== 'highlight' && !isErase;
         const p = gp(e, snapActive);
         sx=p.x; sy=p.y;
 
@@ -2026,13 +2209,27 @@ function initDrawing(cvs) {
             draw = false; return;
         }
 
+        if (cMode === 'stamp') {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = cColor;
+            drawStamp(ctx, sx, sy, cStampType, cStampRotation);
+            saveSketchState();
+            draw = false; return;
+        }
+
         draw=true; snap=ctx.getImageData(0,0,cvs.width,cvs.height); 
+        
+        if (cMode === 'highlight') {
+            currentPath = [{x: sx, y: sy}];
+            return;
+        }
+
         ctx.beginPath(); ctx.moveTo(sx,sy);
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     });
     cvs.addEventListener('pointermove', e => {
         if(!draw || (e.pointerType==='touch'&&!touchOn)) return; e.preventDefault();
-        const snapActive = useGridSnap && cMode !== 'freehand' && !isErase;
+        const snapActive = useGridSnap && cMode !== 'freehand' && cMode !== 'highlight' && !isErase;
         const p = gp(e, snapActive);
         if(isErase){ 
             ctx.globalCompositeOperation='destination-out'; 
@@ -2050,6 +2247,28 @@ function initDrawing(cvs) {
             ctx.stroke(); 
             ctx.beginPath(); 
             ctx.moveTo(p.x,p.y); 
+        }
+        else if(cMode === 'highlight'){
+            currentPath.push(p);
+            ctx.putImageData(snap,0,0);
+            ctx.globalCompositeOperation='source-over';
+            ctx.lineWidth= (cWidth * 3) * (window.devicePixelRatio||1);
+            
+            let color = cColor;
+            if (color.startsWith('#')) {
+                let r = parseInt(color.length === 4 ? color[1]+color[1] : color.substring(1,3), 16);
+                let g = parseInt(color.length === 4 ? color[2]+color[2] : color.substring(3,5), 16);
+                let b = parseInt(color.length === 4 ? color[3]+color[3] : color.substring(5,7), 16);
+                color = `rgba(${r}, ${g}, ${b}, 0.3)`;
+            }
+            ctx.strokeStyle = color;
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(currentPath[0].x, currentPath[0].y);
+            for (let i = 1; i < currentPath.length; i++) {
+                ctx.lineTo(currentPath[i].x, currentPath[i].y);
+            }
+            ctx.stroke();
         }
         else {
             ctx.putImageData(snap,0,0); ctx.globalCompositeOperation='source-over'; ctx.lineWidth=cWidth * (window.devicePixelRatio||1); ctx.strokeStyle=cColor; ctx.beginPath();
@@ -3000,7 +3219,7 @@ function setPE_Color(c, el) { peColor=c; document.querySelectorAll('#photoEditor
 function undoPE() { if(peHist.length>1) { peHist.pop(); const i=new Image(); i.onload=()=>peCtx.drawImage(i,0,0); i.src=peHist[peHist.length-1]; } }
 function closePhotoEditor() { document.getElementById('photoEditorModal').style.display='none'; }
 function savePhotoEditor() { 
-    if(peActiveImgEl) { peActiveImgEl.src = peCvs.toDataURL('image/webp', 0.6); hasUnsavedChanges = true; saveToLocal(); } 
+    if(peActiveImgEl) { peActiveImgEl.src = peCvs.toDataURL('image/jpeg', 0.5); hasUnsavedChanges = true; saveToLocal(); } 
     closePhotoEditor(); 
 }
 
