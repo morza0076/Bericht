@@ -590,6 +590,158 @@
         .result-delete-btn:hover,
         .result-delete-btn:focus-visible { opacity: 1; }
 
+        .open-jobs-panel {
+            display: none;
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(248, 250, 252, 0.92);
+            border: 1px solid var(--gray-200);
+            text-align: left;
+        }
+        .open-jobs-panel.is-visible { display: block; }
+        .open-jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .open-jobs-title {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gray-600);
+        }
+        .open-jobs-subtitle {
+            margin: 0 0 12px 0;
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        .open-jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .open-job-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--gray-200);
+            background: #fff;
+        }
+        .open-job-item.is-today {
+            border-color: #60a5fa;
+            box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.15);
+        }
+        .open-job-item.is-stale {
+            border-color: #f59e0b;
+            box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.15);
+        }
+        .open-job-item.is-missing-followup {
+            border-color: #ef4444;
+            box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.15);
+        }
+        .open-job-main {
+            min-width: 0;
+        }
+        .open-job-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .open-job-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .open-job-badge.today {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .open-job-badge.stale {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .open-job-badge.missing-followup {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .open-job-name {
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.35;
+            word-break: break-word;
+        }
+        .open-job-meta,
+        .open-job-followup {
+            margin: 0;
+            font-size: 11px;
+            color: var(--gray-600);
+            line-height: 1.45;
+        }
+        .open-job-followup {
+            color: #b45309;
+            margin-top: 3px;
+        }
+        .open-job-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .open-job-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .open-job-btn:hover { transform: translateY(-1px); }
+        .open-job-btn.primary {
+            color: #fff;
+            background: linear-gradient(135deg, #2b83b8 0%, #245d9a 100%);
+        }
+        .open-job-btn.secondary {
+            color: var(--gray-600);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+        }
+        .open-jobs-sort {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray-600);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .open-jobs-sort select {
+            min-width: 170px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
         .text-link-btn {
             margin-top: 20px;
             border: none;
@@ -1051,8 +1203,23 @@
         <button class="menu-btn blue" onclick="startApp('DL')">📊 Datenlogger Auswertung</button>
         <hr style="border:0; border-top:1px solid var(--gray-200); margin: 25px 0;">
         <button id="btnRestoreAutosave" class="menu-btn secondary" style="display:none; background: linear-gradient(145deg, #e67e22, #d35400);" onclick="restoreAutosave()">🔄 Letzten Entwurf wiederherstellen</button>
+        <button id="btnResumeOpenJob" class="menu-btn blue" style="display:none;" onclick="resumeLatestOpenJob()">🧰 Baustelle fortsetzen</button>
         <input type="file" id="startImportFile" accept=".lok,application/json" style="display:none" onchange="importFromStart(this)">
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
+        <div id="openJobsPanel" class="open-jobs-panel">
+            <div class="open-jobs-header">
+                <h2 class="open-jobs-title">Offene Baustellen</h2>
+                <label class="open-jobs-sort">
+                    <span>Sortierung</span>
+                    <select id="openJobsSort" onchange="refreshOpenJobsUI()">
+                        <option value="customer-date" selected>Kunde + Datum</option>
+                        <option value="date-customer">Datum + Kunde</option>
+                    </select>
+                </label>
+            </div>
+            <p class="open-jobs-subtitle">Baustellen mit Folgetermin erscheinen hier automatisch und koennen direkt weiterbearbeitet werden.</p>
+            <div id="openJobsList" class="open-jobs-list"></div>
+        </div>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
         <button type="button" class="text-link-btn" onclick="openSettings()">⚙️ E-Mail Einstellungen</button>
         <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.0</div>
@@ -1207,6 +1374,7 @@
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
         <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
         <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
             <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
             <span>FOTOS NUMMERIEREN</span>
@@ -1222,6 +1390,7 @@
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
         <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
         <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
             <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
             <span>FOTOS NUMMERIEREN</span>
@@ -2155,8 +2324,11 @@ const DEFAULT_TEMPLATES = [
 let currentApp = null;
 let appCleanupFuncs = []; // Liste für Cleanup-Funktionen (Event Listeners)
 let hasUnsavedChanges = false;
+let currentDraftId = null;
 const DB_NAME = 'BruggerAppDB';
 const STORE_NAME = 'autosaveStore';
+const AUTOSAVE_KEY = 'brugger_autosave';
+const OPEN_JOBS_INDEX_KEY = 'brugger_open_jobs_index';
 
 const initDB = () => new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -2187,6 +2359,18 @@ async function idbGet(key) {
             req.onerror = () => reject(tx.error);
         });
     } catch(e) { console.error("IDB Get Error", e); return null; }
+}
+
+async function idbDelete(key) {
+    try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete(key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => reject(tx.error);
+        });
+    } catch(e) { console.error("IDB Delete Error", e); return false; }
 }
 
 function attemptLogin() {
@@ -2438,6 +2622,7 @@ function startApp(type) {
         runCleanup(); // Aufräumen bevor neue App startet
 
         currentApp = type;
+        currentDraftId = null;
         document.getElementById('start-screen').style.display = 'none';
         const tpl = document.getElementById(type === 'LO' ? 'tpl-lo' : (type === 'KB' ? 'tpl-kb' : (type === 'RB' ? 'tpl-rb' : 'tpl-dl')));
         if (!tpl) throw new Error("Vorlage nicht gefunden: " + type);
@@ -2572,11 +2757,25 @@ function configureSpeechUI() {
 function maybeShowIOSExportHint(context) {
     if (!isIOSLikeDevice()) return;
     if (context === 'save') {
-        showToast('iPad: Datei ggf. über Teilen in Dateien sichern.', 'info');
+        showToast('iPad: Im Teilen-Fenster "In Dateien sichern" fuer die .lok-Datei waehlen.', 'info');
     } else if (context === 'print') {
         showToast('iPad: PDF im Druckdialog sichern oder teilen.', 'info');
     } else if (context === 'email') {
         showToast('iPad: PDF nach dem Drucken manuell an die Mail anhängen.', 'info');
+    }
+}
+
+async function shareFileOnIOS(blob, fileName) {
+    if (!isIOSLikeDevice() || typeof navigator.share !== 'function' || typeof File === 'undefined') return false;
+    try {
+        const file = new File([blob], fileName, { type: blob.type || 'application/octet-stream' });
+        if (typeof navigator.canShare === 'function' && !navigator.canShare({ files: [file] })) return false;
+        await navigator.share({ files: [file], title: fileName });
+        return true;
+    } catch (e) {
+        if (e?.name === 'AbortError') return 'aborted';
+        console.warn('iOS share failed', e);
+        return false;
     }
 }
 
@@ -2620,25 +2819,71 @@ function autoResize() {
     this.style.height = (this.scrollHeight) + 'px'; 
 }
 
-function buildReportBaseName() {
-    const adr = document.getElementById('adresse')?.value.trim() || '';
-    const plz = document.getElementById('plz')?.value.trim() || '';
-    const ort = document.getElementById('ort')?.value.trim() || '';
-    const pnr = document.getElementById('projekt_nr')?.value.trim() || '';
-    
-    let baseTitle = 'Bericht';
-    if (currentApp === 'KB') baseTitle = 'Kanalreinigungs- & Inspektionsbericht';
-    else if (currentApp === 'RB') baseTitle = 'Regiebericht';
-    else if (currentApp === 'DL') baseTitle = 'Datenlogger-Auswertung';
-    else if (currentApp === 'LO') {
-        baseTitle = document.getElementById('checkFlachdach')?.checked ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
-    }
+function generateDraftId() {
+    return `draft_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
 
-    let titleParts = [];
-    if (pnr) titleParts.push(`Projekt ${pnr}`);
-    if (`${plz} ${ort}`.trim()) titleParts.push(`${plz} ${ort}`.trim());
-    if (adr) titleParts.push(adr);
-    return titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle;
+function ensureCurrentDraftId() {
+    if (!currentDraftId) currentDraftId = generateDraftId();
+    return currentDraftId;
+}
+
+function readFieldValue(id, source = null) {
+    if (source?.byId && typeof source.byId[id] !== 'undefined') return String(source.byId[id] || '').trim();
+    const el = document.getElementById(id);
+    return el ? String(el.value || '').trim() : '';
+}
+
+function getAppBaseTitle(appType = currentApp, source = null) {
+    if (appType === 'KB') return 'Kanalreinigungs- & Inspektionsbericht';
+    if (appType === 'RB') return 'Regiebericht';
+    if (appType === 'DL') return 'Datenlogger-Auswertung';
+    if (appType === 'LO') {
+        const isFlachdach = source?.meta ? !!source.meta.isFlachdach : !!document.getElementById('checkFlachdach')?.checked;
+        return isFlachdach ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
+    }
+    return 'Bericht';
+}
+
+function collectReportMeta(source = null) {
+    const customerName = readFieldValue('name', source);
+    const address = readFieldValue('adresse', source);
+    const postalCode = readFieldValue('plz', source);
+    const city = readFieldValue('ort', source);
+    const projectNumber = readFieldValue('projekt_nr', source);
+    const reportDate = readFieldValue('datum', source);
+    const followUpText = readFieldValue('folgetermin_text', source);
+    const followUpRequired = source?.meta ? !!source.meta.followUpRequired : !!document.getElementById('check_folgetermin')?.checked;
+    const isFlachdach = source?.meta ? !!source.meta.isFlachdach : !!document.getElementById('checkFlachdach')?.checked;
+    const place = `${postalCode} ${city}`.trim();
+    const baseTitle = getAppBaseTitle(source?.appType || currentApp, source);
+    const titleParts = [];
+
+    if (projectNumber) titleParts.push(`Projekt ${projectNumber}`);
+    if (customerName) titleParts.push(customerName);
+    if (place) titleParts.push(place);
+    if (address) titleParts.push(address);
+
+    return {
+        draftId: source?.meta?.draftId || currentDraftId || null,
+        baseTitle,
+        displayName: titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle,
+        shortLabel: [customerName, place || address || '', projectNumber ? `P${projectNumber}` : ''].filter(Boolean).join(' | ') || baseTitle,
+        customerName,
+        address,
+        postalCode,
+        city,
+        place,
+        projectNumber,
+        reportDate,
+        followUpRequired,
+        followUpText,
+        isFlachdach
+    };
+}
+
+function buildReportBaseName() {
+    return collectReportMeta().displayName;
 }
 
 function updateTitleWithAddress() { document.title = buildReportBaseName(); }
@@ -3892,11 +4137,16 @@ async function sendEmail() {
 }
 
 function getReportData() {
-    const d = { appType: currentApp, version: 1, toggles: { sketchEnabled: !!document.getElementById('toggleSketch')?.checked, auftraggeberEnabled: !!document.getElementById('checkAuftraggeber')?.checked, photoNumberingEnabled: !!document.getElementById('checkPhotoNumbering')?.checked }, byId: {}, inputsNoId: [], textareasNoId: [], selectsNoId: [], checkStatesOrdered: [], sketch: {}, signature: {}, photos: [] };
+    const d = { appType: currentApp, version: 1, toggles: { sketchEnabled: !!document.getElementById('toggleSketch')?.checked, auftraggeberEnabled: !!document.getElementById('checkAuftraggeber')?.checked, photoNumberingEnabled: !!document.getElementById('checkPhotoNumbering')?.checked }, byId: {}, inputsNoId: [], textareasNoId: [], selectsNoId: [], checkStatesOrdered: [], sketch: {}, signature: {}, photos: [], meta: {} };
     document.querySelectorAll('#app-root input').forEach(i => { if(i.type==='checkbox'||i.type==='file') return; if(i.id) d.byId[i.id]=i.value; else d.inputsNoId.push(i.value); });
     document.querySelectorAll('#app-root textarea').forEach(t => { if(t.id) d.byId[t.id]=t.value; else d.textareasNoId.push(t.value); });
     document.querySelectorAll('#app-root select').forEach(s => { if(s.id) d.byId[s.id]=s.value; else d.selectsNoId.push(s.value); });
     d.checkStatesOrdered = Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).map(c => !!c.checked);
+    d.meta = {
+        ...collectReportMeta(),
+        draftId: ensureCurrentDraftId(),
+        updatedAt: new Date().toISOString()
+    };
 
     if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
     else { try{ if(sigCanvas) d.signature.png=sigCanvas.toDataURL('image/png'); }catch(e){} }
@@ -3913,8 +4163,10 @@ function getReportData() {
 async function exportFullReport() {
     saveCustomers(); 
     const d = getReportData();
+    await syncOpenConstructionState(d);
     const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok';
     const jsonStr = JSON.stringify(d);
+    const exportBlob = new Blob([jsonStr], { type:'application/json' });
 
     try {
         if (window.showSaveFilePicker) {
@@ -3932,9 +4184,21 @@ async function exportFullReport() {
         }
     } catch (e) { if (e.name === 'AbortError') return; }
 
+    const iosShareResult = await shareFileOnIOS(exportBlob, fileName);
+    if (iosShareResult === true) {
+        hasUnsavedChanges = false;
+        updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
+        showToast('Bericht zum Sichern in Dateien bereitgestellt', 'success');
+        return;
+    }
+    if (iosShareResult === 'aborted') return;
+
     maybeShowIOSExportHint('save');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([jsonStr], {type:'application/octet-stream'}));
-    a.download = fileName; a.click();
+    const url = URL.createObjectURL(exportBlob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
     hasUnsavedChanges = false;
     updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
     showToast("Bericht gespeichert!", "success");
@@ -3942,12 +4206,13 @@ async function exportFullReport() {
 
 function importFromStart(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
-    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); syncOpenConstructionState(d); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
     r.readAsText(f); inp.value='';
 }
 
 function restoreFromData(d) {
     if(!d || typeof d!=='object') return;
+    currentDraftId = d.meta?.draftId || currentDraftId || null;
     if(d.byId) Object.keys(d.byId).forEach(id => { const el = document.getElementById(id); if(el && el.type!=='checkbox') { el.value=d.byId[id]; if(el.tagName==='TEXTAREA') autoResize.call(el); } });
     if(d.inputsNoId) { let i=0; document.querySelectorAll('#app-root input').forEach(el=>{ if(el.type!=='checkbox'&&el.type!=='file'&&!el.id) el.value=d.inputsNoId[i++]||''; }); }
     if(d.textareasNoId) { let i=0; document.querySelectorAll('#app-root textarea').forEach(el=>{ if(!el.id) { el.value=d.textareasNoId[i++]||''; autoResize.call(el); } }); }
@@ -4118,17 +4383,300 @@ function showToast(msg, type='info') {
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
 }
 
+function openJobDataKey(id) {
+    return `brugger_open_job_${id}`;
+}
+
+async function getOpenJobsIndex() {
+    return (await idbGet(OPEN_JOBS_INDEX_KEY)) || [];
+}
+
+async function setOpenJobsIndex(index) {
+    await idbSet(OPEN_JOBS_INDEX_KEY, index);
+}
+
+function buildOpenJobMeta(data) {
+    const meta = collectReportMeta(data);
+    return {
+        id: meta.draftId,
+        appType: data.appType,
+        displayName: meta.displayName,
+        shortLabel: meta.shortLabel,
+        customerName: meta.customerName,
+        address: meta.address,
+        place: meta.place,
+        projectNumber: meta.projectNumber,
+        reportDate: meta.reportDate,
+        followUpText: meta.followUpText,
+        updatedAt: data.meta?.updatedAt || new Date().toISOString()
+    };
+}
+
+function formatOpenJobTimestamp(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('de-AT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+async function saveOpenJob(data) {
+    const meta = buildOpenJobMeta(data);
+    if (!meta.id) return;
+
+    const index = await getOpenJobsIndex();
+    const next = index.filter(item => item.id !== meta.id);
+    next.unshift(meta);
+    next.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+    await idbSet(openJobDataKey(meta.id), data);
+    await setOpenJobsIndex(next.slice(0, 25));
+}
+
+async function removeOpenJob(id) {
+    if (!id) return;
+    const index = await getOpenJobsIndex();
+    const next = index.filter(item => item.id !== id);
+    await idbDelete(openJobDataKey(id));
+    await setOpenJobsIndex(next);
+}
+
+async function syncOpenConstructionState(data = null) {
+    const reportData = data || getReportData();
+    const draftId = reportData.meta?.draftId || currentDraftId;
+    if (reportData.meta?.followUpRequired) {
+        await saveOpenJob(reportData);
+    } else if (draftId) {
+        await removeOpenJob(draftId);
+    }
+    await refreshOpenJobsUI();
+}
+
+async function saveOpenConstructionNow() {
+    if (!currentApp) return;
+    const followupCheckbox = document.getElementById('check_folgetermin');
+    if (!followupCheckbox) {
+        showToast('Diese Funktion ist nur fuer offene Baustellen verfuegbar.', 'info');
+        return;
+    }
+    if (!followupCheckbox.checked) {
+        showToast('Bitte zuerst "Baustelle nicht abgeschlossen" aktivieren.', 'info');
+        return;
+    }
+
+    updateSaveStatus('Offene Baustelle wird gesichert...', 'saving');
+    hasUnsavedChanges = true;
+    const data = getReportData();
+    await idbSet(AUTOSAVE_KEY, data);
+    await syncOpenConstructionState(data);
+    updateSaveStatus(`Offene Baustelle gesichert ${formatStatusTime()}`, 'saved');
+    showToast('Offene Baustelle wurde gesichert', 'success');
+}
+
+async function resumeOpenJob(id) {
+    if (!id) return;
+    const data = await idbGet(openJobDataKey(id));
+    if (!data) {
+        await removeOpenJob(id);
+        await refreshOpenJobsUI();
+        showToast('Die offene Baustelle wurde nicht gefunden.', 'error');
+        return;
+    }
+    startApp(data.appType || 'LO');
+    requestAnimationFrame(() => {
+        restoreFromData(data);
+        hasUnsavedChanges = false;
+        updateSaveStatus('Baustelle fortgesetzt', 'saved');
+        showToast('Baustelle fortgesetzt', 'success');
+    });
+}
+
+async function resumeLatestOpenJob() {
+    const jobs = await getOpenJobsIndex();
+    if (!jobs.length) {
+        showToast('Keine offene Baustelle vorhanden.', 'info');
+        return;
+    }
+    await resumeOpenJob(jobs[0].id);
+}
+
+async function deleteOpenJobEntry(id) {
+    if (!confirm('Diese offene Baustelle aus der Liste entfernen?')) return;
+    await removeOpenJob(id);
+    await refreshOpenJobsUI();
+    showToast('Offene Baustelle entfernt', 'info');
+}
+
+function normalizeSortValue(value) {
+    return (value || '').toString().trim().toLowerCase();
+}
+
+function sortOpenJobs(jobs) {
+    const sortMode = document.getElementById('openJobsSort')?.value || 'customer-date';
+    const items = [...jobs];
+
+    const getSortDate = (job) => {
+        const reportDate = job.reportDate ? new Date(job.reportDate) : null;
+        if (reportDate && !Number.isNaN(reportDate.getTime())) return reportDate.getTime();
+        const updatedAt = new Date(job.updatedAt || 0);
+        return Number.isNaN(updatedAt.getTime()) ? 0 : updatedAt.getTime();
+    };
+
+    if (sortMode === 'customer-date') {
+        items.sort((a, b) => {
+            const customerCompare = normalizeSortValue(a.customerName || a.shortLabel).localeCompare(normalizeSortValue(b.customerName || b.shortLabel), 'de', { sensitivity: 'base' });
+            if (customerCompare !== 0) return customerCompare;
+            const dateCompare = getSortDate(b) - getSortDate(a);
+            if (dateCompare !== 0) return dateCompare;
+            return normalizeSortValue(a.address || '').localeCompare(normalizeSortValue(b.address || ''), 'de', { sensitivity: 'base' });
+        });
+        return items;
+    }
+
+    items.sort((a, b) => {
+        const dateCompare = getSortDate(b) - getSortDate(a);
+        if (dateCompare !== 0) return dateCompare;
+        return normalizeSortValue(a.customerName || a.shortLabel).localeCompare(normalizeSortValue(b.customerName || b.shortLabel), 'de', { sensitivity: 'base' });
+    });
+    return items;
+}
+
+function isSameCalendarDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear() && dateA.getMonth() === dateB.getMonth() && dateA.getDate() === dateB.getDate();
+}
+
+function getOpenJobFlags(job) {
+    const flags = {
+        isToday: false,
+        isStale: false,
+        isMissingFollowup: !job.followUpText
+    };
+    const updatedAt = new Date(job.updatedAt || 0);
+    if (!Number.isNaN(updatedAt.getTime())) {
+        const now = new Date();
+        flags.isToday = isSameCalendarDay(updatedAt, now);
+        const ageMs = now.getTime() - updatedAt.getTime();
+        flags.isStale = !flags.isToday && ageMs > 24 * 60 * 60 * 1000;
+    }
+    return flags;
+}
+
+async function refreshOpenJobsUI() {
+    const panel = document.getElementById('openJobsPanel');
+    const list = document.getElementById('openJobsList');
+    const quickBtn = document.getElementById('btnResumeOpenJob');
+    if (!panel || !list || !quickBtn) return;
+
+    const jobs = await getOpenJobsIndex();
+    clearElement(list);
+
+    if (!jobs.length) {
+        panel.classList.remove('is-visible');
+        quickBtn.style.display = 'none';
+        quickBtn.textContent = '🧰 Baustelle fortsetzen';
+        return;
+    }
+
+    const latestJob = [...jobs].sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0];
+    const sortedJobs = sortOpenJobs(jobs);
+
+    panel.classList.add('is-visible');
+    quickBtn.style.display = 'flex';
+    quickBtn.textContent = latestJob?.shortLabel ? `🧰 Baustelle fortsetzen: ${latestJob.shortLabel}` : '🧰 Baustelle fortsetzen';
+
+    sortedJobs.forEach(job => {
+        const flags = getOpenJobFlags(job);
+        const item = document.createElement('div');
+        item.className = 'open-job-item';
+        if (flags.isToday) item.classList.add('is-today');
+        if (flags.isStale) item.classList.add('is-stale');
+        if (flags.isMissingFollowup) item.classList.add('is-missing-followup');
+
+        const main = document.createElement('div');
+        main.className = 'open-job-main';
+
+        const badges = document.createElement('div');
+        badges.className = 'open-job-badges';
+
+        if (flags.isToday) {
+            const badgeToday = document.createElement('span');
+            badgeToday.className = 'open-job-badge today';
+            badgeToday.textContent = 'Heute';
+            badges.appendChild(badgeToday);
+        }
+
+        if (flags.isStale) {
+            const badgeStale = document.createElement('span');
+            badgeStale.className = 'open-job-badge stale';
+            badgeStale.textContent = 'Aelter';
+            badges.appendChild(badgeStale);
+        }
+
+        if (flags.isMissingFollowup) {
+            const badgeMissing = document.createElement('span');
+            badgeMissing.className = 'open-job-badge missing-followup';
+            badgeMissing.textContent = 'Ohne Info';
+            badges.appendChild(badgeMissing);
+        }
+
+        if (badges.childElementCount) main.appendChild(badges);
+
+        const name = document.createElement('p');
+        name.className = 'open-job-name';
+        name.textContent = job.displayName || job.shortLabel || 'Offene Baustelle';
+
+        const meta = document.createElement('p');
+        meta.className = 'open-job-meta';
+        meta.textContent = [job.appType, formatOpenJobTimestamp(job.updatedAt)].filter(Boolean).join(' | ');
+        main.appendChild(name);
+        main.appendChild(meta);
+
+        if (job.followUpText) {
+            const followup = document.createElement('p');
+            followup.className = 'open-job-followup';
+            followup.textContent = `Folgetermin: ${job.followUpText}`;
+            main.appendChild(followup);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'open-job-actions';
+
+        const resumeBtn = document.createElement('button');
+        resumeBtn.type = 'button';
+        resumeBtn.className = 'open-job-btn primary';
+        resumeBtn.textContent = 'Fortsetzen';
+        resumeBtn.addEventListener('click', () => resumeOpenJob(job.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'open-job-btn secondary';
+        deleteBtn.textContent = 'Entfernen';
+        deleteBtn.addEventListener('click', () => deleteOpenJobEntry(job.id));
+
+        actions.appendChild(resumeBtn);
+        actions.appendChild(deleteBtn);
+        item.appendChild(main);
+        item.appendChild(actions);
+        list.appendChild(item);
+    });
+}
+
 async function saveToLocal() {
     if(!currentApp) return;
     updateSaveStatus('Entwurf wird gesichert...', 'saving');
     const d = getReportData();
     hasUnsavedChanges = true;
-    await idbSet('brugger_autosave', d);
+    await idbSet(AUTOSAVE_KEY, d);
+    await syncOpenConstructionState(d);
     updateSaveStatus(`Lokal gesichert ${formatStatusTime()}`, 'saved');
 }
 
 async function checkAutoSave() {
-    const saved = await idbGet('brugger_autosave');
+    const saved = await idbGet(AUTOSAVE_KEY);
     const btn = document.getElementById('btnRestoreAutosave');
     if(saved && btn) {
         btn.style.display = 'flex';
@@ -4137,11 +4685,11 @@ async function checkAutoSave() {
 }
 
 async function restoreAutosave() {
-    const saved = await idbGet('brugger_autosave');
+    const saved = await idbGet(AUTOSAVE_KEY);
     if(!saved) return;
     try {
         startApp(saved.appType);
-        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); syncOpenConstructionState(saved); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
     } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
 }
 
@@ -4156,6 +4704,7 @@ function initializeApp() {
     try {
         loadTemplates();
         checkAutoSave();
+        refreshOpenJobsUI();
         applyTheme();
         
         const appRoot = document.getElementById('app-root');
@@ -4371,6 +4920,7 @@ function deleteSelectedTemplate() {
 function hardResetApp() {
     if(confirm("ACHTUNG: Dies löscht alle gespeicherten Daten (Einstellungen, Entwürfe, Vorlagen) und setzt die App komplett zurück.\n\nDies hilft oft, wenn die App nicht mehr reagiert.\n\nFortfahren?")) {
         hasUnsavedChanges = false;
+        currentDraftId = null;
         try { localStorage.clear(); } catch(e){}
         try { indexedDB.deleteDatabase(DB_NAME); } catch(e){}
         try { if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){ for(let r of rs) r.unregister(); }); } catch(e){}
