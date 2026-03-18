@@ -1373,15 +1373,15 @@
 <template id="tpl-controls-sketch">
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
         <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
         <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
         <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
             <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
             <span>FOTOS NUMMERIEREN</span>
         </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
         <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 </template>
@@ -1389,14 +1389,14 @@
 <template id="tpl-controls-basic">
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
         <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
         <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
         <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
             <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
             <span>FOTOS NUMMERIEREN</span>
         </label>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
         <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
 </template>
