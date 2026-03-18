@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Brugger Berichte" />
-    <title>Brugger Formulare</title>
+    <title>Brugger Formulare 4.0</title>
     <link rel="manifest" id="manifest-placeholder">
 
     <style>
@@ -27,10 +27,13 @@
             
             --bg-app: #f3f4f6;    
             --surface: #ffffff;
+            --text: #111827;
+            --border: #d1d5db;
             
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 16px;
+            --radius: 10px;
             
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
@@ -60,6 +63,8 @@
             --gray-50: #111827;
             --bg-app: #020617;
             --surface: #1e293b;
+            --text: #f3f4f6;
+            --border: #475569;
             --page-bg: #0f172a;
             --input-bg: #1e293b;
             --canvas-bg: #f3f4f6; /* Hell lassen für Kontrast mit schwarzem Stift */
@@ -175,6 +180,12 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
         .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 15px; margin-top: 8px; }
+        .address-grid-compact { grid-template-columns: 90px 1fr; }
+        .form-divider {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-200);
+        }
         .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 10px; margin-bottom: 10px; }
         .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 10px; margin-bottom: 10px; }
         .grid-header { font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; padding-left: 4px; letter-spacing: 0.5px; }
@@ -189,6 +200,12 @@
         .mic-btn { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
         .mic-btn:hover { background: #fff; border-color: var(--gray-400); }
         .mic-btn.recording { background: #e74c3c; color: white; border-color: #c0392b; animation: pulse 1.5s infinite; }
+        .mic-btn.is-disabled,
+        .mic-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -277,6 +294,21 @@
         .footer { position: absolute; bottom: 10mm; left: 10mm; right: 10mm; font-size: 9px; display: flex; justify-content: space-between; color: var(--gray-400); border-top: 1px solid #eee; padding-top: 6px; }
 
         #controls { position: fixed; top: 10px; right: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; width: 240px; }
+        .save-status {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: color-mix(in srgb, var(--surface) 88%, #ffffff 12%);
+            color: var(--gray-600);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            box-shadow: var(--shadow-sm);
+        }
+        .save-status[data-state="dirty"] { color: #b45309; border-color: #f59e0b; background: #fffbeb; }
+        .save-status[data-state="saving"] { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
+        .save-status[data-state="saved"] { color: #047857; border-color: #6ee7b7; background: #ecfdf5; }
         .control-btn { 
             padding: 12px 16px; background: linear-gradient(135deg, var(--primary), #a38a1a); color: #fff; border: none; border-radius: 8px; 
             cursor: pointer; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
@@ -303,6 +335,7 @@
             body { padding: 0; background: var(--bg-app); overflow-x: hidden; -webkit-text-size-adjust: 100%; }
             #controls { position: sticky; top: 0; left: 0; width: 100%; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 12px; background: #2c3e50; border-radius: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             #controls::-webkit-scrollbar { display: none; }
+            #controls .save-status { flex: 0 0 auto; min-width: 220px; }
             #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
             .page { margin: 15px auto; }
             input, textarea, select { font-size: 16px; padding: 10px; }
@@ -335,28 +368,141 @@
             .logo { background: transparent !important; } /* Logo-Hintergrund im Druck entfernen */
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
-            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: 0 10mm !important; page-break-after: auto !important; page-break-inside: auto !important; break-inside: auto !important; border-radius: 0; overflow: visible !important; position: relative; font-size: 11px !important; float: none !important; }
+            .page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                width: auto !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                padding: 7mm 8mm 8mm 8mm !important;
+                page-break-after: auto !important;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                position: relative;
+                font-size: 10.4px !important;
+                float: none !important;
+                background: #ffffff !important;
+            }
+            .page::before {
+                content: none !important;
+            }
             
             #sketchPage { page-break-before: always !important; break-before: page !important; }
             #photoPagesContainer .page { page-break-before: always !important; break-before: page !important; }
             
-            .header { border-bottom: 1px solid #ccc !important; margin-bottom: 15px !important; padding-bottom: 5px !important; padding-top: 5mm; }
-            .header-top { margin-bottom: 10px !important; }
-            .header-title { background: transparent !important; padding: 0 !important; font-size: 18px !important; text-align: left !important; border: none !important; }
-            .header-right { font-size: 10px !important; line-height: 1.1 !important; color: var(--gray-600) !important; }
-            .header-right strong { font-size: 13px !important; margin-bottom: 0 !important; color: var(--primary) !important; }
+            .header {
+                border: 1px solid #d9e1ea !important;
+                border-radius: 14px !important;
+                background: #ffffff !important;
+                margin-bottom: 10px !important;
+                padding: 12px 14px 14px 14px !important;
+            }
+            .header-top { margin-bottom: 8px !important; align-items: flex-start !important; }
+            .header-title {
+                background: transparent !important;
+                padding: 0 !important;
+                font-size: 18px !important;
+                text-align: left !important;
+                border: none !important;
+                letter-spacing: 0.04em !important;
+                line-height: 1.1 !important;
+            }
+            .header-right {
+                font-size: 9.2px !important;
+                line-height: 1.35 !important;
+                color: #4b5563 !important;
+                border: 1px solid #e4e9f0 !important;
+                border-radius: 10px !important;
+                background: #ffffff !important;
+                padding: 7px 9px !important;
+            }
+            .header-right strong { font-size: 11.8px !important; margin-bottom: 1px !important; color: var(--primary) !important; letter-spacing: 0.05em !important; text-transform: uppercase !important; }
             .logo { max-height: 55px !important; }
-            .section { margin-bottom: 2px; }
-            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 3px !important; font-size: 10.5px !important; }
+            .section {
+                margin-bottom: 6px !important;
+                padding: 9px 11px 10px 11px !important;
+                border: 1px solid #e3e8ef !important;
+                border-radius: 14px !important;
+                background: #ffffff !important;
+            }
+            .section h2 {
+                background: transparent !important;
+                color: var(--primary) !important;
+                border-bottom: 1px solid #e0e6ed !important;
+                padding: 0 0 5px 0 !important;
+                margin-bottom: 8px !important;
+                font-size: 9.8px !important;
+                letter-spacing: 0.08em !important;
+            }
             #mainPage .section:first-of-type > h2 {
                 background: #fff !important;
                 border-bottom: none !important;
             }
-            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 2px; margin-top: 1px; }
-            .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
+            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 5px 9px !important; margin-top: 1px !important; }
+            #mainPage .section:first-of-type > .grid {
+                gap: 5px 10px !important;
+                margin-bottom: 5px !important;
+            }
+            #mainPage .section:first-of-type > div > .section-header-flex {
+                margin-top: 4px !important;
+                margin-bottom: 2px !important;
+            }
+            #mainPage .section:first-of-type .address-grid {
+                gap: 4px 8px !important;
+                margin-top: 3px !important;
+            }
+            #mainPage .section:first-of-type .label {
+                font-size: 10.5px !important;
+                margin-bottom: 3px !important;
+                line-height: 1.2 !important;
+            }
+            .label { font-size: 9px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; color: #6b7280 !important; }
+            .footer { position: static; margin-top: 4mm; left: auto; right: auto; bottom: auto; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 5px !important; font-size: 8.8px !important; }
             textarea { display: none !important; }
-            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; color: inherit !important; }
-            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; height: auto !important; min-height: 0 !important; line-height: 1.1 !important; color: inherit !important; }
+            .print-textarea-clone {
+                display: block !important;
+                width: 100% !important;
+                font-size: 10.3px !important;
+                line-height: 1.35 !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+                margin: 0 !important;
+                padding: 2px 0 !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                color: inherit !important;
+                min-height: 0 !important;
+            }
+            input:not([type="checkbox"]), select, .photo-desc {
+                border: none !important;
+                background: transparent !important;
+                padding: 2px 0 !important;
+                -webkit-appearance: none;
+                appearance: none;
+                font-size: 10.2px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                line-height: 1.2 !important;
+                color: inherit !important;
+            }
+            #mainPage .section:first-of-type input#name,
+            #mainPage .section:first-of-type input#datum,
+            #mainPage .section:first-of-type input#adresse,
+            #mainPage .section:first-of-type input#plz,
+            #mainPage .section:first-of-type input#ort,
+            #mainPage .section:first-of-type input#telefon {
+                font-size: 11px !important;
+                line-height: 1.25 !important;
+                padding: 2px 0 !important;
+            }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; accent-color: var(--primary) !important; }
             .checkbox-item { font-size: 9.5px !important; padding: 0 !important; margin: 0 !important; gap: 3px !important; line-height: 1.1 !important; }
             .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 2px !important; }
@@ -365,19 +511,19 @@
             input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none !important; }
             .worker-grid, .material-grid, .grid, .grid-3, .grid-1-2, .checkbox-group, .checkbox-group-3, .signature-box, .photo-box { break-inside: avoid !important; }
             h2, .section-header-flex, .label { break-after: avoid !important; }
-            .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
-            .grid-header { border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
+            .worker-grid, .material-grid { gap: 4px; margin-bottom: 4px; }
+            .grid-header { border-bottom: 1px solid #d1d5db; padding-bottom: 3px; margin-bottom: 5px; color: #6b7280 !important; }
             .is-empty-row { display: none !important; }
             
-            .sketch-container { border: none !important; background: transparent !important; box-shadow: none !important; height: 170mm !important; background-image: none !important; margin-top: 0 !important; }
+            .sketch-container { border: 1px solid #d6deeb !important; background: #ffffff !important; box-shadow: none !important; height: 168mm !important; background-image: none !important; margin-top: 0 !important; border-radius: 14px !important; }
             #sketch-canvas { position: static !important; width: 100% !important; height: 100% !important; }
             
-            .signature-box { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 10px; }
-            .signature-pad { border: 1px solid #ccc !important; background: transparent !important; height: 80px !important; }
+            .signature-box { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 6px !important; margin-top: 6px; border-radius: 12px !important; }
+            .signature-pad { border: 1px dashed #b6c1cf !important; background: #ffffff !important; height: 78px !important; border-radius: 10px !important; }
             .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
-            .photo-box { border: none !important; box-shadow: none !important; padding: 0 !important; page-break-inside: avoid; }
-            .img-container { height: 85mm !important; border: none !important; background: transparent !important; }
-            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
+            .photo-box { border: 1px solid #e3e8ef !important; box-shadow: none !important; padding: 5px !important; page-break-inside: avoid; border-radius: 12px !important; background: #ffffff !important; }
+            .img-container { height: 83mm !important; border: 1px solid #eef2f6 !important; background: #ffffff !important; border-radius: 10px !important; }
+            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 5px !important; margin-bottom: 5px !important; border-radius: 12px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
             .checkbox-group .checkbox-item:not(:has(input:checked)),
@@ -414,10 +560,39 @@
 
         /* CUSTOMER SEARCH */
         .customer-search-results { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--gray-200); border-top: none; z-index: 1001; max-height: 250px; overflow-y: auto; border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-lg); }
-        .customer-search-results .result-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--gray-100); font-size: 12px; line-height: 1.4; }
+        .customer-search-results .result-item { width: 100%; padding: 10px 12px; cursor: pointer; border: none; border-bottom: 1px solid var(--gray-100); font-size: 12px; line-height: 1.4; text-align: left; background: transparent; color: inherit; }
         .customer-search-results .result-item:hover { background: var(--primary-light); }
+        .customer-search-results .result-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--primary-light); }
         .customer-search-results .result-item:last-child { border-bottom: none; }
         .customer-search-results .result-item small { color: var(--gray-600); }
+        .result-delete-btn {
+            border: none;
+            background: transparent;
+            padding: 5px;
+            cursor: pointer;
+            opacity: 0.6;
+            font-size: 14px;
+            color: inherit;
+        }
+        .result-delete-btn:hover,
+        .result-delete-btn:focus-visible { opacity: 1; }
+
+        .text-link-btn {
+            margin-top: 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+            text-decoration: underline;
+            padding: 0;
+            font: inherit;
+        }
+        .text-link-btn:focus-visible,
+        .tool:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
 
         /* TOGGLE SWITCH */
         .toggle-switch {
@@ -462,6 +637,380 @@
         .toggle-switch input:checked + .switch::before {
             transform: translateX(22px);
         }
+
+        /* =========================================
+           DESIGN REFRESH 4.0
+           ========================================= */
+        @media screen {
+            :root {
+                --primary: #b8860b;
+                --primary-hover: #966d08;
+                --primary-light: #fff8e7;
+                --bg-app: #eef3f7;
+                --surface: rgba(255, 255, 255, 0.82);
+                --page-bg: #fffdf8;
+                --input-bg: rgba(255, 255, 255, 0.9);
+                --border: #d8e0e8;
+                --gray-900: #1a2433;
+                --gray-600: #526173;
+                --gray-400: #8190a3;
+                --gray-200: #d9e1ea;
+                --gray-100: #edf2f7;
+                --gray-50: #f8fafc;
+                --shadow-sm: 0 10px 24px -18px rgba(26, 36, 51, 0.4);
+                --shadow-md: 0 22px 48px -28px rgba(26, 36, 51, 0.34);
+                --shadow-lg: 0 34px 80px -36px rgba(26, 36, 51, 0.36);
+                --font-main: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
+            }
+
+            body {
+                background:
+                    radial-gradient(circle at top left, rgba(184, 134, 11, 0.18), transparent 28%),
+                    radial-gradient(circle at top right, rgba(43, 131, 184, 0.16), transparent 30%),
+                    linear-gradient(180deg, #f5f8fb 0%, #edf2f6 100%);
+                color: var(--gray-900);
+            }
+
+            body::before,
+            body::after {
+                content: "";
+                position: fixed;
+                inset: auto;
+                width: 340px;
+                height: 340px;
+                border-radius: 50%;
+                filter: blur(70px);
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0.45;
+            }
+
+            body::before {
+                top: -120px;
+                left: -80px;
+                background: rgba(184, 134, 11, 0.3);
+            }
+
+            body::after {
+                right: -120px;
+                bottom: 80px;
+                background: rgba(43, 131, 184, 0.24);
+            }
+
+            #start-screen {
+                position: relative;
+                min-height: 100vh;
+                padding: 36px 20px;
+            }
+
+            .menu-box {
+                position: relative;
+                overflow: hidden;
+                max-width: 560px;
+                padding: 46px 42px;
+                border-radius: 30px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 253, 248, 0.84));
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                box-shadow: 0 30px 80px -40px rgba(26, 36, 51, 0.48);
+                backdrop-filter: blur(18px);
+            }
+
+            .menu-box::before {
+                content: "";
+                position: absolute;
+                inset: 0 0 auto 0;
+                height: 6px;
+                background: linear-gradient(90deg, #b8860b, #d8aa2b 45%, #2b83b8);
+            }
+
+            .menu-box img {
+                max-height: 86px;
+                margin-bottom: 18px;
+            }
+
+            .menu-box h1 {
+                margin-bottom: 10px;
+                font-size: 30px;
+                letter-spacing: -0.03em;
+            }
+
+            .menu-subtitle {
+                margin: 0 0 28px 0;
+                color: var(--gray-600);
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .menu-btn {
+                min-height: 58px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, #b8860b 0%, #d3a62f 100%);
+                box-shadow: 0 18px 34px -24px rgba(184, 134, 11, 0.78);
+            }
+
+            .menu-btn.secondary {
+                background: linear-gradient(135deg, #415063 0%, #2b3644 100%);
+            }
+
+            .menu-btn.blue {
+                background: linear-gradient(135deg, #2b83b8 0%, #245d9a 100%);
+            }
+
+            .page {
+                border-radius: 28px;
+                padding: 14mm 13mm;
+                border: 1px solid rgba(255, 255, 255, 0.78);
+                box-shadow: 0 32px 90px -46px rgba(26, 36, 51, 0.42);
+                overflow: hidden;
+            }
+
+            .page::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 7px;
+                background: linear-gradient(90deg, rgba(184, 134, 11, 0.95), rgba(43, 131, 184, 0.75));
+            }
+
+            .header {
+                padding: 18px 20px 20px;
+                margin-bottom: 28px;
+                border: 1px solid rgba(216, 224, 232, 0.9);
+                border-radius: 24px;
+                background: linear-gradient(180deg, rgba(255, 250, 240, 0.82), rgba(255, 255, 255, 0.92));
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            }
+
+            .header-top {
+                margin-bottom: 18px;
+            }
+
+            .logo {
+                max-height: 76px;
+            }
+
+            .header-right {
+                padding: 10px 14px;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(216, 224, 232, 0.75);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .header-right strong {
+                font-size: 16px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .header-title {
+                font-size: 32px;
+                letter-spacing: -0.03em;
+                line-height: 1.1;
+            }
+
+            .section {
+                margin-bottom: 18px;
+                padding: 16px 18px 18px;
+                border: 1px solid rgba(216, 224, 232, 0.86);
+                border-radius: 22px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(248, 250, 252, 0.96));
+                box-shadow: var(--shadow-sm);
+            }
+
+            .section h2 {
+                margin-bottom: 16px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(184, 134, 11, 0.18);
+            }
+
+            .label {
+                font-size: 10.5px;
+                color: #5f6d7c;
+            }
+
+            input,
+            textarea,
+            select {
+                padding: 12px 14px;
+                border: 1px solid #d6deeb;
+                border-radius: 14px;
+                background: rgba(255, 255, 255, 0.92);
+                box-shadow: inset 0 1px 2px rgba(26, 36, 51, 0.04);
+            }
+
+            input:focus,
+            textarea:focus,
+            select:focus {
+                background: #ffffff;
+                border-color: rgba(184, 134, 11, 0.8);
+                box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.12);
+            }
+
+            .gps-btn,
+            .mic-btn,
+            .control-btn {
+                border-radius: 14px;
+            }
+
+            .control-btn {
+                background: linear-gradient(135deg, #b8860b 0%, #d3a62f 100%);
+                box-shadow: 0 16px 28px -20px rgba(184, 134, 11, 0.78);
+            }
+
+            .control-btn.secondary {
+                background: linear-gradient(135deg, #4b5e73 0%, #2b3644 100%);
+                box-shadow: 0 16px 28px -20px rgba(43, 54, 68, 0.62);
+            }
+
+            .control-btn.home {
+                background: linear-gradient(135deg, #d74747 0%, #b91c1c 100%);
+            }
+
+            .toolbar {
+                padding: 10px 18px;
+                border-radius: 22px;
+                background: rgba(255, 255, 255, 0.92);
+                border: 1px solid rgba(216, 224, 232, 0.9);
+                box-shadow: 0 24px 50px -34px rgba(26, 36, 51, 0.45);
+            }
+
+            .tool {
+                width: 38px;
+                height: 38px;
+            }
+
+            .save-status,
+            #controls {
+                backdrop-filter: blur(18px);
+            }
+
+            #controls {
+                width: 250px;
+                padding: 12px;
+                border-radius: 24px;
+                background: rgba(255, 255, 255, 0.52);
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                box-shadow: 0 30px 70px -42px rgba(26, 36, 51, 0.55);
+            }
+
+            .save-status {
+                background: rgba(255, 255, 255, 0.84);
+            }
+
+            .signature-box,
+            .photo-box,
+            #ueberpruefteBauteileContainer,
+            #poolBauteileContainer {
+                border-radius: 18px;
+                border-color: rgba(216, 224, 232, 0.86);
+                background: rgba(255, 255, 255, 0.86);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .img-container,
+            .sketch-container,
+            .signature-pad {
+                border-radius: 16px;
+            }
+
+            .footer {
+                padding-top: 10px;
+                border-top-color: rgba(216, 224, 232, 0.9);
+            }
+
+            body.dark-mode {
+                background:
+                    radial-gradient(circle at top left, rgba(234, 179, 8, 0.18), transparent 28%),
+                    radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 30%),
+                    linear-gradient(180deg, #08111d 0%, #0f172a 100%);
+            }
+
+            body.dark-mode .menu-box,
+            body.dark-mode .page,
+            body.dark-mode .header,
+            body.dark-mode .section,
+            body.dark-mode #controls,
+            body.dark-mode .save-status,
+            body.dark-mode .signature-box,
+            body.dark-mode .photo-box,
+            body.dark-mode #ueberpruefteBauteileContainer,
+            body.dark-mode #poolBauteileContainer,
+            body.dark-mode .header-right {
+                border-color: rgba(71, 85, 105, 0.9);
+                box-shadow: none;
+            }
+
+            body.dark-mode .menu-box {
+                background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.92));
+            }
+
+            body.dark-mode .header,
+            body.dark-mode .section,
+            body.dark-mode .signature-box,
+            body.dark-mode .photo-box,
+            body.dark-mode #ueberpruefteBauteileContainer,
+            body.dark-mode #poolBauteileContainer,
+            body.dark-mode .header-right,
+            body.dark-mode #controls,
+            body.dark-mode .save-status {
+                background: rgba(15, 23, 42, 0.86);
+            }
+
+            body.dark-mode input,
+            body.dark-mode textarea,
+            body.dark-mode select {
+                background: rgba(30, 41, 59, 0.92);
+                border-color: #475569;
+            }
+
+            @media screen and (max-width: 1180px) {
+                #controls {
+                    width: 100%;
+                    border-radius: 0 0 22px 22px;
+                    padding: 12px;
+                    background: rgba(26, 36, 51, 0.9);
+                    border: none;
+                }
+
+                .page {
+                    margin: 20px 10px;
+                }
+            }
+
+            @media screen and (max-width: 768px) {
+                #start-screen {
+                    padding: 18px 14px;
+                }
+
+                .menu-box {
+                    padding: 34px 22px;
+                    border-radius: 24px;
+                }
+
+                .menu-box h1 {
+                    font-size: 24px;
+                }
+
+                .page {
+                    margin: 0 0 14px 0;
+                    padding: 12px;
+                    border-radius: 18px;
+                }
+
+                .header,
+                .section {
+                    border-radius: 18px;
+                    padding: 14px;
+                }
+
+                .header-title {
+                    font-size: 22px;
+                }
+            }
+        }
     </style>
 </head>
 <body>
@@ -474,7 +1023,7 @@
 <div id="start-screen">
     <div class="menu-box" id="login-container">
         <img src="Logo.PNG" alt="Brugger Logo" onerror="this.style.display='none'">
-        <h1>Geschützter Bereich</h1>
+        <h1>PIN-Abfrage</h1>
         <input type="password" inputmode="numeric" pattern="[0-9]*" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px;" onkeyup="if(event.key==='Enter') attemptLogin()">
         <button class="menu-btn" onclick="attemptLogin()">🔓 Entsperren</button>
         <p id="loginError" style="color:#ef4444; display:none; margin-top:10px; font-weight:bold;">PIN falsch!</p>
@@ -492,8 +1041,8 @@
         <input type="file" id="startImportFile" accept=".lok,application/json" style="display:none" onchange="importFromStart(this)">
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
-        <div style="margin-top: 20px; cursor: pointer; color: #666; font-size: 12px; text-decoration: underline;" onclick="openSettings()">⚙️ E-Mail Einstellungen</div>
-        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 3.1</div>
+        <button type="button" class="text-link-btn" onclick="openSettings()">⚙️ E-Mail Einstellungen</button>
+        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.0</div>
     </div>
 </div>
 
@@ -641,12 +1190,12 @@
 
 <div id="app-root"></div>
 
-<template id="tpl-lo">
+<template id="tpl-controls-sketch">
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
         <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
         <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
             <span>FOTOS NUMMERIEREN</span>
         </label>
         <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
@@ -654,6 +1203,24 @@
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
         <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
+</template>
+
+<template id="tpl-controls-basic">
+    <div id="controls" class="no-print">
+        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
+            <span>FOTOS NUMMERIEREN</span>
+        </label>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
+    </div>
+</template>
+
+<template id="tpl-lo">
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -705,8 +1272,8 @@
                 </label>
             </div>
             
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
                     <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
@@ -722,7 +1289,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -837,14 +1404,14 @@
                 <label class="checkbox-item"><input type="checkbox"> <span>provisorisch Abgedichtet</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Druckabfall</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeit</span></label>
-                <label class="checkbox-item"><input type="checkbox" onchange="let el = document.getElementById('ortungsgas_select'); if(el){ el.value = this.checked ? '5' : '0'; el.dispatchEvent(new Event('change')); }"> <span>Tracergas</span></label>
+                <label class="checkbox-item"><input type="checkbox" onchange="syncOrtungsgasFromCheckbox(this.checked)"> <span>Tracergas</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Endoskopie</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Thermografie</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Rohrkamera</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Druckprüfung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Absperrblase</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Nebelverfahren</span></label>
-                <label class="checkbox-item"><input type="checkbox" onchange="let el = document.getElementById('faerbemittel_input'); if(el){ el.value = this.checked ? '10' : ''; el.dispatchEvent(new Event('input')); }"> <span>Luminatspülung</span></label>
+                <label class="checkbox-item"><input type="checkbox" onchange="syncFaerbemittelFromCheckbox(this.checked)"> <span>Luminatspülung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Feuchtigkeitsmessung</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Akustik</span></label>
                 <label class="checkbox-item"><input type="checkbox"> <span>Stemmarbeiten</span></label>
@@ -943,18 +1510,7 @@
 </template>
 
 <template id="tpl-kb">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -1004,8 +1560,8 @@
                     <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
                 </label>
             </div>
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -1016,7 +1572,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1153,17 +1709,7 @@
 </template>
 
 <template id="tpl-rb">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="basic"></div>
 
     <div class="page" id="mainPage">
         
@@ -1216,8 +1762,8 @@
                 </label>
             </div>
             
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
                     <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
@@ -1233,7 +1779,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1335,18 +1881,7 @@
 </template>
 
 <template id="tpl-dl">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -1396,8 +1931,8 @@
                     <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
                 </label>
             </div>
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -1407,7 +1942,7 @@
                         <span class="label" style="margin:0;">Rechnungsadresse</span>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1665,6 +2200,223 @@ function goHome() {
     location.reload();
 }
 
+function ensureSaveStatus() {
+    const controls = document.getElementById('controls');
+    if (!controls) return null;
+    let statusEl = document.getElementById('saveStatus');
+    if (!statusEl) {
+        statusEl = document.createElement('div');
+        statusEl.id = 'saveStatus';
+        statusEl.className = 'save-status no-print';
+        controls.prepend(statusEl);
+    }
+    return statusEl;
+}
+
+function updateSaveStatus(message = 'Bereit', state = 'saved') {
+    const statusEl = ensureSaveStatus();
+    if (!statusEl) return;
+    statusEl.dataset.state = state;
+    statusEl.setAttribute('role', 'status');
+    statusEl.setAttribute('aria-live', 'polite');
+    statusEl.textContent = message;
+}
+
+function formatStatusTime(date = new Date()) {
+    return date.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
+}
+
+function isIOSLikeDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function supportsSpeechRecognition() {
+    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+function getPrintSupportContext() {
+    return {
+        isIOS: isIOSLikeDevice(),
+        supportsHasSelector: typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('selector(:has(*))')
+    };
+}
+
+function clearElement(element) {
+    if (!element) return;
+    while (element.firstChild) element.removeChild(element.firstChild);
+}
+
+function createOptionElement(value, label) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    return option;
+}
+
+function attachLogoFallback(img) {
+    img.addEventListener('error', () => {
+        img.style.display = 'none';
+    }, { once: true });
+}
+
+function createCompanyHeaderRight() {
+    const headerRight = document.createElement('div');
+    headerRight.className = 'header-right';
+
+    const strong = document.createElement('strong');
+    strong.textContent = 'Brugger Entfeuchtung & Kanaltechnik GmbH';
+    headerRight.appendChild(strong);
+    headerRight.appendChild(document.createElement('br'));
+    headerRight.appendChild(document.createTextNode('Liebenauer Hauptstraße 181, 8041 Graz'));
+    headerRight.appendChild(document.createElement('br'));
+    headerRight.appendChild(document.createTextNode('Tel: +43 316 471771'));
+
+    return headerRight;
+}
+
+function createPhotoPageElement(gridId) {
+    const page = document.createElement('div');
+    page.className = 'page';
+
+    const header = document.createElement('div');
+    header.className = 'header';
+
+    const headerTop = document.createElement('div');
+    headerTop.className = 'header-top';
+
+    const logo = document.createElement('img');
+    logo.src = 'Logo.PNG';
+    logo.alt = 'Brugger Logo';
+    logo.className = 'logo';
+    attachLogoFallback(logo);
+
+    headerTop.appendChild(logo);
+    headerTop.appendChild(createCompanyHeaderRight());
+    header.appendChild(headerTop);
+
+    const title = document.createElement('h1');
+    title.className = 'header-title';
+    title.textContent = 'Fotodokumentation';
+    if (currentApp === 'DL') {
+        title.style.background = 'var(--dl-header-bg)';
+        title.style.color = 'var(--dl-header-text)';
+        title.style.borderColor = 'var(--dl-header-border)';
+    }
+    header.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'photo-grid';
+    grid.id = gridId;
+
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    const company = document.createElement('span');
+    company.textContent = 'Brugger GmbH';
+    const pageNo = document.createElement('span');
+    pageNo.className = 'page-no';
+    footer.appendChild(company);
+    footer.appendChild(pageNo);
+
+    page.appendChild(header);
+    page.appendChild(grid);
+    page.appendChild(footer);
+    return page;
+}
+
+function createArrowMarker(arr) {
+    const marker = document.createElement('div');
+    marker.className = 'marker-arrow';
+    marker.style.left = arr.x + '%';
+    marker.style.top = arr.y + '%';
+    marker.innerHTML = '<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>';
+    return marker;
+}
+
+function createPhotoBoxElement(src, txt = '', arr = null) {
+    const photoBox = document.createElement('div');
+    photoBox.className = 'photo-box';
+    photoBox.draggable = true;
+    photoBox.addEventListener('dragstart', handleDragStart);
+    photoBox.addEventListener('dragend', handleDragEnd);
+    photoBox.addEventListener('dragover', handleDragOver);
+    photoBox.addEventListener('dragleave', handleDragLeave);
+    photoBox.addEventListener('drop', handleDrop);
+
+    const number = document.createElement('span');
+    number.className = 'photo-number';
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'delete-photo-btn no-print';
+    deleteButton.textContent = '×';
+    deleteButton.setAttribute('aria-label', 'Foto löschen');
+    deleteButton.addEventListener('click', () => deletePhoto(deleteButton));
+
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'img-container';
+    imageContainer.setAttribute('role', 'button');
+    imageContainer.tabIndex = 0;
+    imageContainer.setAttribute('aria-label', 'Foto bearbeiten');
+    imageContainer.addEventListener('click', () => openPhotoEditor(imageContainer));
+    imageContainer.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPhotoEditor(imageContainer);
+        }
+    });
+
+    const image = document.createElement('img');
+    image.src = src;
+    image.alt = 'Berichtsfoto';
+    imageContainer.appendChild(image);
+    if (arr) imageContainer.appendChild(createArrowMarker(arr));
+
+    const description = document.createElement('input');
+    description.type = 'text';
+    description.className = 'photo-desc';
+    description.placeholder = 'Beschreibung...';
+    description.value = txt;
+
+    photoBox.appendChild(number);
+    photoBox.appendChild(deleteButton);
+    photoBox.appendChild(imageContainer);
+    photoBox.appendChild(description);
+    return photoBox;
+}
+
+function hydrateSharedFragments(root) {
+    root.querySelectorAll('[data-controls-template]').forEach((host) => {
+        const templateId = host.dataset.controlsTemplate === 'basic' ? 'tpl-controls-basic' : 'tpl-controls-sketch';
+        const template = document.getElementById(templateId);
+        if (template) host.replaceWith(template.content.cloneNode(true));
+    });
+}
+
+function upgradeInteractiveAccessibility(root = document) {
+    root.querySelectorAll('[onclick]').forEach((element) => {
+        const tagName = element.tagName;
+        const isNativeInteractive = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'].includes(tagName);
+        if (!isNativeInteractive) {
+            if (!element.hasAttribute('role')) element.setAttribute('role', 'button');
+            if (!element.hasAttribute('tabindex')) element.tabIndex = 0;
+            if (!element.dataset.keyboardClickBound) {
+                element.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        element.click();
+                    }
+                });
+                element.dataset.keyboardClickBound = 'true';
+            }
+        }
+
+        if (!element.getAttribute('aria-label')) {
+            const derivedLabel = element.getAttribute('title') || element.textContent.trim().replace(/\s+/g, ' ');
+            if (derivedLabel) element.setAttribute('aria-label', derivedLabel);
+        }
+    });
+}
+
 function registerCleanup(fn) { appCleanupFuncs.push(fn); }
 function runCleanup() { appCleanupFuncs.forEach(fn => fn()); appCleanupFuncs = []; }
 
@@ -1678,9 +2430,12 @@ function startApp(type) {
         if (!tpl) throw new Error("Vorlage nicht gefunden: " + type);
         
         const appRoot = document.getElementById('app-root');
-        appRoot.innerHTML = ''; // WICHTIG: Vorherigen Inhalt löschen, um doppelte IDs zu vermeiden
+        clearElement(appRoot); // WICHTIG: Vorherigen Inhalt löschen, um doppelte IDs zu vermeiden
         if(type === 'DL') appRoot.classList.add('dl-app'); else appRoot.classList.remove('dl-app');
         appRoot.appendChild(tpl.content.cloneNode(true));
+        hydrateSharedFragments(appRoot);
+        upgradeInteractiveAccessibility(appRoot);
+        ensureSaveStatus();
         initCommon();
         if (type === 'LO') initLO();
         if (type === 'KB') initKB();
@@ -1688,6 +2443,7 @@ function startApp(type) {
         if (type === 'DL') initDL();
         updateTitleWithAddress();
         hasUnsavedChanges = false;
+        updateSaveStatus('Bericht geöffnet', 'saved');
     } catch (e) {
         alert("Fehler beim Starten: " + e.message);
         console.error(e);
@@ -1706,17 +2462,36 @@ function preparePrintView() {
             clone.className = 'print-textarea-clone';
             el.parentNode.insertBefore(clone, el.nextSibling);
         }
-        clone.innerHTML = el.value.replace(/\n/g, '<br>');
+        clone.textContent = el.value;
     });
+
+    const printSupport = getPrintSupportContext();
     
     document.querySelectorAll('.checkbox-group, .checkbox-group-3').forEach(group => {
         const inputs = Array.from(group.querySelectorAll('input[type="checkbox"]'));
         const isAnyChecked = inputs.some(cb => cb.checked);
+        if (!isAnyChecked) {
+            if (!printSupport.supportsHasSelector || printSupport.isIOS) {
+                group.classList.add('no-print', 'temp-hide');
+                const previous = group.previousElementSibling;
+                if (previous && (previous.matches('h2') || previous.classList.contains('label'))) {
+                    previous.classList.add('no-print', 'temp-hide');
+                }
+            }
+            return;
+        }
         if (isAnyChecked) {
             inputs.forEach(cb => {
-                if (!cb.checked) cb.closest('.checkbox-item').classList.add('no-print');
+                if (!cb.checked) cb.closest('.checkbox-item').classList.add('no-print', 'temp-hide');
             });
         }
+    });
+
+    ['ueberpruefteBauteileContainer', 'poolBauteileContainer'].forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        const hasCheckedEntry = !!container.querySelector('input[type="checkbox"]:checked');
+        if (!hasCheckedEntry) container.classList.add('no-print', 'temp-hide');
     });
 
     const opts = [
@@ -1743,11 +2518,53 @@ function preparePrintView() {
         if (desc.value.trim() === '') desc.classList.add('no-print', 'temp-hide');
         else desc.classList.remove('no-print');
     });
+
+    const reparaturSection = document.getElementById('reparaturSection');
+    if (reparaturSection && !sectionHasPrintableContent(reparaturSection)) {
+        reparaturSection.classList.add('no-print', 'temp-hide');
+    }
+}
+
+function sectionHasPrintableContent(section) {
+    const hasCheckedOption = Array.from(section.querySelectorAll('input[type="checkbox"]')).some(input => {
+        return input.checked && input.offsetParent !== null;
+    });
+
+    if (hasCheckedOption) return true;
+
+    return Array.from(section.querySelectorAll('input:not([type="checkbox"]):not([type="hidden"]), textarea, select')).some(field => {
+        if (field.offsetParent === null) return false;
+        const value = (field.value || '').trim();
+        return value !== '' && value !== '- wählen -' && value !== '0';
+    });
 }
 
 function cleanupAfterPrint() {
     document.querySelectorAll('.print-textarea-clone').forEach(el => el.remove());
     document.querySelectorAll('.no-print.temp-hide').forEach(el => el.classList.remove('no-print', 'temp-hide'));
+}
+
+function configureSpeechUI() {
+    const supported = supportsSpeechRecognition();
+    document.querySelectorAll('.mic-btn[onclick*="toggleDictation"]').forEach(btn => {
+        btn.disabled = !supported;
+        btn.classList.toggle('is-disabled', !supported);
+        if (!supported) {
+            btn.title = 'Diktieren wird in diesem Browser nicht unterstützt';
+            btn.setAttribute('aria-label', 'Diktieren wird in diesem Browser nicht unterstützt');
+        }
+    });
+}
+
+function maybeShowIOSExportHint(context) {
+    if (!isIOSLikeDevice()) return;
+    if (context === 'save') {
+        showToast('iPad: Datei ggf. über Teilen in Dateien sichern.', 'info');
+    } else if (context === 'print') {
+        showToast('iPad: PDF im Druckdialog sichern oder teilen.', 'info');
+    } else if (context === 'email') {
+        showToast('iPad: PDF nach dem Drucken manuell an die Mail anhängen.', 'info');
+    }
 }
 
 function initCommon() {
@@ -1779,6 +2596,8 @@ function initCommon() {
         if (mainResults && !mainResults.contains(event.target) && event.target !== mainSearch) mainResults.style.display = 'none';
         if (billingResults && !billingResults.contains(event.target) && event.target !== billingSearch) billingResults.style.display = 'none';
     });
+
+    configureSpeechUI();
     
     setupPWA();
 }
@@ -1810,6 +2629,20 @@ function buildReportBaseName() {
 }
 
 function updateTitleWithAddress() { document.title = buildReportBaseName(); }
+
+function syncOrtungsgasFromCheckbox(isChecked) {
+    const field = document.getElementById('ortungsgas_select');
+    if (!field) return;
+    field.value = isChecked ? '5' : '0';
+    field.dispatchEvent(new Event('change'));
+}
+
+function syncFaerbemittelFromCheckbox(isChecked) {
+    const field = document.getElementById('faerbemittel_input');
+    if (!field) return;
+    field.value = isChecked ? '10' : '';
+    field.dispatchEvent(new Event('input'));
+}
 
 function autoLocate(btn, target) {
     const origTxt = btn.innerHTML;
@@ -1867,7 +2700,9 @@ async function printAndSave() {
         const raw = document.getElementById('dl_pasted_data');
         if (raw) raw.value = '';
     }
+    maybeShowIOSExportHint('save');
     await exportFullReport(); 
+    maybeShowIOSExportHint('print');
     setTimeout(() => window.print(), 800); 
 }
 
@@ -2484,10 +3319,12 @@ function applyTemplateVisibility() {
     opts.style.display = (cf || leck) ? 'block' : 'none';
     const sel = document.getElementById('flachdachTemplate');
     if(sel) {
-        const v = sel.value; sel.innerHTML = '<option value="">- Vorlage wählen -</option>';
+        const v = sel.value;
+        clearElement(sel);
+        sel.appendChild(createOptionElement('', '- Vorlage wählen -'));
         const cat = cf ? 'flachdach' : 'leckortung';
         textTemplates.filter(t => t.category === cat).forEach(t => {
-            sel.innerHTML += `<option value="${t.id}">${t.title}</option>`;
+            sel.appendChild(createOptionElement(t.id, t.title));
         });
         if(Array.from(sel.options).some(o=>o.value===v)) sel.value=v;
     }
@@ -2503,11 +3340,20 @@ function applyTemplateVisibility() {
                 textTemplates.filter(t => t.category === 'flachdach').forEach(t => {
                     const label = document.createElement('label'); label.className = 'checkbox-item';
                     label.style.cssText = "background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd;";
-                    label.innerHTML = `<input type="checkbox" value="${t.id}" checked> <span style="font-weight:600">${t.title}</span>`;
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = t.id;
+                    checkbox.checked = true;
+                    const span = document.createElement('span');
+                    span.style.fontWeight = '600';
+                    span.textContent = t.title;
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(' '));
+                    label.appendChild(span);
                     aiChecks.appendChild(label);
                 });
             }
-        } else { aiOpts.style.display = 'none'; aiChecks.innerHTML = ''; }
+        } else { aiOpts.style.display = 'none'; clearElement(aiChecks); }
     }
 }
 
@@ -2873,8 +3719,8 @@ function getOrCreateLastGrid() {
     const c = document.getElementById('photoPagesContainer'); const grids = c.querySelectorAll('.photo-grid');
     let l = grids.length ? grids[grids.length-1] : null;
     if(!l || l.children.length >= 4) {
-        const p = document.createElement('div'); p.className = 'page'; const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
-        p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${currentApp==='DL'?'style="background: #e0f2fe; color: #0284c7; border-color: #bae6fd;"':''}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
+        const p = createPhotoPageElement(id);
         c.appendChild(p); renumberPhotoPages(); return document.getElementById(id);
     }
     return l;
@@ -2933,10 +3779,8 @@ function repackPhotoPages() {
         let p;
         if (i < existingPages.length) p = existingPages[i];
         else {
-            p = document.createElement('div'); p.className = 'page';
             const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + i);
-            const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
-            p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+            p = createPhotoPageElement(id);
             container.appendChild(p);
         }
     }
@@ -2944,25 +3788,15 @@ function repackPhotoPages() {
     boxes.forEach((box, i) => { const targetGrid = grids[Math.floor(i / 4)]; if (box.parentNode !== targetGrid) targetGrid.appendChild(box); });
     const finalPages = container.querySelectorAll('.page');
     for (let i = numPages; i < finalPages.length; i++) finalPages[i].remove();
-    if(boxes.length === 0) container.innerHTML = '';
+    if(boxes.length === 0) clearElement(container);
     updatePhotoNumbers(); renumberPhotoPages(); hasUnsavedChanges = true; saveToLocal();
 }
 
 function insertPhotoBox(src, gId=null, txt='', arr=null, skipRepack=false) {
-    const b = document.createElement('div'); b.className='photo-box';
-    b.draggable = true;
-    b.addEventListener('dragstart', handleDragStart); b.addEventListener('dragend', handleDragEnd);
-    b.addEventListener('dragover', handleDragOver); b.addEventListener('dragleave', handleDragLeave);
-    b.addEventListener('drop', handleDrop);
-    b.innerHTML = `<span class="photo-number"></span><button class="delete-photo-btn no-print" onclick="deletePhoto(this)">×</button><div class="img-container" onclick="openPhotoEditor(this)"><img src="${src}"></div><input type="text" class="photo-desc" placeholder="Beschreibung..." value="${txt.replace(/"/g,'&quot;')}">`;
+    const b = createPhotoBoxElement(src, txt, arr);
     let g = gId ? document.getElementById(gId) : null;
     if(!g) { const grids = document.querySelectorAll('.photo-grid'); if(grids.length > 0) g = grids[grids.length-1]; else g = getOrCreateLastGrid(); }
     g.appendChild(b);
-    if(arr) {
-        const a = document.createElement('div'); a.className='marker-arrow'; a.style.left=arr.x+'%'; a.style.top=arr.y+'%';
-        a.innerHTML = `<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>`;
-        b.querySelector('.img-container').appendChild(a);
-    }
     const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'flex';
     updatePhotoNumbers();
     hasUnsavedChanges = true; saveToLocal();
@@ -3008,6 +3842,7 @@ async function sendEmail() {
         const raw = document.getElementById('dl_pasted_data');
         if (raw) raw.value = '';
     }
+    maybeShowIOSExportHint('email');
     // 1. Bericht als Datei (.lok) speichern
     await exportFullReport();
     
@@ -3078,20 +3913,23 @@ async function exportFullReport() {
             await writable.write(jsonStr);
             await writable.close();
             hasUnsavedChanges = false;
+            updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
             showToast("Bericht gespeichert!", "success");
             return;
         }
     } catch (e) { if (e.name === 'AbortError') return; }
 
+    maybeShowIOSExportHint('save');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([jsonStr], {type:'application/octet-stream'}));
     a.download = fileName; a.click();
     hasUnsavedChanges = false;
+    updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
     showToast("Bericht gespeichert!", "success");
 }
 
 function importFromStart(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
-    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
     r.readAsText(f); inp.value='';
 }
 
@@ -3120,11 +3958,10 @@ function restoreFromData(d) {
         if(d.signature?.png && sigCtx) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
     }
     
-    const c = document.getElementById('photoPagesContainer'); c.innerHTML='';
+    const c = document.getElementById('photoPagesContainer'); clearElement(c);
     (d.photos||[]).forEach(p => {
-        const pg = document.createElement('div'); pg.className='page'; const gId = 'grid-restore-'+p.index;
-        const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
-        pg.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${gId}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        const gId = 'grid-restore-'+p.index;
+        const pg = createPhotoPageElement(gId);
         c.appendChild(pg); 
         p.images.forEach(img => insertPhotoBox(img.dataUrl, gId, img.description, img.arrow, true));
     });
@@ -3163,20 +4000,52 @@ function handleCustomerSearch(input, type) {
     const searchTerm = input.value.toLowerCase();
     const resultsContainer = document.getElementById(type === 'main' ? 'mainCustomerResults' : 'billingCustomerResults');
     const customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
-    resultsContainer.innerHTML = '';
+    clearElement(resultsContainer);
     if (searchTerm.length < 2) { resultsContainer.style.display = 'none'; return; }
 
     const filtered = customers.filter(c => (c.name && c.name.toLowerCase().includes(searchTerm)) || (c.adresse && c.adresse.toLowerCase().includes(searchTerm)) || (c.ort && c.ort.toLowerCase().includes(searchTerm)));
     if (filtered.length === 0) { resultsContainer.style.display = 'none'; return; }
 
     filtered.slice(0, 10).forEach(customer => {
-        const div = document.createElement('div'); div.className = 'result-item'; div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
-        const info = document.createElement('div'); info.innerHTML = `<strong>${customer.name || ''}</strong><br><small>${customer.adresse || ''}, ${customer.plz || ''} ${customer.ort || ''}</small>`;
-        const delBtn = document.createElement('div'); delBtn.innerText = '🗑️'; delBtn.title = 'Löschen'; delBtn.style.cssText = 'padding:5px; cursor:pointer; opacity:0.6; font-size:14px;';
-        delBtn.onmouseover = () => delBtn.style.opacity = 1; delBtn.onmouseout = () => delBtn.style.opacity = 0.6;
-        delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomer(customer.id, type); };
-        div.onclick = () => selectCustomer(customer.id, type);
-        div.appendChild(info); div.appendChild(delBtn);
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.setAttribute('role', 'button');
+        div.tabIndex = 0;
+        div.setAttribute('aria-label', `Kundeneintrag ${customer.name || ''} laden`);
+        div.addEventListener('click', () => selectCustomer(customer.id, type));
+        div.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectCustomer(customer.id, type);
+            }
+        });
+
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = customer.name || '';
+        const lineBreak = document.createElement('br');
+        const details = document.createElement('small');
+        details.textContent = `${customer.adresse || ''}, ${customer.plz || ''} ${customer.ort || ''}`.trim();
+        info.appendChild(name);
+        info.appendChild(lineBreak);
+        info.appendChild(details);
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'result-delete-btn';
+        delBtn.textContent = '🗑️';
+        delBtn.title = 'Löschen';
+        delBtn.setAttribute('aria-label', `Kundeneintrag ${customer.name || ''} löschen`);
+        delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteCustomer(customer.id, type);
+        });
+
+        div.appendChild(info);
+        div.appendChild(delBtn);
         resultsContainer.appendChild(div);
     });
     resultsContainer.style.display = 'block';
@@ -3238,9 +4107,11 @@ function showToast(msg, type='info') {
 
 async function saveToLocal() {
     if(!currentApp) return;
+    updateSaveStatus('Entwurf wird gesichert...', 'saving');
     const d = getReportData();
     hasUnsavedChanges = true;
     await idbSet('brugger_autosave', d);
+    updateSaveStatus(`Lokal gesichert ${formatStatusTime()}`, 'saved');
 }
 
 async function checkAutoSave() {
@@ -3248,7 +4119,7 @@ async function checkAutoSave() {
     const btn = document.getElementById('btnRestoreAutosave');
     if(saved && btn) {
         btn.style.display = 'flex';
-        try { if(saved.appType) btn.innerHTML = `🔄 Entwurf (${saved.appType}) wiederherstellen`; } catch(e){}
+        try { if(saved.appType) btn.textContent = `🔄 Entwurf (${saved.appType}) wiederherstellen`; } catch(e){}
     }
 }
 
@@ -3257,7 +4128,7 @@ async function restoreAutosave() {
     if(!saved) return;
     try {
         startApp(saved.appType);
-        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
     } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
 }
 
@@ -3275,6 +4146,8 @@ function initializeApp() {
         applyTheme();
         
         const appRoot = document.getElementById('app-root');
+        appRoot.addEventListener('input', () => updateSaveStatus('Ungespeicherte Änderungen', 'dirty'));
+        appRoot.addEventListener('change', () => updateSaveStatus('Ungespeicherte Änderungen', 'dirty'));
         appRoot.addEventListener('input', debounce(saveToLocal, 1000));
         appRoot.addEventListener('change', debounce(saveToLocal, 1000));
 
@@ -3458,8 +4331,10 @@ function loadTemplates() {
 function openTemplateManager() { closeSettings(); document.getElementById('templateManagerModal').style.display = 'flex'; refreshTemplateSelect(); }
 function closeTemplateManager() { document.getElementById('templateManagerModal').style.display = 'none'; }
 function refreshTemplateSelect() {
-    const sel = document.getElementById('tmSelect'); sel.innerHTML = '<option value="new">+ Neue Vorlage erstellen</option>';
-    textTemplates.forEach((t, i) => sel.innerHTML += `<option value="${i}">${t.title} (${t.category})</option>`);
+    const sel = document.getElementById('tmSelect');
+    clearElement(sel);
+    sel.appendChild(createOptionElement('new', '+ Neue Vorlage erstellen'));
+    textTemplates.forEach((t, i) => sel.appendChild(createOptionElement(String(i), `${t.title} (${t.category})`)));
     loadSelectedTemplate();
 }
 function loadSelectedTemplate() {
