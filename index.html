@@ -1220,6 +1220,13 @@
             <p class="open-jobs-subtitle">Baustellen mit Folgetermin erscheinen hier automatisch und koennen direkt weiterbearbeitet werden.</p>
             <div id="openJobsList" class="open-jobs-list"></div>
         </div>
+        <div id="cloudReportsPanel" class="open-jobs-panel">
+            <div class="open-jobs-header">
+                <h2 class="open-jobs-title">Synchronisierte Berichte</h2>
+            </div>
+            <p id="cloudReportsSubtitle" class="open-jobs-subtitle">Cloud-Sync ist deaktiviert. In den Einstellungen kann die zentrale Synchronisation aktiviert werden.</p>
+            <div id="cloudReportsList" class="open-jobs-list"></div>
+        </div>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
         <button type="button" class="text-link-btn" onclick="openSettings()">⚙️ E-Mail Einstellungen</button>
         <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.0</div>
@@ -1283,6 +1290,32 @@
             <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
                 <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Textvorlagen</h4>
                 <button class="control-btn secondary" style="width:100%; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="openTemplateManager()">✏️ Vorlagen bearbeiten</button>
+            </div>
+
+            <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
+                <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Cloud Synchronisation</h4>
+                <label class="toggle-switch" style="margin-bottom: 12px; font-weight: bold; color:#374151;">
+                    <span>Automatische Cloud-Sync aktivieren</span>
+                    <input type="checkbox" id="settingsCloudSyncEnabled">
+                    <span class="switch"></span>
+                </label>
+                <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Supabase URL</label>
+                <input type="url" id="settingsCloudSyncUrl" placeholder="https://projekt.supabase.co" style="width:100%; margin-bottom:12px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Supabase API Key</label>
+                <input type="text" id="settingsCloudSyncKey" placeholder="anon key" style="width:100%; margin-bottom:12px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Gerätename</label>
+                <input type="text" id="settingsCloudSyncDevice" placeholder="z.B. iPad Peter" style="width:100%; margin-bottom:10px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+                <div id="settingsCloudSyncStatus" style="font-size:11px; color:#526173; line-height:1.5; background:#f8fafc; border:1px solid #dbe4ee; border-radius:6px; padding:10px;">Fuer die Cloud-Sync werden die Supabase-Tabellen `brugger_reports` und `brugger_sync_state` benoetigt.</div>
+                <div style="margin-top:10px; font-size:11px; color:#526173; line-height:1.6; background:#fff; border:1px solid #dbe4ee; border-radius:6px; padding:10px;">
+                    <div><strong>Zuletzt synchronisiert</strong></div>
+                    <div>Berichte: <span id="settingsCloudReportsLastSync">Noch nie</span></div>
+                    <div>Kundenliste: <span id="settingsCloudCustomersLastSync">Noch nie</span></div>
+                    <div>Textvorlagen: <span id="settingsCloudTemplatesLastSync">Noch nie</span></div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="syncCloudNow()">Jetzt synchronisieren</button>
+                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="refreshCloudReportsNow()">Cloud neu laden</button>
+                </div>
             </div>
 
         <label class="toggle-switch" style="margin-bottom: 15px; font-weight: bold; color:#374151;">
@@ -2330,6 +2363,26 @@ const STORE_NAME = 'autosaveStore';
 const AUTOSAVE_KEY = 'brugger_autosave';
 const OPEN_JOBS_INDEX_KEY = 'brugger_open_jobs_index';
 const REPORT_FILE_MIME = 'application/x-brugger-lok';
+const CLOUD_SYNC_STORAGE_KEYS = {
+    enabled: 'brugger_cloud_sync_enabled',
+    url: 'brugger_cloud_sync_url',
+    key: 'brugger_cloud_sync_key',
+    device: 'brugger_cloud_sync_device',
+    customersUpdatedAt: 'brugger_customers_updated_at',
+    templatesUpdatedAt: 'brugger_templates_updated_at',
+    reportsSyncedAt: 'brugger_reports_synced_at',
+    customersSyncedAt: 'brugger_customers_synced_at',
+    templatesSyncedAt: 'brugger_templates_synced_at'
+};
+const CLOUD_SYNC_TABLE = 'brugger_reports';
+const CLOUD_SYNC_STATE_TABLE = 'brugger_sync_state';
+let cloudReportsCache = [];
+let cloudSharedStateCache = { customers: null, templates: null };
+let cloudSyncTimer = null;
+let pendingCloudSyncData = null;
+let pendingSharedStateSync = {};
+let cloudSyncInFlight = false;
+let cloudSyncStatusMessage = 'Cloud-Sync ist deaktiviert.';
 
 const initDB = () => new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -2881,6 +2934,407 @@ function collectReportMeta(source = null) {
         followUpText,
         isFlachdach
     };
+}
+
+function getCloudSyncConfig() {
+    return {
+        enabled: localStorage.getItem(CLOUD_SYNC_STORAGE_KEYS.enabled) === 'true',
+        url: (localStorage.getItem(CLOUD_SYNC_STORAGE_KEYS.url) || '').trim().replace(/\/$/, ''),
+        key: (localStorage.getItem(CLOUD_SYNC_STORAGE_KEYS.key) || '').trim(),
+        device: (localStorage.getItem(CLOUD_SYNC_STORAGE_KEYS.device) || '').trim()
+    };
+}
+
+function isCloudSyncConfigured() {
+    const cfg = getCloudSyncConfig();
+    return !!(cfg.enabled && cfg.url && cfg.key);
+}
+
+function getCloudDeviceName() {
+    const cfg = getCloudSyncConfig();
+    if (cfg.device) return cfg.device;
+    if (isIOSLikeDevice()) return 'iPad/iPhone';
+    return navigator.platform || 'Unbekanntes Geraet';
+}
+
+function getStorageJson(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function setStorageJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getCustomersLocal() {
+    return getStorageJson('brugger_customers', []);
+}
+
+function setCustomersLocal(customers, updatedAt = new Date().toISOString()) {
+    setStorageJson('brugger_customers', customers);
+    localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.customersUpdatedAt, updatedAt);
+}
+
+function getTemplatesLocal() {
+    return getStorageJson('brugger_templates', JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)));
+}
+
+function setTemplatesLocal(templates, updatedAt = new Date().toISOString()) {
+    setStorageJson('brugger_templates', templates);
+    localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.templatesUpdatedAt, updatedAt);
+}
+
+function getSharedStateUpdatedAt(entityType) {
+    const key = entityType === 'customers' ? CLOUD_SYNC_STORAGE_KEYS.customersUpdatedAt : CLOUD_SYNC_STORAGE_KEYS.templatesUpdatedAt;
+    return localStorage.getItem(key) || '';
+}
+
+function buildSharedStateRecord(entityType, payload) {
+    return {
+        entity_type: entityType,
+        updated_at: new Date().toISOString(),
+        device_name: getCloudDeviceName(),
+        payload
+    };
+}
+
+function getCloudSyncTimestampKey(entityType) {
+    if (entityType === 'reports') return CLOUD_SYNC_STORAGE_KEYS.reportsSyncedAt;
+    if (entityType === 'customers') return CLOUD_SYNC_STORAGE_KEYS.customersSyncedAt;
+    return CLOUD_SYNC_STORAGE_KEYS.templatesSyncedAt;
+}
+
+function markCloudSyncTimestamp(entityType, timestamp = new Date().toISOString()) {
+    localStorage.setItem(getCloudSyncTimestampKey(entityType), timestamp);
+    renderCloudSyncTimestamps();
+}
+
+function getCloudSyncTimestamp(entityType) {
+    return localStorage.getItem(getCloudSyncTimestampKey(entityType)) || '';
+}
+
+function formatCloudSyncTimestamp(timestamp) {
+    if (!timestamp) return 'Noch nie';
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return 'Noch nie';
+    return date.toLocaleString('de-AT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function renderCloudSyncTimestamps() {
+    const reportsEl = document.getElementById('settingsCloudReportsLastSync');
+    const customersEl = document.getElementById('settingsCloudCustomersLastSync');
+    const templatesEl = document.getElementById('settingsCloudTemplatesLastSync');
+    if (reportsEl) reportsEl.textContent = formatCloudSyncTimestamp(getCloudSyncTimestamp('reports'));
+    if (customersEl) customersEl.textContent = formatCloudSyncTimestamp(getCloudSyncTimestamp('customers'));
+    if (templatesEl) templatesEl.textContent = formatCloudSyncTimestamp(getCloudSyncTimestamp('templates'));
+}
+
+function updateCloudSyncStatus(message) {
+    cloudSyncStatusMessage = message;
+    const el = document.getElementById('settingsCloudSyncStatus');
+    if (el) el.textContent = message;
+    const subtitle = document.getElementById('cloudReportsSubtitle');
+    if (subtitle && (!cloudReportsCache.length || !isCloudSyncConfigured())) subtitle.textContent = message;
+}
+
+function buildCloudSyncHeaders(includeJson = true) {
+    const cfg = getCloudSyncConfig();
+    const headers = {
+        apikey: cfg.key,
+        Authorization: `Bearer ${cfg.key}`
+    };
+    if (includeJson) headers['Content-Type'] = 'application/json';
+    return headers;
+}
+
+async function supabaseRequest(path, options = {}) {
+    const cfg = getCloudSyncConfig();
+    if (!isCloudSyncConfigured()) throw new Error('Cloud-Sync ist nicht konfiguriert.');
+    const response = await fetch(`${cfg.url}/rest/v1/${path}`, {
+        ...options,
+        headers: {
+            ...buildCloudSyncHeaders(options.body !== undefined),
+            ...(options.headers || {})
+        }
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Cloud-Fehler ${response.status}`);
+    }
+    if (response.status === 204) return null;
+    return response.json();
+}
+
+async function pushSharedStateToCloud(entityType, payload) {
+    if (!isCloudSyncConfigured()) return false;
+    const record = buildSharedStateRecord(entityType, payload);
+    await supabaseRequest(`${CLOUD_SYNC_STATE_TABLE}?on_conflict=entity_type`, {
+        method: 'POST',
+        headers: {
+            Prefer: 'resolution=merge-duplicates,return=representation'
+        },
+        body: JSON.stringify(record)
+    });
+    if (entityType === 'customers') setCustomersLocal(payload, record.updated_at);
+    if (entityType === 'templates') setTemplatesLocal(payload, record.updated_at);
+    markCloudSyncTimestamp(entityType, record.updated_at);
+    return true;
+}
+
+function applySharedStateRecord(record) {
+    if (!record?.entity_type) return;
+    const localUpdatedAt = getSharedStateUpdatedAt(record.entity_type);
+    const cloudUpdatedAt = record.updated_at || '';
+    if (localUpdatedAt && cloudUpdatedAt && new Date(localUpdatedAt) > new Date(cloudUpdatedAt)) return;
+
+    if (record.entity_type === 'customers' && Array.isArray(record.payload)) {
+        setCustomersLocal(record.payload, cloudUpdatedAt || new Date().toISOString());
+    }
+    if (record.entity_type === 'templates' && Array.isArray(record.payload)) {
+        textTemplates = record.payload;
+        setTemplatesLocal(record.payload, cloudUpdatedAt || new Date().toISOString());
+        if (document.getElementById('tmSelect')) refreshTemplateSelect();
+        if (currentApp === 'LO') applyTemplateVisibility();
+    }
+}
+
+async function fetchCloudSharedState() {
+    if (!isCloudSyncConfigured()) {
+        cloudSharedStateCache = { customers: null, templates: null };
+        return cloudSharedStateCache;
+    }
+    try {
+        const rows = await supabaseRequest(`${CLOUD_SYNC_STATE_TABLE}?select=entity_type,updated_at,device_name,payload&in=entity_type.(customers,templates)`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        });
+        cloudSharedStateCache = { customers: null, templates: null };
+        (Array.isArray(rows) ? rows : []).forEach(row => {
+            cloudSharedStateCache[row.entity_type] = row;
+            applySharedStateRecord(row);
+            if (row.entity_type === 'customers' || row.entity_type === 'templates') markCloudSyncTimestamp(row.entity_type, row.updated_at || new Date().toISOString());
+        });
+    } catch (e) {
+        console.error('Cloud shared-state fetch failed', e);
+        updateCloudSyncStatus(`Cloud-Sync Fehler: ${e.message}`);
+    }
+    return cloudSharedStateCache;
+}
+
+function scheduleSharedStateSync(entityType, payload) {
+    if (!isCloudSyncConfigured()) return;
+    pendingSharedStateSync[entityType] = payload;
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(() => { flushCloudSync(); }, 1200);
+}
+
+function buildCloudRecord(data) {
+    const meta = collectReportMeta(data);
+    return {
+        draft_id: data.meta?.draftId || ensureCurrentDraftId(),
+        app_type: data.appType,
+        display_name: meta.displayName,
+        short_label: meta.shortLabel,
+        customer_name: meta.customerName || null,
+        address: meta.address || null,
+        place: meta.place || null,
+        project_number: meta.projectNumber || null,
+        report_date: meta.reportDate || null,
+        follow_up_required: !!meta.followUpRequired,
+        follow_up_text: meta.followUpText || null,
+        updated_at: data.meta?.updatedAt || new Date().toISOString(),
+        device_name: getCloudDeviceName(),
+        payload: data
+    };
+}
+
+function mapCloudRecordToOpenJob(record) {
+    return {
+        id: record.draft_id,
+        appType: record.app_type,
+        displayName: record.display_name,
+        shortLabel: record.short_label,
+        customerName: record.customer_name,
+        address: record.address,
+        place: record.place,
+        projectNumber: record.project_number,
+        reportDate: record.report_date,
+        followUpText: record.follow_up_text,
+        updatedAt: record.updated_at
+    };
+}
+
+function getOpenJobsFromCloud() {
+    return cloudReportsCache.filter(report => report.follow_up_required).map(mapCloudRecordToOpenJob);
+}
+
+async function pushReportToCloud(data) {
+    if (!isCloudSyncConfigured()) return false;
+    const record = buildCloudRecord(data);
+    await supabaseRequest(`${CLOUD_SYNC_TABLE}?on_conflict=draft_id`, {
+        method: 'POST',
+        headers: {
+            Prefer: 'resolution=merge-duplicates,return=representation'
+        },
+        body: JSON.stringify(record)
+    });
+    markCloudSyncTimestamp('reports', record.updated_at);
+    return true;
+}
+
+async function fetchCloudReports() {
+    if (!isCloudSyncConfigured()) {
+        cloudReportsCache = [];
+        cloudSharedStateCache = { customers: null, templates: null };
+        updateCloudSyncStatus('Cloud-Sync ist deaktiviert. In den Einstellungen kann die zentrale Synchronisation aktiviert werden.');
+        await refreshCloudReportsUI();
+        await refreshOpenJobsUI();
+        return [];
+    }
+
+    try {
+        const rows = await supabaseRequest(`${CLOUD_SYNC_TABLE}?select=draft_id,app_type,display_name,short_label,customer_name,address,place,project_number,report_date,follow_up_required,follow_up_text,updated_at,device_name,payload&order=updated_at.desc&limit=150`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        });
+        cloudReportsCache = Array.isArray(rows) ? rows : [];
+        if (cloudReportsCache.length) markCloudSyncTimestamp('reports', new Date().toISOString());
+        await fetchCloudSharedState();
+        updateCloudSyncStatus(`Cloud verbunden. ${cloudReportsCache.length} Bericht(e), Kunden und Vorlagen geladen.`);
+    } catch (e) {
+        console.error('Cloud fetch failed', e);
+        updateCloudSyncStatus(`Cloud-Sync Fehler: ${e.message}`);
+    }
+
+    await refreshCloudReportsUI();
+    await refreshOpenJobsUI();
+    return cloudReportsCache;
+}
+
+async function loadCloudReport(draftId) {
+    const record = cloudReportsCache.find(item => item.draft_id === draftId);
+    if (!record?.payload) {
+        showToast('Cloud-Bericht konnte nicht geladen werden.', 'error');
+        return;
+    }
+    startApp(record.app_type || 'LO');
+    requestAnimationFrame(() => {
+        restoreFromData(record.payload);
+        hasUnsavedChanges = false;
+        updateSaveStatus('Cloud-Bericht geladen', 'saved');
+        showToast('Cloud-Bericht geladen', 'success');
+    });
+}
+
+async function refreshCloudReportsUI() {
+    const panel = document.getElementById('cloudReportsPanel');
+    const list = document.getElementById('cloudReportsList');
+    const subtitle = document.getElementById('cloudReportsSubtitle');
+    if (!panel || !list || !subtitle) return;
+
+    clearElement(list);
+
+    if (!isCloudSyncConfigured()) {
+        panel.classList.remove('is-visible');
+        subtitle.textContent = cloudSyncStatusMessage;
+        return;
+    }
+
+    panel.classList.add('is-visible');
+    subtitle.textContent = cloudReportsCache.length ? `Zentral gespeicherte Berichte von allen Geraeten. Stand: ${formatOpenJobTimestamp(new Date().toISOString())}` : cloudSyncStatusMessage;
+
+    if (!cloudReportsCache.length) return;
+
+    cloudReportsCache.forEach(report => {
+        const item = document.createElement('div');
+        item.className = 'open-job-item';
+
+        const main = document.createElement('div');
+        main.className = 'open-job-main';
+
+        const name = document.createElement('p');
+        name.className = 'open-job-name';
+        name.textContent = report.display_name || report.short_label || 'Synchronisierter Bericht';
+
+        const meta = document.createElement('p');
+        meta.className = 'open-job-meta';
+        meta.textContent = [report.app_type, report.device_name, formatOpenJobTimestamp(report.updated_at)].filter(Boolean).join(' | ');
+
+        main.appendChild(name);
+        main.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'open-job-actions';
+
+        const loadBtn = document.createElement('button');
+        loadBtn.type = 'button';
+        loadBtn.className = 'open-job-btn primary';
+        loadBtn.textContent = 'Laden';
+        loadBtn.addEventListener('click', () => loadCloudReport(report.draft_id));
+
+        actions.appendChild(loadBtn);
+        item.appendChild(main);
+        item.appendChild(actions);
+        list.appendChild(item);
+    });
+}
+
+function scheduleCloudSync(data) {
+    if (!isCloudSyncConfigured()) return;
+    pendingCloudSyncData = data;
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(() => { flushCloudSync(); }, 1200);
+}
+
+async function flushCloudSync(forceData = null) {
+    if (!isCloudSyncConfigured() || cloudSyncInFlight) return;
+    const data = forceData || pendingCloudSyncData;
+    const sharedEntries = Object.entries(pendingSharedStateSync);
+    if (!data && !sharedEntries.length) return;
+    pendingCloudSyncData = null;
+    pendingSharedStateSync = {};
+    cloudSyncInFlight = true;
+    try {
+        if (data) await pushReportToCloud(data);
+        for (const [entityType, payload] of sharedEntries) {
+            await pushSharedStateToCloud(entityType, payload);
+        }
+        updateCloudSyncStatus(`Cloud-Sync erfolgreich ${formatStatusTime()}`);
+        await fetchCloudReports();
+    } catch (e) {
+        console.error('Cloud sync failed', e);
+        updateCloudSyncStatus(`Cloud-Sync Fehler: ${e.message}`);
+    } finally {
+        cloudSyncInFlight = false;
+    }
+}
+
+async function syncCloudNow() {
+    if (!currentApp) {
+        await fetchCloudReports();
+        showToast('Cloud-Berichte aktualisiert', 'success');
+        return;
+    }
+    const data = getReportData();
+    const previousStatus = cloudSyncStatusMessage;
+    await flushCloudSync(data);
+    const failed = cloudSyncStatusMessage.includes('Fehler') && previousStatus !== cloudSyncStatusMessage;
+    showToast(failed ? 'Cloud-Synchronisation fehlgeschlagen' : 'Cloud-Synchronisation abgeschlossen', failed ? 'error' : 'success');
+}
+
+async function refreshCloudReportsNow() {
+    await fetchCloudReports();
+    showToast('Cloud-Berichte aktualisiert', 'success');
 }
 
 function buildReportBaseName() {
@@ -4165,6 +4619,7 @@ async function exportFullReport() {
     saveCustomers(); 
     const d = getReportData();
     await syncOpenConstructionState(d);
+    scheduleCloudSync(d);
     const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok';
     const jsonStr = JSON.stringify(d);
     const exportBlob = new Blob([jsonStr], { type: REPORT_FILE_MIME });
@@ -4207,7 +4662,7 @@ async function exportFullReport() {
 
 function importFromStart(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
-    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); syncOpenConstructionState(d); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); syncOpenConstructionState(d); scheduleCloudSync(d); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
     r.readAsText(f); inp.value='';
 }
 
@@ -4257,7 +4712,7 @@ let sigCtx = null;
    CUSTOMER DATABASE
    ========================================================= */
 function saveCustomers() {
-    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    let customers = getCustomersLocal();
     const save = (prefix) => {
         const name = document.getElementById(prefix + 'name')?.value.trim();
         const adr = document.getElementById(prefix + 'adresse')?.value.trim();
@@ -4270,7 +4725,8 @@ function saveCustomers() {
     };
     save('');
     if (document.getElementById('checkAuftraggeber')?.checked) save('auftraggeber_');
-    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+    setCustomersLocal(customers);
+    scheduleSharedStateSync('customers', customers);
 }
 
 const debouncedCustomerSearch = debounce(handleCustomerSearch, 200);
@@ -4332,9 +4788,10 @@ function handleCustomerSearch(input, type) {
 
 function deleteCustomer(id, type) {
     if(!confirm("Diesen Eintrag wirklich löschen?")) return;
-    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    let customers = getCustomersLocal();
     customers = customers.filter(c => c.id !== id);
-    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+    setCustomersLocal(customers);
+    scheduleSharedStateSync('customers', customers);
     const input = document.getElementById(type === 'main' ? 'mainCustomerSearch' : 'billingCustomerSearch');
     if(input) handleCustomerSearch(input, type);
     showToast("Eintrag gelöscht", "info");
@@ -4353,7 +4810,7 @@ function selectCustomer(customerId, type) {
 }
 
 function exportCustomers() {
-    const customers = localStorage.getItem('brugger_customers') || '[]';
+    const customers = JSON.stringify(getCustomersLocal());
     const a = document.createElement('a'); 
     a.href = URL.createObjectURL(new Blob([customers], {type:'application/json'}));
     a.download = 'Brugger_Kunden_' + new Date().toISOString().split('T')[0] + '.json'; 
@@ -4365,9 +4822,11 @@ function importCustomers(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
     r.onload = e => {
         try { const data = JSON.parse(e.target.result); if(Array.isArray(data)) {
-            let existing = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+            let existing = getCustomersLocal();
             data.forEach(newCust => { const idx = existing.findIndex(c => c.name === newCust.name && c.plz === newCust.plz); if(idx > -1) existing[idx] = {...existing[idx], ...newCust}; else existing.push(newCust); });
-            localStorage.setItem('brugger_customers', JSON.stringify(existing)); showToast("Kundenliste importiert", "success");
+            setCustomersLocal(existing);
+            scheduleSharedStateSync('customers', existing);
+            showToast("Kundenliste importiert", "success");
         } } catch(err) { showToast("Ungültige Datei", "error"); }
     }; r.readAsText(f); inp.value = '';
 }
@@ -4474,6 +4933,7 @@ async function saveOpenConstructionNow() {
     const data = getReportData();
     await idbSet(AUTOSAVE_KEY, data);
     await syncOpenConstructionState(data);
+    scheduleCloudSync(data);
     updateSaveStatus(`Offene Baustelle gesichert ${formatStatusTime()}`, 'saved');
     showToast('Offene Baustelle wurde gesichert', 'success');
 }
@@ -4572,7 +5032,7 @@ async function refreshOpenJobsUI() {
     const quickBtn = document.getElementById('btnResumeOpenJob');
     if (!panel || !list || !quickBtn) return;
 
-    const jobs = await getOpenJobsIndex();
+    const jobs = isCloudSyncConfigured() && cloudReportsCache.length ? getOpenJobsFromCloud() : await getOpenJobsIndex();
     clearElement(list);
 
     if (!jobs.length) {
@@ -4673,6 +5133,7 @@ async function saveToLocal() {
     hasUnsavedChanges = true;
     await idbSet(AUTOSAVE_KEY, d);
     await syncOpenConstructionState(d);
+    scheduleCloudSync(d);
     updateSaveStatus(`Lokal gesichert ${formatStatusTime()}`, 'saved');
 }
 
@@ -4690,7 +5151,7 @@ async function restoreAutosave() {
     if(!saved) return;
     try {
         startApp(saved.appType);
-        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); syncOpenConstructionState(saved); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); syncOpenConstructionState(saved); scheduleCloudSync(saved); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
     } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
 }
 
@@ -4706,6 +5167,8 @@ function initializeApp() {
         loadTemplates();
         checkAutoSave();
         refreshOpenJobsUI();
+        fetchCloudReports();
+        renderCloudSyncTimestamps();
         applyTheme();
         
         const appRoot = document.getElementById('app-root');
@@ -4865,6 +5328,13 @@ function openSettings() {
     document.getElementById('settingsEmail').value = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
     document.getElementById('settingsTechnician').value = localStorage.getItem('brugger_techniker') || '';
     document.getElementById('settingsDarkMode').checked = localStorage.getItem('brugger_darkmode') === 'true';
+    const cloudCfg = getCloudSyncConfig();
+    document.getElementById('settingsCloudSyncEnabled').checked = cloudCfg.enabled;
+    document.getElementById('settingsCloudSyncUrl').value = cloudCfg.url;
+    document.getElementById('settingsCloudSyncKey').value = cloudCfg.key;
+    document.getElementById('settingsCloudSyncDevice').value = cloudCfg.device;
+    renderCloudSyncTimestamps();
+    updateCloudSyncStatus(isCloudSyncConfigured() ? cloudSyncStatusMessage : 'Fuer die Cloud-Sync werden die Supabase-Tabellen `brugger_reports` und `brugger_sync_state` benoetigt.');
 }
 function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
 function saveSettings() {
@@ -4873,8 +5343,17 @@ function saveSettings() {
     if(email) localStorage.setItem('brugger_email', email); else localStorage.removeItem('brugger_email');
     if(tech) localStorage.setItem('brugger_techniker', tech); else localStorage.removeItem('brugger_techniker');
     localStorage.setItem('brugger_darkmode', document.getElementById('settingsDarkMode').checked);
+    localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.enabled, document.getElementById('settingsCloudSyncEnabled').checked);
+    const cloudUrl = document.getElementById('settingsCloudSyncUrl').value.trim();
+    const cloudKey = document.getElementById('settingsCloudSyncKey').value.trim();
+    const cloudDevice = document.getElementById('settingsCloudSyncDevice').value.trim();
+    if(cloudUrl) localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.url, cloudUrl); else localStorage.removeItem(CLOUD_SYNC_STORAGE_KEYS.url);
+    if(cloudKey) localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.key, cloudKey); else localStorage.removeItem(CLOUD_SYNC_STORAGE_KEYS.key);
+    if(cloudDevice) localStorage.setItem(CLOUD_SYNC_STORAGE_KEYS.device, cloudDevice); else localStorage.removeItem(CLOUD_SYNC_STORAGE_KEYS.device);
     applyTheme();
-    closeSettings(); showToast("Einstellungen gespeichert", "success");
+    closeSettings();
+    fetchCloudReports();
+    showToast("Einstellungen gespeichert", "success");
 }
 
 /* =========================================================
@@ -4884,7 +5363,7 @@ function loadTemplates() {
     try {
         const stored = localStorage.getItem('brugger_templates');
         if(stored) textTemplates = JSON.parse(stored);
-        else { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); }
+        else { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); setTemplatesLocal(textTemplates); }
     } catch(e) { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); }
 }
 
@@ -4910,12 +5389,12 @@ function saveTemplate() {
     if(!title || !text) return showToast("Bitte Titel und Text eingeben", "error");
     const val = document.getElementById('tmSelect').value; const newTpl = { id: title.toLowerCase().replace(/[^a-z0-9]/g, '_'), category, title, text };
     if (val === 'new') textTemplates.push(newTpl); else textTemplates[val] = newTpl;
-    localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gespeichert", "success"); refreshTemplateSelect();
+    setTemplatesLocal(textTemplates); scheduleSharedStateSync('templates', textTemplates); showToast("Vorlage gespeichert", "success"); refreshTemplateSelect();
     if(currentApp === 'LO') applyTemplateVisibility();
 }
 function deleteSelectedTemplate() {
     const val = document.getElementById('tmSelect').value; if(val === 'new') return;
-    if(confirm("Vorlage wirklich löschen?")) { textTemplates.splice(val, 1); localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gelöscht", "info"); refreshTemplateSelect(); if(currentApp === 'LO') applyTemplateVisibility(); }
+    if(confirm("Vorlage wirklich löschen?")) { textTemplates.splice(val, 1); setTemplatesLocal(textTemplates); scheduleSharedStateSync('templates', textTemplates); showToast("Vorlage gelöscht", "info"); refreshTemplateSelect(); if(currentApp === 'LO') applyTemplateVisibility(); }
 }
 
 function hardResetApp() {
