@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Brugger Berichte" />
-    <title>Brugger Formulare 4.0</title>
+    <title>Brugger Formulare 4.1</title>
     <link rel="manifest" id="manifest-placeholder">
 
     <style>
@@ -385,14 +385,15 @@
                 border: none !important;
                 width: 210mm !important;
                 max-width: 210mm !important;
-                height: auto !important;
-                min-height: 297mm !important;
-                padding: 7mm 8mm 8mm 8mm !important;
-                page-break-after: auto !important;
-                page-break-inside: auto !important;
-                break-inside: auto !important;
+                height: 297mm !important;
+                min-height: 0 !important;
+                padding: 7mm 8mm 14mm 8mm !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                break-after: page !important;
+                break-inside: avoid !important;
                 border-radius: 0 !important;
-                overflow: visible !important;
+                overflow: hidden !important;
                 position: relative;
                 left: auto !important;
                 right: auto !important;
@@ -400,12 +401,19 @@
                 float: none !important;
                 background: #ffffff !important;
             }
+            .page:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
             .page::before {
                 content: none !important;
             }
             
-            #sketchPage { page-break-before: always !important; break-before: page !important; }
-            #photoPagesContainer .page { page-break-before: always !important; break-before: page !important; }
+            #sketchPage,
+            #photoPagesContainer .page {
+                page-break-before: auto !important;
+                break-before: auto !important;
+            }
             
             .header {
                 border: 1px solid #d9e1ea !important;
@@ -474,7 +482,7 @@
                 line-height: 1.2 !important;
             }
             .label { font-size: 9px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; color: #6b7280 !important; }
-            .footer { position: static; margin-top: 4mm; left: auto; right: auto; bottom: auto; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 5px !important; font-size: 8.8px !important; }
+            .footer { position: absolute !important; left: 8mm !important; right: 8mm !important; bottom: 6mm !important; margin-top: 0 !important; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 4px !important; font-size: 8.8px !important; }
             textarea { display: none !important; }
             .print-textarea-clone {
                 display: block !important;
@@ -560,6 +568,23 @@
             #ueberpruefteBauteileContainer:not(:has(input:checked)),
             #poolBauteileContainer:not(:has(input:checked)) {
                 display: none !important;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            @media print {
+                html, body {
+                    width: auto !important;
+                    min-width: 0 !important;
+                    max-width: none !important;
+                }
+
+                .page {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    height: 296mm !important;
+                    min-height: 0 !important;
+                }
             }
         }
 
@@ -725,6 +750,27 @@
             color: var(--gray-600);
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
+        }
+        .workflow-hint-box {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1e3a8a;
+            text-align: left;
+        }
+        .workflow-hint-box strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .workflow-hint-box p {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.5;
         }
         .open-jobs-sort {
             display: flex;
@@ -1227,9 +1273,13 @@
             <p id="cloudReportsSubtitle" class="open-jobs-subtitle">Cloud-Sync ist deaktiviert. In den Einstellungen kann die zentrale Synchronisation aktiviert werden.</p>
             <div id="cloudReportsList" class="open-jobs-list"></div>
         </div>
+        <div class="workflow-hint-box">
+            <strong>OneDrive Hinweis</strong>
+            <p>Offene Baustellen bitte immer im gemeinsamen OneDrive-Ordner unter Offene Baustellen als .lok speichern, damit sie auf allen Geräten sichtbar und wieder ladbar sind.</p>
+        </div>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
         <button type="button" class="text-link-btn" onclick="openSettings()">⚙️ E-Mail Einstellungen</button>
-        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.0</div>
+        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.1</div>
     </div>
 </div>
 
@@ -1313,6 +1363,7 @@
                     <div>Textvorlagen: <span id="settingsCloudTemplatesLastSync">Noch nie</span></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="testSupabaseConnection()">Verbindung testen</button>
                     <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="syncCloudNow()">Jetzt synchronisieren</button>
                     <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="refreshCloudReportsNow()">Cloud neu laden</button>
                 </div>
@@ -1560,9 +1611,9 @@
                     <div id="boxArbeitszeitOrtungsgas" style="display: grid; grid-template-columns: 1fr; gap: 6px; align-content: start;">
                         <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Arbeitszeit</span><input type="text" placeholder="z.B. 1.5 Std" id="arbeitszeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
                         <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzone</span><select id="fahrzone_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Ortungsgas</span><select id="ortungsgas_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Fahrzone</span><select id="fahrzone_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="fahrzone_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Ortungsgas</span><select id="ortungsgas_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="ortungsgas_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="faerbemittel_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
                     </div>
                 </div>
             </div>
@@ -2747,18 +2798,23 @@ function preparePrintView() {
     });
 
     const opts = [
-        { id: 'arbeitszeit_input', def: '' },
-        { id: 'ortungsgas_select', def: '0' },
-        { id: 'fahrzeit_input', def: '' },
-        { id: 'fahrzone_select', def: '' },
-        { id: 'faerbemittel_input', def: '' }
+        { ids: ['arbeitszeit_input'], defaults: [''] },
+        { ids: ['fahrzeit_input'], defaults: [''] },
+        { ids: ['fahrzone_select', 'fahrzone_qty'], defaults: ['', ''] },
+        { ids: ['ortungsgas_select', 'ortungsgas_qty'], defaults: ['0', ''] },
+        { ids: ['faerbemittel_input', 'faerbemittel_qty'], defaults: ['', ''] }
     ];
     opts.forEach(o => {
-        const el = document.getElementById(o.id);
-        if(el && el.parentElement) {
-            const val = el.value.trim();
-            if(val === o.def || val === '- wählen -') el.parentElement.classList.add('no-print', 'temp-hide');
-            else el.parentElement.classList.remove('no-print');
+        const firstEl = document.getElementById(o.ids[0]);
+        if(firstEl && firstEl.parentElement) {
+            const hasValue = o.ids.some((id, index) => {
+                const field = document.getElementById(id);
+                if (!field) return false;
+                const value = String(field.value || '').trim();
+                return value !== o.defaults[index] && value !== '- wählen -';
+            });
+            if(!hasValue) firstEl.parentElement.classList.add('no-print', 'temp-hide');
+            else firstEl.parentElement.classList.remove('no-print');
         }
     });
 
@@ -3330,6 +3386,31 @@ async function syncCloudNow() {
     await flushCloudSync(data);
     const failed = cloudSyncStatusMessage.includes('Fehler') && previousStatus !== cloudSyncStatusMessage;
     showToast(failed ? 'Cloud-Synchronisation fehlgeschlagen' : 'Cloud-Synchronisation abgeschlossen', failed ? 'error' : 'success');
+}
+
+async function testSupabaseConnection() {
+    if (!isCloudSyncConfigured()) {
+        updateCloudSyncStatus('Bitte zuerst Supabase URL, API Key und Cloud-Sync aktivieren.');
+        showToast('Supabase ist noch nicht vollständig konfiguriert', 'info');
+        return;
+    }
+    try {
+        updateCloudSyncStatus('Supabase Verbindung wird geprüft...');
+        await supabaseRequest(`${CLOUD_SYNC_TABLE}?select=draft_id&limit=1`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        });
+        await supabaseRequest(`${CLOUD_SYNC_STATE_TABLE}?select=entity_type&limit=1`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+        });
+        updateCloudSyncStatus('Supabase Verbindung erfolgreich. Beide Tabellen sind erreichbar.');
+        showToast('Supabase Verbindung erfolgreich', 'success');
+    } catch (e) {
+        console.error('Supabase connection test failed', e);
+        updateCloudSyncStatus(`Supabase Test fehlgeschlagen: ${e.message}`);
+        showToast('Supabase Test fehlgeschlagen', 'error');
+    }
 }
 
 async function refreshCloudReportsNow() {
