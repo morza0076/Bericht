@@ -363,19 +363,30 @@
            PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
-            html, body { background: #fff; padding: 0; margin: 0; height: auto !important; overflow: visible !important; font-size: 0 !important; }
+            html, body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                width: 210mm !important;
+                min-width: 210mm !important;
+                max-width: 210mm !important;
+                height: auto !important;
+                overflow: visible !important;
+                font-size: 0 !important;
+                -webkit-text-size-adjust: 100% !important;
+            }
             #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal, #photoEditorModal, #settingsModal, #toast-container { display: none !important; }
             .logo { background: transparent !important; } /* Logo-Hintergrund im Druck entfernen */
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
             .page {
-                margin: 0 !important;
+                margin: 0 auto !important;
                 box-shadow: none !important;
                 border: none !important;
-                width: auto !important;
-                max-width: none !important;
+                width: 210mm !important;
+                max-width: 210mm !important;
                 height: auto !important;
-                min-height: 0 !important;
+                min-height: 297mm !important;
                 padding: 7mm 8mm 8mm 8mm !important;
                 page-break-after: auto !important;
                 page-break-inside: auto !important;
@@ -383,6 +394,8 @@
                 border-radius: 0 !important;
                 overflow: visible !important;
                 position: relative;
+                left: auto !important;
+                right: auto !important;
                 font-size: 10.4px !important;
                 float: none !important;
                 background: #ffffff !important;
