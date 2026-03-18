@@ -1204,7 +1204,7 @@
         <hr style="border:0; border-top:1px solid var(--gray-200); margin: 25px 0;">
         <button id="btnRestoreAutosave" class="menu-btn secondary" style="display:none; background: linear-gradient(145deg, #e67e22, #d35400);" onclick="restoreAutosave()">🔄 Letzten Entwurf wiederherstellen</button>
         <button id="btnResumeOpenJob" class="menu-btn blue" style="display:none;" onclick="resumeLatestOpenJob()">🧰 Baustelle fortsetzen</button>
-        <input type="file" id="startImportFile" accept=".lok,application/json" style="display:none" onchange="importFromStart(this)">
+        <input type="file" id="startImportFile" accept=".lok,.json,application/x-brugger-lok,application/json,text/plain" style="display:none" onchange="importFromStart(this)">
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
         <div id="openJobsPanel" class="open-jobs-panel">
             <div class="open-jobs-header">
@@ -2329,6 +2329,7 @@ const DB_NAME = 'BruggerAppDB';
 const STORE_NAME = 'autosaveStore';
 const AUTOSAVE_KEY = 'brugger_autosave';
 const OPEN_JOBS_INDEX_KEY = 'brugger_open_jobs_index';
+const REPORT_FILE_MIME = 'application/x-brugger-lok';
 
 const initDB = () => new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -2768,7 +2769,7 @@ function maybeShowIOSExportHint(context) {
 async function shareFileOnIOS(blob, fileName) {
     if (!isIOSLikeDevice() || typeof navigator.share !== 'function' || typeof File === 'undefined') return false;
     try {
-        const file = new File([blob], fileName, { type: blob.type || 'application/octet-stream' });
+        const file = new File([blob], fileName, { type: blob.type || REPORT_FILE_MIME });
         if (typeof navigator.canShare === 'function' && !navigator.canShare({ files: [file] })) return false;
         await navigator.share({ files: [file], title: fileName });
         return true;
@@ -4166,13 +4167,13 @@ async function exportFullReport() {
     await syncOpenConstructionState(d);
     const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok';
     const jsonStr = JSON.stringify(d);
-    const exportBlob = new Blob([jsonStr], { type:'application/json' });
+    const exportBlob = new Blob([jsonStr], { type: REPORT_FILE_MIME });
 
     try {
         if (window.showSaveFilePicker) {
             const handle = await window.showSaveFilePicker({
                 suggestedName: fileName,
-                types: [{ description: 'Brugger Bericht', accept: { 'application/json': ['.lok'] } }],
+                types: [{ description: 'Brugger Bericht', accept: { [REPORT_FILE_MIME]: ['.lok'], 'application/json': ['.json'] } }],
             });
             const writable = await handle.createWritable();
             await writable.write(jsonStr);
