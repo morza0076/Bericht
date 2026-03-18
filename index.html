@@ -78,7 +78,7 @@
         body.dark-mode .logo { background: rgba(255,255,255,0.9); padding: 2px 5px; border-radius: 4px; }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { size: A4; margin: 0 !important; }
+        @page { size: A4; margin: 3mm !important; }
 
         body { 
             font-family: var(--font-main);
@@ -367,9 +367,9 @@
                 background: #fff;
                 padding: 0;
                 margin: 0;
-                width: 210mm !important;
-                min-width: 210mm !important;
-                max-width: 210mm !important;
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: none !important;
                 height: auto !important;
                 overflow: visible !important;
                 font-size: 0 !important;
@@ -380,14 +380,14 @@
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
             .page {
-                margin: 0 auto !important;
+                margin: 0 auto 1.5mm auto !important;
                 box-shadow: none !important;
                 border: none !important;
-                width: 210mm !important;
-                max-width: 210mm !important;
-                height: 297mm !important;
+                width: 200mm !important;
+                max-width: 200mm !important;
+                height: 285mm !important;
                 min-height: 0 !important;
-                padding: 7mm 8mm 14mm 8mm !important;
+                padding: 5mm 6mm 10mm 6mm !important;
                 page-break-after: always !important;
                 page-break-inside: avoid !important;
                 break-after: page !important;
@@ -397,7 +397,7 @@
                 position: relative;
                 left: auto !important;
                 right: auto !important;
-                font-size: 10.4px !important;
+                font-size: 9.7px !important;
                 float: none !important;
                 background: #ffffff !important;
             }
@@ -419,14 +419,14 @@
                 border: 1px solid #d9e1ea !important;
                 border-radius: 14px !important;
                 background: #ffffff !important;
-                margin-bottom: 10px !important;
-                padding: 12px 14px 14px 14px !important;
+                margin-bottom: 7px !important;
+                padding: 9px 11px 10px 11px !important;
             }
             .header-top { margin-bottom: 8px !important; align-items: flex-start !important; }
             .header-title {
                 background: transparent !important;
                 padding: 0 !important;
-                font-size: 18px !important;
+                font-size: 15.5px !important;
                 text-align: left !important;
                 border: none !important;
                 letter-spacing: 0.04em !important;
@@ -441,11 +441,11 @@
                 background: #ffffff !important;
                 padding: 7px 9px !important;
             }
-            .header-right strong { font-size: 11.8px !important; margin-bottom: 1px !important; color: var(--primary) !important; letter-spacing: 0.05em !important; text-transform: uppercase !important; }
-            .logo { max-height: 55px !important; }
+            .header-right strong { font-size: 10.6px !important; margin-bottom: 1px !important; color: var(--primary) !important; letter-spacing: 0.05em !important; text-transform: uppercase !important; }
+            .logo { max-height: 46px !important; }
             .section {
-                margin-bottom: 6px !important;
-                padding: 9px 11px 10px 11px !important;
+                margin-bottom: 4px !important;
+                padding: 6px 8px 7px 8px !important;
                 border: 1px solid #e3e8ef !important;
                 border-radius: 14px !important;
                 background: #ffffff !important;
@@ -455,15 +455,15 @@
                 color: var(--primary) !important;
                 border-bottom: 1px solid #e0e6ed !important;
                 padding: 0 0 5px 0 !important;
-                margin-bottom: 8px !important;
-                font-size: 9.8px !important;
+                margin-bottom: 5px !important;
+                font-size: 9px !important;
                 letter-spacing: 0.08em !important;
             }
             #mainPage .section:first-of-type > h2 {
                 background: #fff !important;
                 border-bottom: none !important;
             }
-            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 5px 9px !important; margin-top: 1px !important; }
+            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 3px 7px !important; margin-top: 1px !important; }
             #mainPage .section:first-of-type > .grid {
                 gap: 5px 10px !important;
                 margin-bottom: 5px !important;
@@ -481,14 +481,14 @@
                 margin-bottom: 3px !important;
                 line-height: 1.2 !important;
             }
-            .label { font-size: 9px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; color: #6b7280 !important; }
-            .footer { position: absolute !important; left: 8mm !important; right: 8mm !important; bottom: 6mm !important; margin-top: 0 !important; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 4px !important; font-size: 8.8px !important; }
+            .label { font-size: 8.3px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; color: #6b7280 !important; }
+            .footer { position: absolute !important; left: 6mm !important; right: 6mm !important; bottom: 4mm !important; margin-top: 0 !important; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 2px !important; font-size: 7.9px !important; }
             textarea { display: none !important; }
             .print-textarea-clone {
                 display: block !important;
                 width: 100% !important;
-                font-size: 10.3px !important;
-                line-height: 1.35 !important;
+                font-size: 9.5px !important;
+                line-height: 1.2 !important;
                 white-space: pre-wrap !important;
                 word-wrap: break-word !important;
                 margin: 0 !important;
@@ -503,15 +503,15 @@
             input:not([type="checkbox"]), select, .photo-desc {
                 border: none !important;
                 background: transparent !important;
-                padding: 2px 0 !important;
+                padding: 1px 0 !important;
                 -webkit-appearance: none;
                 appearance: none;
-                font-size: 10.2px !important;
+                font-size: 9.4px !important;
                 margin: 0 !important;
                 border-radius: 0 !important;
                 height: auto !important;
                 min-height: 0 !important;
-                line-height: 1.2 !important;
+                line-height: 1.1 !important;
                 color: inherit !important;
             }
             #mainPage .section:first-of-type input#name,
@@ -520,13 +520,13 @@
             #mainPage .section:first-of-type input#plz,
             #mainPage .section:first-of-type input#ort,
             #mainPage .section:first-of-type input#telefon {
-                font-size: 11px !important;
-                line-height: 1.25 !important;
-                padding: 2px 0 !important;
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+                padding: 1px 0 !important;
             }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; accent-color: var(--primary) !important; }
-            .checkbox-item { font-size: 9.5px !important; padding: 0 !important; margin: 0 !important; gap: 3px !important; line-height: 1.1 !important; }
-            .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 2px !important; }
+            .checkbox-item { font-size: 8.7px !important; padding: 0 !important; margin: 0 !important; gap: 2px !important; line-height: 1 !important; }
+            .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 1px !important; }
             #boxArbeitszeitOrtungsgas { gap: 2px !important; }
             input[type="date"]::-webkit-calendar-picker-indicator,
             input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none !important; }
@@ -536,15 +536,15 @@
             .grid-header { border-bottom: 1px solid #d1d5db; padding-bottom: 3px; margin-bottom: 5px; color: #6b7280 !important; }
             .is-empty-row { display: none !important; }
             
-            .sketch-container { border: 1px solid #d6deeb !important; background: #ffffff !important; box-shadow: none !important; height: 168mm !important; background-image: none !important; margin-top: 0 !important; border-radius: 14px !important; }
+            .sketch-container { border: 1px solid #d6deeb !important; background: #ffffff !important; box-shadow: none !important; height: 148mm !important; background-image: none !important; margin-top: 0 !important; border-radius: 14px !important; }
             #sketch-canvas { position: static !important; width: 100% !important; height: 100% !important; }
             
-            .signature-box { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 6px !important; margin-top: 6px; border-radius: 12px !important; }
-            .signature-pad { border: 1px dashed #b6c1cf !important; background: #ffffff !important; height: 78px !important; border-radius: 10px !important; }
-            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
+            .signature-box { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 4px !important; margin-top: 4px; border-radius: 12px !important; }
+            .signature-pad { border: 1px dashed #b6c1cf !important; background: #ffffff !important; height: 66px !important; border-radius: 10px !important; }
+            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 3px; page-break-inside: auto; }
             .photo-box { border: 1px solid #e3e8ef !important; box-shadow: none !important; padding: 5px !important; page-break-inside: avoid; border-radius: 12px !important; background: #ffffff !important; }
-            .img-container { height: 83mm !important; border: 1px solid #eef2f6 !important; background: #ffffff !important; border-radius: 10px !important; }
-            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 5px !important; margin-bottom: 5px !important; border-radius: 12px !important; }
+            .img-container { height: 70mm !important; border: 1px solid #eef2f6 !important; background: #ffffff !important; border-radius: 10px !important; }
+            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 3px !important; margin-bottom: 3px !important; border-radius: 12px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
             .checkbox-group .checkbox-item:not(:has(input:checked)),
@@ -580,10 +580,11 @@
                 }
 
                 .page {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    height: 296mm !important;
+                    width: 198mm !important;
+                    max-width: 198mm !important;
+                    height: 283mm !important;
                     min-height: 0 !important;
+                    padding: 4.5mm 5.5mm 9mm 5.5mm !important;
                 }
             }
         }
