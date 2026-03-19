@@ -337,7 +337,8 @@
             #controls::-webkit-scrollbar { display: none; }
             #controls .save-status { flex: 0 0 auto; min-width: 220px; }
             #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
-            .page { margin: 15px auto; }
+            .page { margin: 15px auto; min-height: auto; padding-bottom: 16px; }
+            .footer { position: static; left: auto; right: auto; bottom: auto; margin-top: 14px; }
             input, textarea, select { font-size: 16px; padding: 10px; }
             .sketch-container { height: 65vh; }
         }
@@ -1364,7 +1365,158 @@
                 }
 
                 .page {
-                    margin: 20px 10px;
+                    margin: 12px 8px;
+                    min-height: auto;
+                    padding: 8mm 7mm 12px;
+                    border-radius: 16px;
+                }
+
+                .page::before {
+                    height: 4px;
+                }
+
+                .header {
+                    padding: 10px 12px 12px;
+                    margin-bottom: 12px;
+                    border-radius: 14px;
+                }
+
+                .header-top {
+                    margin-bottom: 8px;
+                }
+
+                .header-title {
+                    font-size: 24px;
+                }
+
+                .logo {
+                    max-height: 58px;
+                }
+
+                .header-right {
+                    padding: 6px 10px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    line-height: 1.15;
+                }
+
+                .header-right strong {
+                    font-size: 13px;
+                }
+
+                .section {
+                    margin-bottom: 8px;
+                    padding: 8px 10px 10px;
+                    border-radius: 14px;
+                }
+
+                .section h2 {
+                    margin-bottom: 7px;
+                    padding-bottom: 5px;
+                    font-size: 10px;
+                }
+
+                .section-header-flex {
+                    margin-bottom: 6px;
+                }
+
+                .grid,
+                .grid-3,
+                .grid-1-2,
+                .address-grid {
+                    gap: 8px;
+                }
+
+                .address-grid {
+                    grid-template-columns: 72px 1fr 1.1fr;
+                }
+
+                .address-grid.address-grid-compact {
+                    grid-template-columns: 72px 1fr;
+                }
+
+                .form-divider {
+                    margin-top: 8px;
+                    padding-top: 8px;
+                }
+
+                .label {
+                    font-size: 9px;
+                    margin-bottom: 3px;
+                    line-height: 1.15;
+                }
+
+                input,
+                textarea,
+                select {
+                    padding: 7px 9px;
+                    font-size: 14px;
+                    border-radius: 10px;
+                }
+
+                textarea {
+                    min-height: 30px;
+                    line-height: 1.25;
+                }
+
+                #befund,
+                #reparatur,
+                #interne_notizen,
+                #reparatur_notizen,
+                #bauteile_notizen,
+                #pool_notizen {
+                    min-height: 54px;
+                }
+
+                .checkbox-group,
+                .checkbox-group-3 {
+                    gap: 2px 6px;
+                }
+
+                .checkbox-item {
+                    gap: 4px;
+                    padding: 1px 0;
+                    font-size: 11px;
+                    line-height: 1.15;
+                }
+
+                .checkbox-item input {
+                    width: 12px;
+                    height: 12px;
+                }
+
+                .gps-btn,
+                .mic-btn {
+                    padding: 3px 6px;
+                    font-size: 9px;
+                    gap: 4px;
+                }
+
+                #mainPage .section.no-print {
+                    margin-top: 8px !important;
+                    padding: 8px 10px !important;
+                }
+
+                #mainPage .section.no-print h2 {
+                    margin-bottom: 4px;
+                }
+
+                #mainPage .section.no-print textarea {
+                    min-height: 44px;
+                }
+
+                #boxArbeitszeitOrtungsgas {
+                    gap: 4px !important;
+                }
+
+                .footer {
+                    position: static;
+                    left: auto;
+                    right: auto;
+                    bottom: auto;
+                    margin-top: 6px;
+                    padding-top: 6px;
+                    font-size: 8px;
                 }
             }
 
@@ -1883,6 +2035,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -2082,6 +2235,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -2496,6 +2650,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -2885,6 +3040,18 @@ function startApp(type) {
 function preparePrintView() {
     enablePrintLightMode();
 
+    const togglePrintVisibility = (element, visible) => {
+        if (!element) return;
+        element.classList.toggle('no-print', !visible);
+        element.classList.toggle('temp-hide', !visible);
+    };
+
+    const hasPrintableValue = (field) => {
+        if (!field) return false;
+        const value = String(field.value || '').trim();
+        return value !== '' && value !== '- wählen -' && value !== '0';
+    };
+
     document.querySelectorAll('textarea').forEach(el => {
         let clone = el.nextElementSibling;
         if (!clone || !clone.classList.contains('print-textarea-clone')) {
@@ -2947,6 +3114,38 @@ function preparePrintView() {
 
     document.querySelectorAll('.print-toggle-empty').forEach(el => {
         if (el.value.trim() === '') el.parentElement.classList.add('no-print', 'temp-hide');
+    });
+
+    [
+        'name',
+        'datum',
+        'auftraggeber_name',
+        'auftraggeber_tel'
+    ].forEach(id => {
+        const field = document.getElementById(id);
+        if (!field) return;
+        togglePrintVisibility(field.parentElement, hasPrintableValue(field));
+    });
+
+    [
+        { ids: ['adresse', 'plz', 'ort', 'telefon'] },
+        { ids: ['auftraggeber_adresse', 'auftraggeber_plz', 'auftraggeber_ort'], containerId: 'auftraggeberContainer' }
+    ].forEach(group => {
+        const fields = group.ids.map(id => document.getElementById(id)).filter(Boolean);
+        if (!fields.length) return;
+
+        const hasAnyValue = fields.some(hasPrintableValue);
+        const container = group.containerId
+            ? document.getElementById(group.containerId)
+            : fields[0].parentElement;
+
+        if (!hasAnyValue) {
+            togglePrintVisibility(container, false);
+            return;
+        }
+
+        togglePrintVisibility(container, true);
+        fields.forEach(field => togglePrintVisibility(field, hasPrintableValue(field)));
     });
 
     document.querySelectorAll('.photo-desc').forEach(desc => {
@@ -3534,6 +3733,93 @@ function resetMicBtn() {
    ========================================================= */
 let cropImg = new Image(), cropCvs = null, cropCtx = null, isCrop = false, cx1=0, cy1=0, cx2=0, cy2=0, cScale=1;
 
+let sketchBackgroundSourceData = null;
+let sketchBackgroundFitMode = 'contain';
+
+function drawImageFittedOnCanvas(canvas, source, fitMode = 'contain') {
+    if (!canvas || !source) return;
+    const ctx = canvas.getContext('2d');
+    const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+    const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+    if (!ctx || !sourceWidth || !sourceHeight || !canvas.width || !canvas.height) return;
+
+    const scale = fitMode === 'cover'
+        ? Math.max(canvas.width / sourceWidth, canvas.height / sourceHeight)
+        : Math.min(canvas.width / sourceWidth, canvas.height / sourceHeight);
+    const renderWidth = sourceWidth * scale;
+    const renderHeight = sourceHeight * scale;
+    const offsetX = (canvas.width - renderWidth) / 2;
+    const offsetY = (canvas.height - renderHeight) / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, offsetX, offsetY, renderWidth, renderHeight);
+}
+
+function restoreCanvasSnapshot(canvas, dataUrl, fitMode = 'stretch') {
+    if (!canvas || !dataUrl) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const image = new Image();
+    image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (fitMode === 'contain' || fitMode === 'cover') {
+            drawImageFittedOnCanvas(canvas, image, fitMode);
+            return;
+        }
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+    image.src = dataUrl;
+}
+
+function updateSketchBackgroundModeButton() {
+    const isFillMode = sketchBackgroundFitMode === 'cover';
+    const label = isFillMode ? 'FILL' : 'FIT';
+    const title = isFillMode ? 'Bildmodus: Füllen' : 'Bildmodus: Einpassen';
+    document.querySelectorAll('#sketchBgFitToggleBtn').forEach(button => {
+        button.textContent = label;
+        button.title = title;
+        button.setAttribute('aria-label', title);
+        button.classList.toggle('active', isFillMode);
+    });
+}
+
+function renderSketchBackground() {
+    const canvas = document.getElementById('sketch-bg-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (sketchBackgroundSourceData) {
+        restoreCanvasSnapshot(canvas, sketchBackgroundSourceData, sketchBackgroundFitMode);
+    }
+}
+
+function setSketchBackgroundSource(dataUrl, { markDirty = true } = {}) {
+    sketchBackgroundSourceData = dataUrl || null;
+    renderSketchBackground();
+    updateSketchBackgroundModeButton();
+    if (markDirty) {
+        hasUnsavedChanges = true;
+        saveToLocal();
+    }
+}
+
+function setSketchBackgroundFitMode(mode, { markDirty = true } = {}) {
+    sketchBackgroundFitMode = mode === 'cover' ? 'cover' : 'contain';
+    renderSketchBackground();
+    updateSketchBackgroundModeButton();
+    if (markDirty) {
+        hasUnsavedChanges = true;
+        saveToLocal();
+    }
+}
+
+function toggleSketchBackgroundFitMode() {
+    setSketchBackgroundFitMode(sketchBackgroundFitMode === 'contain' ? 'cover' : 'contain');
+}
+
 function _refreshCropCanvas() {
     document.getElementById('cropModal').style.display = 'flex';
     const mw = window.innerWidth*0.95, mh = window.innerHeight*0.65;
@@ -3575,12 +3861,7 @@ function confirmCrop() {
     let x=Math.min(cx1,cx2)*cScale, y=Math.min(cy1,cy2)*cScale, w=Math.abs(cx2-cx1)*cScale, h=Math.abs(cy2-cy1)*cScale;
     if(w<10||h<10) { x=0; y=0; w=cropImg.width; h=cropImg.height; }
     const tc = document.createElement('canvas'); tc.width=w; tc.height=h; tc.getContext('2d').drawImage(cropImg,x,y,w,h,0,0,w,h);
-    const bgc = document.getElementById('sketch-bg-canvas');
-    if (bgc) {
-        const cw=bgc.width, ch=bgc.height; let scale, off;
-        if(w/h > cw/ch) { scale = ch/h; off=(w*scale-cw)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,-off,0,w*scale,ch); } 
-        else { scale = cw/w; off=(h*scale-ch)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,0,-off,cw,h*scale); }
-    }
+    setSketchBackgroundSource(tc.toDataURL('image/png'));
     closeCropModal();
 }
 
@@ -3615,6 +3896,7 @@ function setupSketchListeners() {
     if(tb && touchOn) { tb.classList.add('active'); tb.style.background="#d0e4f5"; tb.style.borderColor="#2b83b8"; }
     const sb = document.getElementById('snapToggleBtn');
     if(sb && useGridSnap) { sb.classList.add('active'); sb.style.background="#d0e4f5"; sb.style.borderColor="#2b83b8"; }
+    updateSketchBackgroundModeButton();
     const cvs = document.getElementById('sketch-canvas');
     if(cvs) sketchCtx = initDrawing(cvs);
 }
@@ -3640,10 +3922,10 @@ function saveSketchState() {
 }
 
 function toggleGridSnap(el) { useGridSnap = !useGridSnap; el.classList.toggle('active', useGridSnap); el.style.background=useGridSnap?"#d0e4f5":"#fff"; el.style.borderColor=useGridSnap?"#2b83b8":"#ccc"; }
-function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn):not(#sketchBgFitToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function setWidth(w, el) { cWidth = w; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.width-tool').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
 function setColor(c, el) { cColor = c; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn):not(#sketchBgFitToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 
 let cStampType = '';
 let cStampRotation = 0;
@@ -3814,10 +4096,17 @@ function initDrawing(cvs) {
         const r = cvs.getBoundingClientRect(); 
         if(r.width === 0 || r.height === 0) return;
         const dpr = window.devicePixelRatio || 1;
-        [cvs, bgCvs].forEach(c => { 
-            if(!c) return; const t = c.toDataURL(); c.width=r.width * dpr; c.height=r.height * dpr; 
-            const i=new Image(); i.onload=()=>c.getContext('2d').drawImage(i,0,0,c.width,c.height); i.src=t; 
-        }); 
+        [cvs, bgCvs].forEach(c => {
+            if(!c) return;
+            const snapshot = c.id === 'sketch-bg-canvas' && sketchBackgroundSourceData ? null : c.toDataURL();
+            c.width = r.width * dpr;
+            c.height = r.height * dpr;
+            if (c.id === 'sketch-bg-canvas' && sketchBackgroundSourceData) {
+                renderSketchBackground();
+            } else {
+                restoreCanvasSnapshot(c, snapshot, 'stretch');
+            }
+        });
     }
     setTimeout(rs, 100); 
     const resizeHandler = debounce(rs, 200);
@@ -4049,6 +4338,7 @@ function clearSketch() {
             if (c.id === 'sketch-canvas') setTimeout(() => { sketchHistory = [c.toDataURL()]; hasUnsavedChanges = true; saveToLocal(); }, 50);
         }
     });
+    sketchBackgroundSourceData = null;
 }
 
 /* =========================================================
@@ -4668,7 +4958,14 @@ function getReportData() {
         updatedAt: new Date().toISOString()
     };
 
-    if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
+    if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') {
+        try {
+            d.sketch.bg = document.getElementById('sketch-bg-canvas').toDataURL('image/png');
+            d.sketch.bgSource = sketchBackgroundSourceData;
+            d.sketch.bgMode = sketchBackgroundFitMode;
+            d.sketch.lines = document.getElementById('sketch-canvas').toDataURL('image/png');
+        } catch(e) {}
+    }
     else { try{ if(sigCanvas) d.signature.png=sigCanvas.toDataURL('image/png'); }catch(e){} }
     document.querySelectorAll('#photoPagesContainer .page').forEach((p, idx) => {
         const imgs = Array.from(p.querySelectorAll('.photo-box')).map(b => {
@@ -4749,8 +5046,10 @@ function restoreFromData(d) {
     if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') {
         if (currentApp==='LO') { applyReparaturState(); applyFlachdachState(); applyPoolState(); }
         if(d.toggles && typeof d.toggles.sketchEnabled==='boolean' && document.getElementById('toggleSketch')) { document.getElementById('toggleSketch').checked=d.toggles.sketchEnabled; document.getElementById('toggleSketch').dispatchEvent(new Event('change')); }
-        if(d.sketch?.bg) { const i=new Image(); i.onload=()=>document.getElementById('sketch-bg-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.bg; }
-        if(d.sketch?.lines||d.sketch?.png) { const i=new Image(); i.onload=()=>document.getElementById('sketch-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.lines||d.sketch.png; }
+        sketchBackgroundFitMode = d.sketch?.bgMode === 'cover' ? 'cover' : 'contain';
+        updateSketchBackgroundModeButton();
+        if(d.sketch?.bgSource || d.sketch?.bg) setSketchBackgroundSource(d.sketch.bgSource || d.sketch.bg, { markDirty: false });
+        if(d.sketch?.lines||d.sketch?.png) restoreCanvasSnapshot(document.getElementById('sketch-canvas'), d.sketch.lines||d.sketch.png, 'stretch');
     } else {
         updateDynamicRows();
         if(d.signature?.png && sigCtx) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
