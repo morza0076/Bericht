@@ -571,6 +571,7 @@
                 display: none !important;
             }
 
+            body.ios-print-mode #app-root #mainPage,
             body.ios-print-mode #app-root #sketchPage,
             body.ios-print-mode #app-root #photoPagesContainer .page {
                 box-sizing: border-box !important;
@@ -583,23 +584,32 @@
                 overflow: hidden !important;
             }
 
+            body.ios-print-mode #app-root #mainPage {
+                zoom: 0.96 !important;
+                padding: 2.5mm 3mm 3mm 3mm !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .header,
             body.ios-print-mode #app-root #sketchPage .header,
             body.ios-print-mode #app-root #photoPagesContainer .page .header {
                 margin-bottom: 4px !important;
                 padding: 6px 8px 7px 8px !important;
             }
 
+            body.ios-print-mode #app-root #mainPage .header-top,
             body.ios-print-mode #app-root #sketchPage .header-top,
             body.ios-print-mode #app-root #photoPagesContainer .page .header-top {
                 margin-bottom: 5px !important;
             }
 
+            body.ios-print-mode #app-root #mainPage .header-title,
             body.ios-print-mode #app-root #sketchPage .header-title,
             body.ios-print-mode #app-root #photoPagesContainer .page .header-title {
                 font-size: 13.8px !important;
                 line-height: 1.02 !important;
             }
 
+            body.ios-print-mode #app-root #mainPage .header-right,
             body.ios-print-mode #app-root #sketchPage .header-right,
             body.ios-print-mode #app-root #photoPagesContainer .page .header-right {
                 font-size: 8.2px !important;
@@ -607,9 +617,60 @@
                 padding: 5px 7px !important;
             }
 
+            body.ios-print-mode #app-root #mainPage .logo,
             body.ios-print-mode #app-root #sketchPage .logo,
             body.ios-print-mode #app-root #photoPagesContainer .page .logo {
                 max-height: 38px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section {
+                margin-bottom: 3px !important;
+                padding: 4px 6px 5px 6px !important;
+                border-radius: 10px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section h2 {
+                font-size: 8.2px !important;
+                margin-bottom: 3px !important;
+                padding-bottom: 3px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .label {
+                font-size: 7.6px !important;
+                margin-bottom: 2px !important;
+                line-height: 1.05 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .grid,
+            body.ios-print-mode #app-root #mainPage .address-grid,
+            body.ios-print-mode #app-root #mainPage .grid-3,
+            body.ios-print-mode #app-root #mainPage .grid-1-2 {
+                gap: 2px 5px !important;
+                margin-top: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage input:not([type="checkbox"]),
+            body.ios-print-mode #app-root #mainPage select,
+            body.ios-print-mode #app-root #mainPage .print-textarea-clone {
+                font-size: 8.6px !important;
+                line-height: 1.05 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .checkbox-item {
+                font-size: 8px !important;
+                gap: 1px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .checkbox-group,
+            body.ios-print-mode #app-root #mainPage .checkbox-group-3 {
+                gap: 0 2px !important;
+                margin-bottom: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section-header-flex {
+                margin-bottom: 2px !important;
             }
 
             body.ios-print-mode #app-root #sketchPage .sketch-container {
@@ -636,6 +697,7 @@
                 padding: 0 !important;
             }
 
+            body.ios-print-mode #app-root #mainPage .footer,
             body.ios-print-mode #app-root #sketchPage .footer,
             body.ios-print-mode #app-root #photoPagesContainer .page .footer {
                 display: none !important;
