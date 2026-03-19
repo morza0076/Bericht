@@ -390,9 +390,9 @@
                 height: 285mm !important;
                 min-height: 0 !important;
                 padding: 5mm 6mm 10mm 6mm !important;
-                page-break-after: always !important;
+                page-break-after: auto !important;
                 page-break-inside: avoid !important;
-                break-after: page !important;
+                break-after: auto !important;
                 break-inside: avoid !important;
                 border-radius: 0 !important;
                 overflow: hidden !important;
@@ -403,9 +403,9 @@
                 float: none !important;
                 background: #ffffff !important;
             }
-            .page:last-child {
-                page-break-after: auto !important;
-                break-after: auto !important;
+            .page.print-page-break {
+                page-break-after: always !important;
+                break-after: page !important;
             }
             .page::before {
                 content: none !important;
@@ -3239,6 +3239,7 @@ function startApp(type) {
 function preparePrintView() {
     enablePrintLightMode();
     document.body.classList.toggle('ios-print-mode', getPrintSupportContext().isIOS);
+    document.querySelectorAll('.print-page-break').forEach(el => el.classList.remove('print-page-break'));
 
     const togglePrintVisibility = (element, visible) => {
         if (!element) return;
@@ -3357,6 +3358,9 @@ function preparePrintView() {
     if (reparaturSection && !sectionHasPrintableContent(reparaturSection)) {
         reparaturSection.classList.add('no-print', 'temp-hide');
     }
+
+    const printablePages = Array.from(document.querySelectorAll('#app-root .page')).filter(page => page.offsetParent !== null);
+    printablePages.forEach((page, index) => page.classList.toggle('print-page-break', index < printablePages.length - 1));
 }
 
 function sectionHasPrintableContent(section) {
@@ -3376,6 +3380,7 @@ function sectionHasPrintableContent(section) {
 function cleanupAfterPrint() {
     document.querySelectorAll('.print-textarea-clone').forEach(el => el.remove());
     document.querySelectorAll('.no-print.temp-hide').forEach(el => el.classList.remove('no-print', 'temp-hide'));
+    document.querySelectorAll('.print-page-break').forEach(el => el.classList.remove('print-page-break'));
     document.body.classList.remove('ios-print-mode');
     disablePrintLightMode();
 }
