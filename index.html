@@ -78,7 +78,7 @@
         body.dark-mode .logo { background: rgba(255,255,255,0.9); padding: 2px 5px; border-radius: 4px; }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { size: A4; margin: 3mm !important; }
+        @page { size: A4; margin: 0 !important; }
 
         body { 
             font-family: var(--font-main);
@@ -381,14 +381,14 @@
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
             .page {
-                margin: 0 auto 1.5mm auto !important;
+                margin: 5mm auto 0 auto !important;
                 box-shadow: none !important;
                 border: none !important;
                 box-sizing: border-box !important;
                 width: 200mm !important;
                 max-width: 200mm !important;
-                height: 285mm !important;
-                min-height: 0 !important;
+                height: 282mm !important;
+                min-height: 282mm !important;
                 padding: 5mm 6mm 10mm 6mm !important;
                 page-break-after: auto !important;
                 page-break-inside: avoid !important;
@@ -543,7 +543,7 @@
             
             .signature-box { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 4px !important; margin-top: 4px; border-radius: 12px !important; }
             .signature-pad { border: 1px dashed #b6c1cf !important; background: #ffffff !important; height: 66px !important; border-radius: 10px !important; }
-            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 3px; page-break-inside: auto; }
+            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 3px; page-break-inside: avoid !important; }
             .photo-box { border: 1px solid #e3e8ef !important; box-shadow: none !important; padding: 5px !important; page-break-inside: avoid; border-radius: 12px !important; background: #ffffff !important; }
             .img-container { height: 70mm !important; border: 1px solid #eef2f6 !important; background: #ffffff !important; border-radius: 10px !important; }
             #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 3px !important; margin-bottom: 3px !important; border-radius: 12px !important; }
@@ -578,9 +578,9 @@
                 box-sizing: border-box !important;
                 width: 198mm !important;
                 max-width: 198mm !important;
-                height: 281mm !important;
-                min-height: 281mm !important;
-                margin: 0 auto !important;
+                height: 280mm !important;
+                min-height: 280mm !important;
+                margin: 5mm auto 0 auto !important;
                 padding: 3mm 3.5mm 4mm 3.5mm !important;
                 overflow: hidden !important;
             }
@@ -709,7 +709,7 @@
             @media print {
                 @page {
                     size: A4;
-                    margin: 2mm !important;
+                    margin: 0 !important;
                 }
 
                 html, body {
@@ -723,9 +723,9 @@
                     box-sizing: border-box !important;
                     width: 200mm !important;
                     max-width: 200mm !important;
-                    height: 286mm !important;
-                    min-height: 286mm !important;
-                    margin: 0 auto !important;
+                    height: 282mm !important;
+                    min-height: 282mm !important;
+                    margin: 5mm auto 0 auto !important;
                     padding: 3mm 4mm 6mm 4mm !important;
                     page-break-after: auto !important;
                     page-break-inside: avoid !important;
