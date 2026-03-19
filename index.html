@@ -570,6 +570,76 @@
             #poolBauteileContainer:not(:has(input:checked)) {
                 display: none !important;
             }
+
+            body.ios-print-mode #app-root #sketchPage,
+            body.ios-print-mode #app-root #photoPagesContainer .page {
+                box-sizing: border-box !important;
+                width: 198mm !important;
+                max-width: 198mm !important;
+                height: 281mm !important;
+                min-height: 281mm !important;
+                margin: 0 auto !important;
+                padding: 3mm 3.5mm 4mm 3.5mm !important;
+                overflow: hidden !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .header,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header {
+                margin-bottom: 4px !important;
+                padding: 6px 8px 7px 8px !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .header-top,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-top {
+                margin-bottom: 5px !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .header-title,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-title {
+                font-size: 13.8px !important;
+                line-height: 1.02 !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .header-right,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-right {
+                font-size: 8.2px !important;
+                line-height: 1.2 !important;
+                padding: 5px 7px !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .logo,
+            body.ios-print-mode #app-root #photoPagesContainer .page .logo {
+                max-height: 38px !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .sketch-container {
+                height: 132mm !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-grid {
+                gap: 5px !important;
+                margin-top: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-box {
+                padding: 3px !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .img-container {
+                height: 58mm !important;
+                margin-bottom: 5px !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-desc {
+                font-size: 8.2px !important;
+                line-height: 1 !important;
+                padding: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .footer,
+            body.ios-print-mode #app-root #photoPagesContainer .page .footer {
+                display: none !important;
+            }
         }
 
         @supports (-webkit-touch-callout: none) {
@@ -588,12 +658,12 @@
 
                 #app-root .page {
                     box-sizing: border-box !important;
-                    width: 202mm !important;
-                    max-width: 202mm !important;
-                    height: auto !important;
+                    width: 200mm !important;
+                    max-width: 200mm !important;
+                    height: 286mm !important;
                     min-height: 286mm !important;
                     margin: 0 auto !important;
-                    padding: 3.5mm 4.5mm 7mm 4.5mm !important;
+                    padding: 3mm 4mm 6mm 4mm !important;
                     page-break-after: auto !important;
                     page-break-inside: avoid !important;
                     break-after: auto !important;
@@ -608,8 +678,73 @@
                     break-before: page !important;
                 }
 
+                #app-root #sketchPage {
+                    zoom: 0.97 !important;
+                    height: 284mm !important;
+                    min-height: 284mm !important;
+                    padding-bottom: 5mm !important;
+                }
+
+                #app-root #photoPagesContainer .page {
+                    zoom: 0.97 !important;
+                    height: 284mm !important;
+                    min-height: 284mm !important;
+                    padding-bottom: 5mm !important;
+                }
+
+                #app-root #sketchPage .header,
+                #app-root #photoPagesContainer .page .header {
+                    margin-bottom: 5px !important;
+                    padding: 7px 9px 8px 9px !important;
+                }
+
+                #app-root #sketchPage .header-top,
+                #app-root #photoPagesContainer .page .header-top {
+                    margin-bottom: 6px !important;
+                }
+
+                #app-root #sketchPage .header-title,
+                #app-root #photoPagesContainer .page .header-title {
+                    font-size: 14.5px !important;
+                    line-height: 1.05 !important;
+                }
+
+                #app-root #sketchPage .header-right,
+                #app-root #photoPagesContainer .page .header-right {
+                    font-size: 8.7px !important;
+                    padding: 6px 8px !important;
+                }
+
+                #app-root #sketchPage .logo,
+                #app-root #photoPagesContainer .page .logo {
+                    max-height: 42px !important;
+                }
+
+                #app-root #sketchPage .sketch-container {
+                    height: 138mm !important;
+                }
+
+                #app-root #photoPagesContainer .photo-grid {
+                    gap: 6px !important;
+                    margin-top: 1px !important;
+                }
+
+                #app-root #photoPagesContainer .photo-box {
+                    padding: 4px !important;
+                }
+
+                #app-root #photoPagesContainer .img-container {
+                    height: 62mm !important;
+                }
+
+                #app-root #photoPagesContainer .photo-desc {
+                    font-size: 8.7px !important;
+                    line-height: 1 !important;
+                }
+
                 .footer {
-                    bottom: 3mm !important;
+                    bottom: 2mm !important;
+                    font-size: 7.4px !important;
                 }
             }
         }
@@ -3039,6 +3174,7 @@ function startApp(type) {
    ========================================================= */
 function preparePrintView() {
     enablePrintLightMode();
+    document.body.classList.toggle('ios-print-mode', getPrintSupportContext().isIOS);
 
     const togglePrintVisibility = (element, visible) => {
         if (!element) return;
@@ -3176,6 +3312,7 @@ function sectionHasPrintableContent(section) {
 function cleanupAfterPrint() {
     document.querySelectorAll('.print-textarea-clone').forEach(el => el.remove());
     document.querySelectorAll('.no-print.temp-hide').forEach(el => el.classList.remove('no-print', 'temp-hide'));
+    document.body.classList.remove('ios-print-mode');
     disablePrintLightMode();
 }
 
