@@ -3879,6 +3879,10 @@ async function printAndSave() {
         const raw = document.getElementById('dl_pasted_data');
         if (raw) raw.value = '';
     }
+    if (isIOSLikeDevice()) {
+        await exportReportPdf();
+        return;
+    }
     maybeShowIOSExportHint('save');
     await exportFullReport();
     maybeShowIOSExportHint('print');
