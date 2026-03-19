@@ -573,20 +573,84 @@
 
         @supports (-webkit-touch-callout: none) {
             @media print {
+                @page {
+                    size: A4;
+                    margin: 2mm !important;
+                }
+
                 html, body {
                     width: auto !important;
                     min-width: 0 !important;
                     max-width: none !important;
+                    overflow: visible !important;
                 }
 
-                .page {
-                    width: 198mm !important;
-                    max-width: 198mm !important;
-                    height: 283mm !important;
-                    min-height: 0 !important;
-                    padding: 4.5mm 5.5mm 9mm 5.5mm !important;
+                #app-root .page {
+                    box-sizing: border-box !important;
+                    width: 202mm !important;
+                    max-width: 202mm !important;
+                    height: auto !important;
+                    min-height: 286mm !important;
+                    margin: 0 auto !important;
+                    padding: 3.5mm 4.5mm 7mm 4.5mm !important;
+                    page-break-after: auto !important;
+                    page-break-inside: avoid !important;
+                    break-after: auto !important;
+                    break-inside: avoid !important;
+                    page-break-before: auto !important;
+                    break-before: auto !important;
+                    overflow: hidden !important;
+                }
+
+                #app-root .page + .page {
+                    page-break-before: always !important;
+                    break-before: page !important;
+                }
+
+                .footer {
+                    bottom: 3mm !important;
                 }
             }
+        }
+
+        body.pdf-export-mode {
+            background: #ffffff !important;
+            padding: 0 !important;
+        }
+        body.pdf-export-mode::before,
+        body.pdf-export-mode::after {
+            display: none !important;
+        }
+        body.pdf-export-mode #controls,
+        body.pdf-export-mode .toolbar,
+        body.pdf-export-mode .no-print,
+        body.pdf-export-mode input[type="file"],
+        body.pdf-export-mode #cropModal,
+        body.pdf-export-mode #photoEditorModal,
+        body.pdf-export-mode #settingsModal,
+        body.pdf-export-mode #toast-container {
+            display: none !important;
+        }
+        body.pdf-export-mode #app-root {
+            padding: 0 !important;
+        }
+        body.pdf-export-mode .page {
+            width: 200mm !important;
+            max-width: 200mm !important;
+            min-height: 285mm !important;
+            margin: 0 auto 4mm auto !important;
+            padding: 5mm 6mm 10mm 6mm !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: #ffffff !important;
+            overflow: hidden !important;
+        }
+        body.pdf-export-mode .page:last-child {
+            margin-bottom: 0 !important;
+        }
+        body.pdf-export-mode .pdf-export-hidden-image {
+            visibility: hidden !important;
         }
 
         /* TOAST NOTIFICATIONS */
@@ -2467,6 +2531,8 @@
     <div id="photoPagesContainer"></div>
 </template>
 
+<script src="vendor/html2canvas.min.js" data-pdf-lib="html2canvas"></script>
+<script src="vendor/jspdf.umd.min.js" data-pdf-lib="jspdf"></script>
 <script>
 /* =========================================================
    TEXT-VORLAGEN (Leckortung)
@@ -2951,6 +3017,262 @@ async function shareFileOnIOS(blob, fileName) {
     }
 }
 
+const externalScriptPromises = new Map();
+const HTML2CANVAS_SRC = 'vendor/html2canvas.min.js';
+const JSPDF_SRC = 'vendor/jspdf.umd.min.js';
+
+function arePdfLibrariesReady() {
+    return !!(window.html2canvas && window.jspdf && window.jspdf.jsPDF);
+}
+
+function loadExternalScript(src) {
+    if (externalScriptPromises.has(src)) return externalScriptPromises.get(src);
+    const promise = new Promise((resolve, reject) => {
+        if (arePdfLibrariesReady()) return resolve(true);
+
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing && existing.dataset.loaded === 'true') {
+            return resolve(true);
+        }
+
+        let script = existing;
+        if (script) {
+            script.remove();
+        }
+
+        script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.addEventListener('load', () => {
+            script.dataset.loaded = 'true';
+            resolve(true);
+        }, { once: true });
+        script.addEventListener('error', () => reject(new Error(`Script konnte nicht geladen werden: ${src}`)), { once: true });
+        document.head.appendChild(script);
+    });
+    externalScriptPromises.set(src, promise);
+    return promise;
+}
+
+async function ensurePdfLibraries() {
+    if (arePdfLibrariesReady()) return true;
+    await Promise.all([
+        loadExternalScript(HTML2CANVAS_SRC),
+        loadExternalScript(JSPDF_SRC)
+    ]);
+    return arePdfLibrariesReady();
+}
+
+function waitForNextPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function markProblematicImagesForPdf() {
+    const marked = [];
+    document.querySelectorAll('#app-root img').forEach(img => {
+        const src = img.getAttribute('src') || '';
+        const isEmbedded = src.startsWith('data:') || src.startsWith('blob:');
+        if (isEmbedded) return;
+        img.classList.add('pdf-export-hidden-image');
+        marked.push(img);
+    });
+    return marked;
+}
+
+function restoreProblematicImagesAfterPdf(images) {
+    images.forEach(img => img.classList.remove('pdf-export-hidden-image'));
+}
+
+function showPdfDebugError(error) {
+    const rawMessage = String(error?.message || error || 'Unbekannter PDF Fehler');
+    const rawStack = String(error?.stack || '').split('\n').slice(0, 6).join('\n');
+    const debugText = rawStack ? `${rawMessage}\n\n${rawStack}` : rawMessage;
+    console.error('PDF debug details:', debugText);
+    setTimeout(() => {
+        alert(`PDF DEBUG FEHLER\n\n${debugText}`);
+    }, 50);
+}
+
+function stripProblematicPdfCharacters(text) {
+    return String(text || '')
+        .replace(/[\u{1F000}-\u{1FAFF}]/gu, '')
+        .replace(/[\u2600-\u27BF]/g, '')
+        .replace(/[\u200D\uFE0E\uFE0F]/g, '')
+        .replace(/\s{2,}/g, ' ');
+}
+
+function sanitizePdfCloneDocument(clonedDocument) {
+    const root = clonedDocument.getElementById('app-root');
+    if (!root) return;
+
+    const walker = clonedDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let currentNode = walker.nextNode();
+    while (currentNode) {
+        textNodes.push(currentNode);
+        currentNode = walker.nextNode();
+    }
+
+    textNodes.forEach(node => {
+        const original = node.nodeValue || '';
+        const sanitized = stripProblematicPdfCharacters(original);
+        if (sanitized !== original) node.nodeValue = sanitized;
+    });
+}
+
+function fitCanvasIntoPdfPage(canvas, pdfWidth, pdfHeight) {
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const renderHeight = Math.min(imgHeight, pdfHeight);
+    const renderWidth = imgHeight > pdfHeight ? (canvas.width * pdfHeight) / canvas.height : imgWidth;
+    return {
+        x: (pdfWidth - renderWidth) / 2,
+        y: 0,
+        width: renderWidth,
+        height: renderHeight
+    };
+}
+
+function createPdfFallbackCanvas(sourceCanvas) {
+    const fallbackCanvas = document.createElement('canvas');
+    fallbackCanvas.width = Math.max(1, Math.floor(sourceCanvas.width * 0.75));
+    fallbackCanvas.height = Math.max(1, Math.floor(sourceCanvas.height * 0.75));
+    const context = fallbackCanvas.getContext('2d', { alpha: false });
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
+    context.drawImage(sourceCanvas, 0, 0, fallbackCanvas.width, fallbackCanvas.height);
+    return fallbackCanvas;
+}
+
+function addCanvasToPdf(pdf, canvas, pageIndex, pdfWidth, pdfHeight) {
+    const placement = fitCanvasIntoPdfPage(canvas, pdfWidth, pdfHeight);
+    if (pageIndex > 0) pdf.addPage();
+
+    try {
+        const pngData = canvas.toDataURL('image/png');
+        pdf.addImage(pngData, 'PNG', placement.x, placement.y, placement.width, placement.height, undefined, 'NONE');
+        return;
+    } catch (pngError) {
+        console.warn('PNG export failed, trying fallback canvas', pngError);
+    }
+
+    const fallbackCanvas = createPdfFallbackCanvas(canvas);
+    const fallbackPlacement = fitCanvasIntoPdfPage(fallbackCanvas, pdfWidth, pdfHeight);
+    const jpegData = fallbackCanvas.toDataURL('image/jpeg', 0.8);
+    pdf.addImage(jpegData, 'JPEG', fallbackPlacement.x, fallbackPlacement.y, fallbackPlacement.width, fallbackPlacement.height, undefined, 'FAST');
+}
+
+async function saveBlobToDevice(blob, fileName, description = 'Datei') {
+    try {
+        if (window.showSaveFilePicker) {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: fileName,
+                types: [{ description, accept: { [blob.type || 'application/octet-stream']: [`.${fileName.split('.').pop()}`] } }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return true;
+        }
+    } catch (e) {
+        if (e?.name === 'AbortError') return 'aborted';
+    }
+
+    const iosShareResult = await shareFileOnIOS(blob, fileName);
+    if (iosShareResult === true || iosShareResult === 'aborted') return iosShareResult;
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+}
+
+async function exportReportPdf({ skipReportSave = false } = {}) {
+    if (currentApp === 'DL') {
+        const raw = document.getElementById('dl_pasted_data');
+        if (raw) raw.value = '';
+    }
+
+    if (!skipReportSave) {
+        maybeShowIOSExportHint('save');
+        await exportFullReport();
+    }
+
+    updateSaveStatus('PDF wird erstellt...', 'saving');
+
+    let hiddenImages = [];
+
+    try {
+        const libsReady = await ensurePdfLibraries();
+        if (!libsReady) throw new Error('PDF-Bibliotheken sind nicht verfügbar.');
+
+        preparePrintView();
+        document.body.classList.add('pdf-export-mode');
+        hiddenImages = markProblematicImagesForPdf();
+        await waitForNextPaint();
+
+        const pages = Array.from(document.querySelectorAll('#app-root .page')).filter(page => page.offsetParent !== null);
+        if (!pages.length) throw new Error('Keine Seiten für den PDF-Export gefunden.');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const captureScale = isIOSLikeDevice() ? 1.15 : 1.75;
+
+        for (let index = 0; index < pages.length; index++) {
+            const page = pages[index];
+            await waitForNextPaint();
+            const canvas = await window.html2canvas(page, {
+                scale: captureScale,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                onclone: sanitizePdfCloneDocument,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: document.documentElement.scrollWidth,
+                windowHeight: document.documentElement.scrollHeight
+            });
+            addCanvasToPdf(pdf, canvas, index, pdfWidth, pdfHeight);
+        }
+
+        const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.pdf';
+        const pdfBlob = pdf.output('blob');
+        const saveResult = await saveBlobToDevice(pdfBlob, fileName, 'PDF Dokument');
+        if (saveResult === 'aborted') {
+            updateSaveStatus('PDF Export abgebrochen', 'dirty');
+            return false;
+        }
+
+        updateSaveStatus(`PDF gespeichert ${formatStatusTime()}`, 'saved');
+        showToast('PDF exportiert', 'success');
+        return { fileName, blob: pdfBlob };
+    } catch (e) {
+        console.error('PDF export failed', e);
+        updateSaveStatus('PDF Export fehlgeschlagen', 'dirty');
+        const rawMessage = String(e?.message || '');
+        showPdfDebugError(e);
+        const message = /Script konnte nicht geladen werden|PDF-Bibliotheken/.test(rawMessage)
+            ? 'PDF Export nicht verfügbar. Bitte Seite neu laden und sicherstellen, dass der Ordner vendor neben der HTML-Datei vorhanden ist.'
+            : /tainted|insecure|canvas|cross-origin/i.test(rawMessage)
+                ? 'PDF Export fehlgeschlagen. Wahrscheinlich blockiert ein Bild oder Logo den Export. Das wurde jetzt abgesichert. Bitte erneut versuchen.'
+                : /offset .* larger|DataView|addImage/i.test(rawMessage)
+                    ? 'PDF Export fehlgeschlagen. Der iPad-Bildparser hat die Seite abgelehnt. Der Export wurde jetzt vereinfacht. Bitte erneut versuchen.'
+                : `PDF Export fehlgeschlagen: ${e.message}`;
+        showToast(message, 'error');
+        return false;
+    } finally {
+        restoreProblematicImagesAfterPdf(hiddenImages);
+        document.body.classList.remove('pdf-export-mode');
+        cleanupAfterPrint();
+    }
+}
+
 function initCommon() {
     document.querySelectorAll('input[type="date"]').forEach(input => {
         try { input.valueAsDate = new Date(); } catch (e) { input.value = new Date().toISOString().split('T')[0]; }
@@ -3160,9 +3482,9 @@ async function printAndSave() {
         if (raw) raw.value = '';
     }
     maybeShowIOSExportHint('save');
-    await exportFullReport(); 
+    await exportFullReport();
     maybeShowIOSExportHint('print');
-    setTimeout(() => window.print(), 800); 
+    setTimeout(() => window.print(), 900);
 }
 
 /* =========================================================
@@ -4302,19 +4624,16 @@ async function sendEmail() {
         if (raw) raw.value = '';
     }
     maybeShowIOSExportHint('email');
-    // 1. Bericht als Datei (.lok) speichern
     await exportFullReport();
-    
-    // 2. Drucken-Dialog für PDF-Erstellung öffnen
+
     setTimeout(() => {
         window.print();
-        
-        // 3. E-Mail Fenster im Anschluss öffnen
+
         setTimeout(() => {
             let sbj = buildReportBaseName();
             const folgeterminChecked = document.getElementById('check_folgetermin')?.checked;
             const folgeterminText = document.getElementById('folgetermin_text')?.value.trim();
-            
+
             if (folgeterminChecked) {
                 sbj = 'WICHTIG (Folgetermin) - ' + sbj;
             }
@@ -4328,13 +4647,13 @@ async function sendEmail() {
             const notizenId = (currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') ? 'interne_notizen' : 'interne_notizen_rb';
             const notizen = document.getElementById(notizenId)?.value.trim();
             if (notizen) body += notizen + '\n\n';
-            
+
             body += 'BITTE DAS SOEBEN ERSTELLTE PDF HIER ANHÄNGEN.\n\n';
             body += 'Gesendet vom Brugger-Formular.';
             const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
             window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
-        }, 800);
-    }, 800);
+        }, 900);
+    }, 900);
 }
 
 function getReportData() {
