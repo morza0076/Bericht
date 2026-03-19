@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Brugger Berichte" />
-    <title>Brugger Formulare</title>
+    <title>Brugger Formulare 4.1</title>
     <link rel="manifest" id="manifest-placeholder">
 
     <style>
@@ -78,7 +78,7 @@
         body.dark-mode .logo { background: rgba(255,255,255,0.9); padding: 2px 5px; border-radius: 4px; }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { size: A4; margin: 0 !important; }
+        @page { size: A4; margin: 3mm !important; }
 
         body { 
             font-family: var(--font-main);
@@ -180,6 +180,12 @@
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
         .address-grid { display: grid; grid-template-columns: 90px 1fr 1.3fr; gap: 15px; margin-top: 8px; }
+        .address-grid-compact { grid-template-columns: 90px 1fr; }
+        .form-divider {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-200);
+        }
         .worker-grid { display: grid; grid-template-columns: 110px 1fr 70px 1.5fr; gap: 10px; margin-bottom: 10px; }
         .material-grid { display: grid; grid-template-columns: 80px 80px 1fr; gap: 10px; margin-bottom: 10px; }
         .grid-header { font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; padding-left: 4px; letter-spacing: 0.5px; }
@@ -194,6 +200,12 @@
         .mic-btn { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
         .mic-btn:hover { background: #fff; border-color: var(--gray-400); }
         .mic-btn.recording { background: #e74c3c; color: white; border-color: #c0392b; animation: pulse 1.5s infinite; }
+        .mic-btn.is-disabled,
+        .mic-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -325,7 +337,8 @@
             #controls::-webkit-scrollbar { display: none; }
             #controls .save-status { flex: 0 0 auto; min-width: 220px; }
             #controls .control-btn { flex: 0 0 auto; padding: 12px 20px; font-size: 12px; box-shadow: none; margin-top:0; }
-            .page { margin: 15px auto; }
+            .page { margin: 15px auto; min-height: auto; padding-bottom: 16px; }
+            .footer { position: static; left: auto; right: auto; bottom: auto; margin-top: 14px; }
             input, textarea, select { font-size: 16px; padding: 10px; }
             .sketch-container { height: 65vh; }
         }
@@ -351,54 +364,189 @@
            PRINT STYLES (PDF OPTIMIERUNG)
            ========================================= */
         @media print {
-            html, body { background: #fff; padding: 0; margin: 0; height: auto !important; overflow: visible !important; font-size: 0 !important; }
+            html, body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                height: auto !important;
+                overflow: visible !important;
+                font-size: 0 !important;
+                -webkit-text-size-adjust: 100% !important;
+            }
             #start-screen, #controls, .toolbar, .no-print, input[type="file"], #cropModal, #photoEditorModal, #settingsModal, #toast-container { display: none !important; }
             .logo { background: transparent !important; } /* Logo-Hintergrund im Druck entfernen */
             body:not(.sketch-enabled) #sketchPage { display: none !important; }
             
-            .page { margin: 0 !important; box-shadow: none !important; border: none !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: 0 10mm !important; page-break-after: auto !important; page-break-inside: auto !important; break-inside: auto !important; border-radius: 0; overflow: visible !important; position: relative; font-size: 11px !important; float: none !important; }
+            .page {
+                margin: 0 auto 1.5mm auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                box-sizing: border-box !important;
+                width: 200mm !important;
+                max-width: 200mm !important;
+                height: 285mm !important;
+                min-height: 0 !important;
+                padding: 5mm 6mm 10mm 6mm !important;
+                page-break-after: auto !important;
+                page-break-inside: avoid !important;
+                break-after: auto !important;
+                break-inside: avoid !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+                position: relative;
+                left: auto !important;
+                right: auto !important;
+                font-size: 9.7px !important;
+                float: none !important;
+                background: #ffffff !important;
+            }
+            .page.print-page-break {
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+            .page::before {
+                content: none !important;
+            }
             
-            #sketchPage { page-break-before: always !important; break-before: page !important; }
-            #photoPagesContainer .page { page-break-before: always !important; break-before: page !important; }
+            #sketchPage,
+            #photoPagesContainer .page {
+                page-break-before: auto !important;
+                break-before: auto !important;
+            }
             
-            .header { border-bottom: 1px solid #ccc !important; margin-bottom: 15px !important; padding-bottom: 5px !important; padding-top: 5mm; }
-            .header-top { margin-bottom: 10px !important; }
-            .header-title { background: transparent !important; padding: 0 !important; font-size: 18px !important; text-align: left !important; border: none !important; }
-            .header-right { font-size: 10px !important; line-height: 1.1 !important; color: var(--gray-600) !important; }
-            .header-right strong { font-size: 13px !important; margin-bottom: 0 !important; color: var(--primary) !important; }
-            .logo { max-height: 55px !important; }
-            .section { margin-bottom: 2px; }
-            .section h2 { background: transparent !important; color: var(--primary) !important; border-bottom: 1px solid #ccc !important; padding: 0 !important; margin-bottom: 3px !important; font-size: 10.5px !important; }
+            .header {
+                border: 1px solid #d9e1ea !important;
+                border-radius: 14px !important;
+                background: #ffffff !important;
+                margin-bottom: 7px !important;
+                padding: 9px 11px 10px 11px !important;
+            }
+            .header-top { margin-bottom: 8px !important; align-items: flex-start !important; }
+            .header-title {
+                background: transparent !important;
+                padding: 0 !important;
+                font-size: 15.5px !important;
+                text-align: left !important;
+                border: none !important;
+                letter-spacing: 0.04em !important;
+                line-height: 1.1 !important;
+            }
+            .header-right {
+                font-size: 9.2px !important;
+                line-height: 1.35 !important;
+                color: #4b5563 !important;
+                border: 1px solid #e4e9f0 !important;
+                border-radius: 10px !important;
+                background: #ffffff !important;
+                padding: 7px 9px !important;
+            }
+            .header-right strong { font-size: 10.6px !important; margin-bottom: 1px !important; color: var(--primary) !important; letter-spacing: 0.05em !important; text-transform: uppercase !important; }
+            .logo { max-height: 46px !important; }
+            .section {
+                margin-bottom: 4px !important;
+                padding: 6px 8px 7px 8px !important;
+                border: 1px solid #e3e8ef !important;
+                border-radius: 14px !important;
+                background: #ffffff !important;
+            }
+            .section h2 {
+                background: transparent !important;
+                color: var(--primary) !important;
+                border-bottom: 1px solid #e0e6ed !important;
+                padding: 0 0 5px 0 !important;
+                margin-bottom: 5px !important;
+                font-size: 9px !important;
+                letter-spacing: 0.08em !important;
+            }
             #mainPage .section:first-of-type > h2 {
                 background: #fff !important;
                 border-bottom: none !important;
             }
-            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 2px; margin-top: 1px; }
-            .footer { position: static; margin-top: 6mm; left: auto; right: auto; bottom: auto; color: #555; border-top-color: #ccc; }
+            .grid, .address-grid, .grid-3, .grid-1-2 { gap: 3px 7px !important; margin-top: 1px !important; }
+            #mainPage .section:first-of-type > .grid {
+                gap: 5px 10px !important;
+                margin-bottom: 5px !important;
+            }
+            #mainPage .section:first-of-type > div > .section-header-flex {
+                margin-top: 4px !important;
+                margin-bottom: 2px !important;
+            }
+            #mainPage .section:first-of-type .address-grid {
+                gap: 4px 8px !important;
+                margin-top: 3px !important;
+            }
+            #mainPage .section:first-of-type .label {
+                font-size: 10.5px !important;
+                margin-bottom: 3px !important;
+                line-height: 1.2 !important;
+            }
+            .label { font-size: 8.3px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; color: #6b7280 !important; }
+            .footer { position: absolute !important; left: 6mm !important; right: 6mm !important; bottom: 4mm !important; margin-top: 0 !important; color: #6b7280; border-top: 1px solid #d1d5db !important; padding-top: 2px !important; font-size: 7.9px !important; }
             textarea { display: none !important; }
-            .print-textarea-clone { display: block !important; width: 100% !important; font-size: 11px !important; line-height: 1.2 !important; white-space: pre-wrap !important; word-wrap: break-word !important; margin: 0 !important; padding: 1px 0 !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; color: inherit !important; }
-            input:not([type="checkbox"]), select, .photo-desc { border: none !important; background: transparent !important; padding: 1px 0 !important; -webkit-appearance: none; appearance: none; font-size: 11px !important; margin: 0 !important; border-radius: 0 !important; height: auto !important; min-height: 0 !important; line-height: 1.1 !important; color: inherit !important; }
+            .print-textarea-clone {
+                display: block !important;
+                width: 100% !important;
+                font-size: 9.5px !important;
+                line-height: 1.2 !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+                margin: 0 !important;
+                padding: 2px 0 !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                color: inherit !important;
+                min-height: 0 !important;
+            }
+            input:not([type="checkbox"]), select, .photo-desc {
+                border: none !important;
+                background: transparent !important;
+                padding: 1px 0 !important;
+                -webkit-appearance: none;
+                appearance: none;
+                font-size: 9.4px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                line-height: 1.1 !important;
+                color: inherit !important;
+            }
+            #mainPage .section:first-of-type input#name,
+            #mainPage .section:first-of-type input#datum,
+            #mainPage .section:first-of-type input#adresse,
+            #mainPage .section:first-of-type input#plz,
+            #mainPage .section:first-of-type input#ort,
+            #mainPage .section:first-of-type input#telefon {
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+                padding: 1px 0 !important;
+            }
             input[type="checkbox"] { -webkit-appearance: auto !important; appearance: auto !important; border: 1px solid #000 !important; width: 9px !important; height: 9px !important; margin-right: 3px !important; margin-top: 0 !important; margin-bottom: 0 !important; accent-color: var(--primary) !important; }
-            .checkbox-item { font-size: 9.5px !important; padding: 0 !important; margin: 0 !important; gap: 3px !important; line-height: 1.1 !important; }
-            .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 2px !important; }
+            .checkbox-item { font-size: 8.7px !important; padding: 0 !important; margin: 0 !important; gap: 2px !important; line-height: 1 !important; }
+            .checkbox-group, .checkbox-group-3 { gap: 1px 2px !important; margin-bottom: 1px !important; }
             #boxArbeitszeitOrtungsgas { gap: 2px !important; }
             input[type="date"]::-webkit-calendar-picker-indicator,
             input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none !important; }
             .worker-grid, .material-grid, .grid, .grid-3, .grid-1-2, .checkbox-group, .checkbox-group-3, .signature-box, .photo-box { break-inside: avoid !important; }
             h2, .section-header-flex, .label { break-after: avoid !important; }
-            .worker-grid, .material-grid { gap: 4px; margin-bottom: 2px; }
-            .grid-header { border-bottom: 1px solid #000; padding-bottom: 2px; margin-bottom: 4px; }
+            .worker-grid, .material-grid { gap: 4px; margin-bottom: 4px; }
+            .grid-header { border-bottom: 1px solid #d1d5db; padding-bottom: 3px; margin-bottom: 5px; color: #6b7280 !important; }
             .is-empty-row { display: none !important; }
             
-            .sketch-container { border: none !important; background: transparent !important; box-shadow: none !important; height: 170mm !important; background-image: none !important; margin-top: 0 !important; }
+            .sketch-container { border: 1px solid #d6deeb !important; background: #ffffff !important; box-shadow: none !important; height: 148mm !important; background-image: none !important; margin-top: 0 !important; border-radius: 14px !important; }
             #sketch-canvas { position: static !important; width: 100% !important; height: 100% !important; }
             
-            .signature-box { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 10px; }
-            .signature-pad { border: 1px solid #ccc !important; background: transparent !important; height: 80px !important; }
-            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; page-break-inside: auto; }
-            .photo-box { border: none !important; box-shadow: none !important; padding: 0 !important; page-break-inside: avoid; }
-            .img-container { height: 85mm !important; border: none !important; background: transparent !important; }
-            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #eee !important; background: transparent !important; padding: 4px !important; margin-bottom: 6px !important; }
+            .signature-box { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 4px !important; margin-top: 4px; border-radius: 12px !important; }
+            .signature-pad { border: 1px dashed #b6c1cf !important; background: #ffffff !important; height: 66px !important; border-radius: 10px !important; }
+            .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 3px; page-break-inside: auto; }
+            .photo-box { border: 1px solid #e3e8ef !important; box-shadow: none !important; padding: 5px !important; page-break-inside: avoid; border-radius: 12px !important; background: #ffffff !important; }
+            .img-container { height: 70mm !important; border: 1px solid #eef2f6 !important; background: #ffffff !important; border-radius: 10px !important; }
+            #ueberpruefteBauteileContainer, #poolBauteileContainer { border: 1px solid #e3e8ef !important; background: #ffffff !important; padding: 3px !important; margin-bottom: 3px !important; border-radius: 12px !important; }
             #auftraggeberContainer { border-top: none !important; }
             
             .checkbox-group .checkbox-item:not(:has(input:checked)),
@@ -423,6 +571,281 @@
             #poolBauteileContainer:not(:has(input:checked)) {
                 display: none !important;
             }
+
+            body.ios-print-mode #app-root #mainPage,
+            body.ios-print-mode #app-root #sketchPage,
+            body.ios-print-mode #app-root #photoPagesContainer .page {
+                box-sizing: border-box !important;
+                width: 198mm !important;
+                max-width: 198mm !important;
+                height: 281mm !important;
+                min-height: 281mm !important;
+                margin: 0 auto !important;
+                padding: 3mm 3.5mm 4mm 3.5mm !important;
+                overflow: hidden !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage {
+                zoom: 0.96 !important;
+                padding: 2.5mm 3mm 3mm 3mm !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .header,
+            body.ios-print-mode #app-root #sketchPage .header,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header {
+                margin-bottom: 4px !important;
+                padding: 6px 8px 7px 8px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .header-top,
+            body.ios-print-mode #app-root #sketchPage .header-top,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-top {
+                margin-bottom: 5px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .header-title,
+            body.ios-print-mode #app-root #sketchPage .header-title,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-title {
+                font-size: 13.8px !important;
+                line-height: 1.02 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .header-right,
+            body.ios-print-mode #app-root #sketchPage .header-right,
+            body.ios-print-mode #app-root #photoPagesContainer .page .header-right {
+                font-size: 8.2px !important;
+                line-height: 1.2 !important;
+                padding: 5px 7px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .logo,
+            body.ios-print-mode #app-root #sketchPage .logo,
+            body.ios-print-mode #app-root #photoPagesContainer .page .logo {
+                max-height: 38px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section {
+                margin-bottom: 3px !important;
+                padding: 4px 6px 5px 6px !important;
+                border-radius: 10px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section h2 {
+                font-size: 8.2px !important;
+                margin-bottom: 3px !important;
+                padding-bottom: 3px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .label {
+                font-size: 7.6px !important;
+                margin-bottom: 2px !important;
+                line-height: 1.05 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .grid,
+            body.ios-print-mode #app-root #mainPage .address-grid,
+            body.ios-print-mode #app-root #mainPage .grid-3,
+            body.ios-print-mode #app-root #mainPage .grid-1-2 {
+                gap: 2px 5px !important;
+                margin-top: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage input:not([type="checkbox"]),
+            body.ios-print-mode #app-root #mainPage select,
+            body.ios-print-mode #app-root #mainPage .print-textarea-clone {
+                font-size: 8.6px !important;
+                line-height: 1.05 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .checkbox-item {
+                font-size: 8px !important;
+                gap: 1px !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .checkbox-group,
+            body.ios-print-mode #app-root #mainPage .checkbox-group-3 {
+                gap: 0 2px !important;
+                margin-bottom: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .section-header-flex {
+                margin-bottom: 2px !important;
+            }
+
+            body.ios-print-mode #app-root #sketchPage .sketch-container {
+                height: 132mm !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-grid {
+                gap: 5px !important;
+                margin-top: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-box {
+                padding: 3px !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .img-container {
+                height: 58mm !important;
+                margin-bottom: 5px !important;
+            }
+
+            body.ios-print-mode #app-root #photoPagesContainer .photo-desc {
+                font-size: 8.2px !important;
+                line-height: 1 !important;
+                padding: 0 !important;
+            }
+
+            body.ios-print-mode #app-root #mainPage .footer,
+            body.ios-print-mode #app-root #sketchPage .footer,
+            body.ios-print-mode #app-root #photoPagesContainer .page .footer {
+                display: none !important;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            @media print {
+                @page {
+                    size: A4;
+                    margin: 2mm !important;
+                }
+
+                html, body {
+                    width: auto !important;
+                    min-width: 0 !important;
+                    max-width: none !important;
+                    overflow: visible !important;
+                }
+
+                #app-root .page {
+                    box-sizing: border-box !important;
+                    width: 200mm !important;
+                    max-width: 200mm !important;
+                    height: 286mm !important;
+                    min-height: 286mm !important;
+                    margin: 0 auto !important;
+                    padding: 3mm 4mm 6mm 4mm !important;
+                    page-break-after: auto !important;
+                    page-break-inside: avoid !important;
+                    break-after: auto !important;
+                    break-inside: avoid !important;
+                    page-break-before: auto !important;
+                    break-before: auto !important;
+                    overflow: hidden !important;
+                }
+
+                #app-root #sketchPage {
+                    zoom: 0.97 !important;
+                    height: 284mm !important;
+                    min-height: 284mm !important;
+                    padding-bottom: 5mm !important;
+                }
+
+                #app-root #photoPagesContainer .page {
+                    zoom: 0.97 !important;
+                    height: 284mm !important;
+                    min-height: 284mm !important;
+                    padding-bottom: 5mm !important;
+                }
+
+                #app-root #sketchPage .header,
+                #app-root #photoPagesContainer .page .header {
+                    margin-bottom: 5px !important;
+                    padding: 7px 9px 8px 9px !important;
+                }
+
+                #app-root #sketchPage .header-top,
+                #app-root #photoPagesContainer .page .header-top {
+                    margin-bottom: 6px !important;
+                }
+
+                #app-root #sketchPage .header-title,
+                #app-root #photoPagesContainer .page .header-title {
+                    font-size: 14.5px !important;
+                    line-height: 1.05 !important;
+                }
+
+                #app-root #sketchPage .header-right,
+                #app-root #photoPagesContainer .page .header-right {
+                    font-size: 8.7px !important;
+                    padding: 6px 8px !important;
+                }
+
+                #app-root #sketchPage .logo,
+                #app-root #photoPagesContainer .page .logo {
+                    max-height: 42px !important;
+                }
+
+                #app-root #sketchPage .sketch-container {
+                    height: 138mm !important;
+                }
+
+                #app-root #photoPagesContainer .photo-grid {
+                    gap: 6px !important;
+                    margin-top: 1px !important;
+                }
+
+                #app-root #photoPagesContainer .photo-box {
+                    padding: 4px !important;
+                }
+
+                #app-root #photoPagesContainer .img-container {
+                    height: 62mm !important;
+                }
+
+                #app-root #photoPagesContainer .photo-desc {
+                    font-size: 8.7px !important;
+                    line-height: 1 !important;
+                }
+
+                .footer {
+                    bottom: 2mm !important;
+                    font-size: 7.4px !important;
+                }
+            }
+        }
+
+        body.pdf-export-mode {
+            background: #ffffff !important;
+            padding: 0 !important;
+        }
+        body.pdf-export-mode::before,
+        body.pdf-export-mode::after {
+            display: none !important;
+        }
+        body.pdf-export-mode #controls,
+        body.pdf-export-mode .toolbar,
+        body.pdf-export-mode .no-print,
+        body.pdf-export-mode input[type="file"],
+        body.pdf-export-mode #cropModal,
+        body.pdf-export-mode #photoEditorModal,
+        body.pdf-export-mode #settingsModal,
+        body.pdf-export-mode #toast-container {
+            display: none !important;
+        }
+        body.pdf-export-mode #app-root {
+            padding: 0 !important;
+        }
+        body.pdf-export-mode .page {
+            box-sizing: border-box !important;
+            width: 200mm !important;
+            max-width: 200mm !important;
+            min-height: 285mm !important;
+            margin: 0 auto 4mm auto !important;
+            padding: 5mm 6mm 10mm 6mm !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: #ffffff !important;
+            overflow: hidden !important;
+        }
+        body.pdf-export-mode .page:last-child {
+            margin-bottom: 0 !important;
+        }
+        body.pdf-export-mode .pdf-export-hidden-image {
+            visibility: hidden !important;
         }
 
         /* TOAST NOTIFICATIONS */
@@ -435,10 +858,212 @@
 
         /* CUSTOMER SEARCH */
         .customer-search-results { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--gray-200); border-top: none; z-index: 1001; max-height: 250px; overflow-y: auto; border-radius: 0 0 var(--radius-md) var(--radius-md); box-shadow: var(--shadow-lg); }
-        .customer-search-results .result-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--gray-100); font-size: 12px; line-height: 1.4; }
+        .customer-search-results .result-item { width: 100%; padding: 10px 12px; cursor: pointer; border: none; border-bottom: 1px solid var(--gray-100); font-size: 12px; line-height: 1.4; text-align: left; background: transparent; color: inherit; }
         .customer-search-results .result-item:hover { background: var(--primary-light); }
+        .customer-search-results .result-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--primary-light); }
         .customer-search-results .result-item:last-child { border-bottom: none; }
         .customer-search-results .result-item small { color: var(--gray-600); }
+        .result-delete-btn {
+            border: none;
+            background: transparent;
+            padding: 5px;
+            cursor: pointer;
+            opacity: 0.6;
+            font-size: 14px;
+            color: inherit;
+        }
+        .result-delete-btn:hover,
+        .result-delete-btn:focus-visible { opacity: 1; }
+
+        .open-jobs-panel {
+            display: none;
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(248, 250, 252, 0.92);
+            border: 1px solid var(--gray-200);
+            text-align: left;
+        }
+        .open-jobs-panel.is-visible { display: block; }
+        .open-jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .open-jobs-title {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gray-600);
+        }
+        .open-jobs-subtitle {
+            margin: 0 0 12px 0;
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        .open-jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .open-job-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--gray-200);
+            background: #fff;
+        }
+        .open-job-item.is-today {
+            border-color: #60a5fa;
+            box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.15);
+        }
+        .open-job-item.is-stale {
+            border-color: #f59e0b;
+            box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.15);
+        }
+        .open-job-item.is-missing-followup {
+            border-color: #ef4444;
+            box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.15);
+        }
+        .open-job-main {
+            min-width: 0;
+        }
+        .open-job-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .open-job-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .open-job-badge.today {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .open-job-badge.stale {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .open-job-badge.missing-followup {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .open-job-name {
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.35;
+            word-break: break-word;
+        }
+        .open-job-meta,
+        .open-job-followup {
+            margin: 0;
+            font-size: 11px;
+            color: var(--gray-600);
+            line-height: 1.45;
+        }
+        .open-job-followup {
+            color: #b45309;
+            margin-top: 3px;
+        }
+        .open-job-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .open-job-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .open-job-btn:hover { transform: translateY(-1px); }
+        .open-job-btn.primary {
+            color: #fff;
+            background: linear-gradient(135deg, #2b83b8 0%, #245d9a 100%);
+        }
+        .open-job-btn.secondary {
+            color: var(--gray-600);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+        }
+        .workflow-hint-box {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1e3a8a;
+            text-align: left;
+        }
+        .workflow-hint-box strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .workflow-hint-box p {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .open-jobs-sort {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray-600);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .open-jobs-sort select {
+            min-width: 170px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .text-link-btn {
+            margin-top: 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+            text-decoration: underline;
+            padding: 0;
+            font: inherit;
+        }
+        .text-link-btn:focus-visible,
+        .tool:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
 
         /* TOGGLE SWITCH */
         .toggle-switch {
@@ -483,6 +1108,643 @@
         .toggle-switch input:checked + .switch::before {
             transform: translateX(22px);
         }
+
+        #settingsModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            background: rgba(0,0,0,0.5);
+            z-index: 10002;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .settings-panel {
+            width: min(100%, 400px);
+            max-height: calc(100vh - 32px);
+            overflow-y: auto;
+            background: var(--surface);
+            color: var(--gray-900);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overscroll-behavior: contain;
+        }
+        .settings-panel input {
+            margin-bottom: 20px;
+        }
+        .settings-section {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        .settings-section h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--gray-900);
+            font-size: 13px;
+        }
+        .settings-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        .settings-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            padding-top: 14px;
+            margin-top: 4px;
+            background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 24%);
+        }
+
+        body.print-light-mode,
+        body.print-light-mode.dark-mode {
+            --primary: #b89b1e;
+            --primary-hover: #9a8218;
+            --primary-light: #fdfbf2;
+            --gray-900: #111827;
+            --gray-600: #4b5563;
+            --gray-400: #9ca3af;
+            --gray-200: #e5e7eb;
+            --gray-100: #f3f4f6;
+            --gray-50: #f9fafb;
+            --bg-app: #f3f4f6;
+            --surface: #ffffff;
+            --text: #111827;
+            --border: #d1d5db;
+            --page-bg: #ffffff;
+            --input-bg: #ffffff;
+            --canvas-bg: #ffffff;
+            --dl-header-bg: #e0f2fe;
+            --dl-header-text: #0284c7;
+            --dl-header-border: #bae6fd;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+            background: #f3f4f6;
+            color: #111827;
+        }
+        body.print-light-mode::before,
+        body.print-light-mode::after {
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            #settingsModal {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .settings-panel {
+                width: 100%;
+                max-height: calc(100vh - 20px);
+                padding: 18px;
+                margin: 0 auto;
+            }
+
+            .settings-actions {
+                flex-wrap: wrap;
+            }
+
+            .settings-actions .control-btn {
+                flex: 1 1 140px;
+            }
+        }
+
+        /* =========================================
+           DESIGN REFRESH 4.0
+           ========================================= */
+        @media screen {
+            :root {
+                --primary: #b8860b;
+                --primary-hover: #966d08;
+                --primary-light: #fff8e7;
+                --bg-app: #eef3f7;
+                --surface: rgba(255, 255, 255, 0.82);
+                --page-bg: #fffdf8;
+                --input-bg: rgba(255, 255, 255, 0.9);
+                --border: #d8e0e8;
+                --gray-900: #1a2433;
+                --gray-600: #526173;
+                --gray-400: #8190a3;
+                --gray-200: #d9e1ea;
+                --gray-100: #edf2f7;
+                --gray-50: #f8fafc;
+                --shadow-sm: 0 10px 24px -18px rgba(26, 36, 51, 0.4);
+                --shadow-md: 0 22px 48px -28px rgba(26, 36, 51, 0.34);
+                --shadow-lg: 0 34px 80px -36px rgba(26, 36, 51, 0.36);
+                --font-main: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
+            }
+
+            body {
+                background:
+                    radial-gradient(circle at top left, rgba(184, 134, 11, 0.18), transparent 28%),
+                    radial-gradient(circle at top right, rgba(43, 131, 184, 0.16), transparent 30%),
+                    linear-gradient(180deg, #f5f8fb 0%, #edf2f6 100%);
+                color: var(--gray-900);
+            }
+
+            body::before,
+            body::after {
+                content: "";
+                position: fixed;
+                inset: auto;
+                width: 340px;
+                height: 340px;
+                border-radius: 50%;
+                filter: blur(70px);
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0.45;
+            }
+
+            body::before {
+                top: -120px;
+                left: -80px;
+                background: rgba(184, 134, 11, 0.3);
+            }
+
+            body::after {
+                right: -120px;
+                bottom: 80px;
+                background: rgba(43, 131, 184, 0.24);
+            }
+
+            #start-screen {
+                position: relative;
+                min-height: 100vh;
+                padding: 36px 20px;
+            }
+
+            .menu-box {
+                position: relative;
+                overflow: hidden;
+                max-width: 560px;
+                padding: 46px 42px;
+                border-radius: 30px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 253, 248, 0.84));
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                box-shadow: 0 30px 80px -40px rgba(26, 36, 51, 0.48);
+                backdrop-filter: blur(18px);
+            }
+
+            .menu-box::before {
+                content: "";
+                position: absolute;
+                inset: 0 0 auto 0;
+                height: 6px;
+                background: linear-gradient(90deg, #b8860b, #d8aa2b 45%, #2b83b8);
+            }
+
+            .menu-box img {
+                max-height: 86px;
+                margin-bottom: 18px;
+            }
+
+            .menu-box h1 {
+                margin-bottom: 10px;
+                font-size: 30px;
+                letter-spacing: -0.03em;
+            }
+
+            .menu-subtitle {
+                margin: 0 0 28px 0;
+                color: var(--gray-600);
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .menu-btn {
+                min-height: 58px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, #b8860b 0%, #d3a62f 100%);
+                box-shadow: 0 18px 34px -24px rgba(184, 134, 11, 0.78);
+            }
+
+            .menu-btn.secondary {
+                background: linear-gradient(135deg, #415063 0%, #2b3644 100%);
+            }
+
+            .menu-btn.blue {
+                background: linear-gradient(135deg, #2b83b8 0%, #245d9a 100%);
+            }
+
+            .page {
+                border-radius: 28px;
+                padding: 14mm 13mm;
+                border: 1px solid rgba(255, 255, 255, 0.78);
+                box-shadow: 0 32px 90px -46px rgba(26, 36, 51, 0.42);
+                overflow: hidden;
+            }
+
+            .page::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 7px;
+                background: linear-gradient(90deg, rgba(184, 134, 11, 0.95), rgba(43, 131, 184, 0.75));
+            }
+
+            .header {
+                padding: 18px 20px 20px;
+                margin-bottom: 28px;
+                border: 1px solid rgba(216, 224, 232, 0.9);
+                border-radius: 24px;
+                background: linear-gradient(180deg, rgba(255, 250, 240, 0.82), rgba(255, 255, 255, 0.92));
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            }
+
+            .header-top {
+                margin-bottom: 18px;
+            }
+
+            .logo {
+                max-height: 76px;
+            }
+
+            .header-right {
+                padding: 10px 14px;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(216, 224, 232, 0.75);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .header-right strong {
+                font-size: 16px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .header-title {
+                font-size: 32px;
+                letter-spacing: -0.03em;
+                line-height: 1.1;
+            }
+
+            .section {
+                margin-bottom: 18px;
+                padding: 16px 18px 18px;
+                border: 1px solid rgba(216, 224, 232, 0.86);
+                border-radius: 22px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(248, 250, 252, 0.96));
+                box-shadow: var(--shadow-sm);
+            }
+
+            .section h2 {
+                margin-bottom: 16px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(184, 134, 11, 0.18);
+            }
+
+            .label {
+                font-size: 10.5px;
+                color: #5f6d7c;
+            }
+
+            input,
+            textarea,
+            select {
+                padding: 12px 14px;
+                border: 1px solid #d6deeb;
+                border-radius: 14px;
+                background: rgba(255, 255, 255, 0.92);
+                box-shadow: inset 0 1px 2px rgba(26, 36, 51, 0.04);
+            }
+
+            input:focus,
+            textarea:focus,
+            select:focus {
+                background: #ffffff;
+                border-color: rgba(184, 134, 11, 0.8);
+                box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.12);
+            }
+
+            .gps-btn,
+            .mic-btn,
+            .control-btn {
+                border-radius: 14px;
+            }
+
+            .control-btn {
+                background: linear-gradient(135deg, #b8860b 0%, #d3a62f 100%);
+                box-shadow: 0 16px 28px -20px rgba(184, 134, 11, 0.78);
+            }
+
+            .control-btn.secondary {
+                background: linear-gradient(135deg, #4b5e73 0%, #2b3644 100%);
+                box-shadow: 0 16px 28px -20px rgba(43, 54, 68, 0.62);
+            }
+
+            .control-btn.home {
+                background: linear-gradient(135deg, #d74747 0%, #b91c1c 100%);
+            }
+
+            .toolbar {
+                padding: 10px 18px;
+                border-radius: 22px;
+                background: rgba(255, 255, 255, 0.92);
+                border: 1px solid rgba(216, 224, 232, 0.9);
+                box-shadow: 0 24px 50px -34px rgba(26, 36, 51, 0.45);
+            }
+
+            .tool {
+                width: 38px;
+                height: 38px;
+            }
+
+            .save-status,
+            #controls {
+                backdrop-filter: blur(18px);
+            }
+
+            #controls {
+                width: 250px;
+                padding: 12px;
+                border-radius: 24px;
+                background: rgba(255, 255, 255, 0.52);
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                box-shadow: 0 30px 70px -42px rgba(26, 36, 51, 0.55);
+            }
+
+            .save-status {
+                background: rgba(255, 255, 255, 0.84);
+            }
+
+            .signature-box,
+            .photo-box,
+            #ueberpruefteBauteileContainer,
+            #poolBauteileContainer {
+                border-radius: 18px;
+                border-color: rgba(216, 224, 232, 0.86);
+                background: rgba(255, 255, 255, 0.86);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .img-container,
+            .sketch-container,
+            .signature-pad {
+                border-radius: 16px;
+            }
+
+            .footer {
+                padding-top: 10px;
+                border-top-color: rgba(216, 224, 232, 0.9);
+            }
+
+            body.dark-mode {
+                background:
+                    radial-gradient(circle at top left, rgba(234, 179, 8, 0.18), transparent 28%),
+                    radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 30%),
+                    linear-gradient(180deg, #08111d 0%, #0f172a 100%);
+            }
+
+            body.dark-mode .menu-box,
+            body.dark-mode .page,
+            body.dark-mode .header,
+            body.dark-mode .section,
+            body.dark-mode #controls,
+            body.dark-mode .save-status,
+            body.dark-mode .signature-box,
+            body.dark-mode .photo-box,
+            body.dark-mode #ueberpruefteBauteileContainer,
+            body.dark-mode #poolBauteileContainer,
+            body.dark-mode .header-right {
+                border-color: rgba(71, 85, 105, 0.9);
+                box-shadow: none;
+            }
+
+            body.dark-mode .menu-box {
+                background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.92));
+            }
+
+            body.dark-mode .header,
+            body.dark-mode .section,
+            body.dark-mode .signature-box,
+            body.dark-mode .photo-box,
+            body.dark-mode #ueberpruefteBauteileContainer,
+            body.dark-mode #poolBauteileContainer,
+            body.dark-mode .header-right,
+            body.dark-mode #controls,
+            body.dark-mode .save-status {
+                background: rgba(15, 23, 42, 0.86);
+            }
+
+            body.dark-mode input,
+            body.dark-mode textarea,
+            body.dark-mode select {
+                background: rgba(30, 41, 59, 0.92);
+                border-color: #475569;
+            }
+
+            @media screen and (max-width: 1180px) {
+                #controls {
+                    width: 100%;
+                    border-radius: 0 0 22px 22px;
+                    padding: 12px;
+                    background: rgba(26, 36, 51, 0.9);
+                    border: none;
+                }
+
+                .page {
+                    margin: 12px 8px;
+                    min-height: auto;
+                    padding: 8mm 7mm 12px;
+                    border-radius: 16px;
+                }
+
+                .page::before {
+                    height: 4px;
+                }
+
+                .header {
+                    padding: 10px 12px 12px;
+                    margin-bottom: 12px;
+                    border-radius: 14px;
+                }
+
+                .header-top {
+                    margin-bottom: 8px;
+                }
+
+                .header-title {
+                    font-size: 24px;
+                }
+
+                .logo {
+                    max-height: 58px;
+                }
+
+                .header-right {
+                    padding: 6px 10px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    line-height: 1.15;
+                }
+
+                .header-right strong {
+                    font-size: 13px;
+                }
+
+                .section {
+                    margin-bottom: 8px;
+                    padding: 8px 10px 10px;
+                    border-radius: 14px;
+                }
+
+                .section h2 {
+                    margin-bottom: 7px;
+                    padding-bottom: 5px;
+                    font-size: 10px;
+                }
+
+                .section-header-flex {
+                    margin-bottom: 6px;
+                }
+
+                .grid,
+                .grid-3,
+                .grid-1-2,
+                .address-grid {
+                    gap: 8px;
+                }
+
+                .address-grid {
+                    grid-template-columns: 72px 1fr 1.1fr;
+                }
+
+                .address-grid.address-grid-compact {
+                    grid-template-columns: 72px 1fr;
+                }
+
+                .form-divider {
+                    margin-top: 8px;
+                    padding-top: 8px;
+                }
+
+                .label {
+                    font-size: 9px;
+                    margin-bottom: 3px;
+                    line-height: 1.15;
+                }
+
+                input,
+                textarea,
+                select {
+                    padding: 7px 9px;
+                    font-size: 14px;
+                    border-radius: 10px;
+                }
+
+                textarea {
+                    min-height: 30px;
+                    line-height: 1.25;
+                }
+
+                #befund,
+                #reparatur,
+                #interne_notizen,
+                #reparatur_notizen,
+                #bauteile_notizen,
+                #pool_notizen {
+                    min-height: 54px;
+                }
+
+                .checkbox-group,
+                .checkbox-group-3 {
+                    gap: 2px 6px;
+                }
+
+                .checkbox-item {
+                    gap: 4px;
+                    padding: 1px 0;
+                    font-size: 11px;
+                    line-height: 1.15;
+                }
+
+                .checkbox-item input {
+                    width: 12px;
+                    height: 12px;
+                }
+
+                .gps-btn,
+                .mic-btn {
+                    padding: 3px 6px;
+                    font-size: 9px;
+                    gap: 4px;
+                }
+
+                #mainPage .section.no-print {
+                    margin-top: 8px !important;
+                    padding: 8px 10px !important;
+                }
+
+                #mainPage .section.no-print h2 {
+                    margin-bottom: 4px;
+                }
+
+                #mainPage .section.no-print textarea {
+                    min-height: 44px;
+                }
+
+                #boxArbeitszeitOrtungsgas {
+                    gap: 4px !important;
+                }
+
+                .footer {
+                    position: static;
+                    left: auto;
+                    right: auto;
+                    bottom: auto;
+                    margin-top: 6px;
+                    padding-top: 6px;
+                    font-size: 8px;
+                }
+            }
+
+            @media screen and (max-width: 768px) {
+                #start-screen {
+                    padding: 18px 14px;
+                }
+
+                .menu-box {
+                    padding: 34px 22px;
+                    border-radius: 24px;
+                }
+
+                .menu-box h1 {
+                    font-size: 24px;
+                }
+
+                .page {
+                    margin: 0 0 14px 0;
+                    padding: 12px;
+                    border-radius: 18px;
+                }
+
+                .header,
+                .section {
+                    border-radius: 18px;
+                    padding: 14px;
+                }
+
+                .header-title {
+                    font-size: 22px;
+                }
+            }
+        }
     </style>
 </head>
 <body>
@@ -495,7 +1757,7 @@
 <div id="start-screen">
     <div class="menu-box" id="login-container">
         <img src="Logo.PNG" alt="Brugger Logo" onerror="this.style.display='none'">
-        <h1>Geschützter Bereich</h1>
+        <h1>PIN-Abfrage</h1>
         <input type="password" inputmode="numeric" pattern="[0-9]*" id="loginPassword" placeholder="PIN eingeben" style="width:100%; padding:15px; font-size:24px; text-align:center; border:1px solid #ccc; border-radius:8px; margin-bottom:20px;" onkeyup="if(event.key==='Enter') attemptLogin()">
         <button class="menu-btn" onclick="attemptLogin()">🔓 Entsperren</button>
         <p id="loginError" style="color:#ef4444; display:none; margin-top:10px; font-weight:bold;">PIN falsch!</p>
@@ -510,11 +1772,30 @@
         <button class="menu-btn blue" onclick="startApp('DL')">📊 Datenlogger Auswertung</button>
         <hr style="border:0; border-top:1px solid var(--gray-200); margin: 25px 0;">
         <button id="btnRestoreAutosave" class="menu-btn secondary" style="display:none; background: linear-gradient(145deg, #e67e22, #d35400);" onclick="restoreAutosave()">🔄 Letzten Entwurf wiederherstellen</button>
-        <input type="file" id="startImportFile" accept=".lok,application/json" style="display:none" onchange="importFromStart(this)">
+        <button id="btnResumeOpenJob" class="menu-btn blue" style="display:none;" onclick="resumeLatestOpenJob()">🧰 Baustelle fortsetzen</button>
+        <input type="file" id="startImportFile" accept=".lok,.json,application/x-brugger-lok,application/json,text/plain" style="display:none" onchange="importFromStart(this)">
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px;" onclick="document.getElementById('startImportFile').click()">💾 Gespeicherten Bericht laden</button>
+        <div id="openJobsPanel" class="open-jobs-panel">
+            <div class="open-jobs-header">
+                <h2 class="open-jobs-title">Offene Baustellen</h2>
+                <label class="open-jobs-sort">
+                    <span>Sortierung</span>
+                    <select id="openJobsSort" onchange="refreshOpenJobsUI()">
+                        <option value="customer-date" selected>Kunde + Datum</option>
+                        <option value="date-customer">Datum + Kunde</option>
+                    </select>
+                </label>
+            </div>
+            <p class="open-jobs-subtitle">Baustellen mit Folgetermin erscheinen hier automatisch und koennen direkt weiterbearbeitet werden.</p>
+            <div id="openJobsList" class="open-jobs-list"></div>
+        </div>
+        <div class="workflow-hint-box">
+            <strong>OneDrive Hinweis</strong>
+            <p>Offene Baustellen bitte immer im gemeinsamen OneDrive-Ordner unter Offene Baustellen als .lok speichern, damit sie auf allen Geräten sichtbar und wieder ladbar sind.</p>
+        </div>
         <button class="menu-btn secondary" style="font-size: 13px; padding: 12px; margin-top: 20px; background: #ef4444; border: 1px solid #dc2626;" onclick="hardResetApp()">⚠️ App Reparatur / Reset</button>
-        <div style="margin-top: 20px; cursor: pointer; color: #666; font-size: 12px; text-decoration: underline;" onclick="openSettings()">⚙️ E-Mail Einstellungen</div>
-        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 3.7</div>
+        <button type="button" class="text-link-btn" onclick="openSettings()">⚙️ E-Mail Einstellungen</button>
+        <div style="margin-top: 15px; color: #9ca3af; font-size: 11px;">Version 4.1</div>
     </div>
 </div>
 
@@ -555,34 +1836,34 @@
     </div>
 </div>
 
-<div id="settingsModal" class="no-print" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10002; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:25px; border-radius:12px; width:90%; max-width:400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-        <h3 style="margin-top:0; margin-bottom:15px; color:#111827;">Einstellungen</h3>
-        <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Standard E-Mail Empfänger:</label>
-        <input type="email" id="settingsEmail" placeholder="kanal@brugger-entfeuchtung.at" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
-        <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:#374151;">Name des Technikers (für Berichte):</label>
-        <input type="text" id="settingsTechnician" placeholder="Max Mustermann" style="width:100%; margin-bottom:20px; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
-            
-            <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
-                <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Kundendatenbank</h4>
-                <div style="display:flex; gap:10px;">
-                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="exportCustomers()">⬆️ Exportieren</button>
-                    <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="document.getElementById('importCustomersInput').click()">⬇️ Importieren</button>
-                    <input type="file" id="importCustomersInput" accept=".json" style="display:none" onchange="importCustomers(this)">
-                </div>
-            </div>
+<div id="settingsModal" class="no-print">
+    <div class="settings-panel">
+        <h3 style="margin-top:0; margin-bottom:15px; color:var(--gray-900);">Einstellungen</h3>
+        <label class="settings-label">Standard E-Mail Empfänger:</label>
+        <input type="email" id="settingsEmail" placeholder="kanal@brugger-entfeuchtung.at" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+        <label class="settings-label">Name des Technikers (für Berichte):</label>
+        <input type="text" id="settingsTechnician" placeholder="Max Mustermann" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
 
-            <div style="margin-bottom:15px; padding-bottom: 15px; border-bottom: 1px solid #d1d5db;">
-                <h4 style="margin-top:0; margin-bottom:10px; color:#111827; font-size:13px;">Textvorlagen</h4>
-                <button class="control-btn secondary" style="width:100%; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="openTemplateManager()">✏️ Vorlagen bearbeiten</button>
+        <div class="settings-section">
+            <h4>Kundendatenbank</h4>
+            <div style="display:flex; gap:10px;">
+                <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="exportCustomers()">⬆️ Exportieren</button>
+                <button class="control-btn secondary" style="flex:1; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="document.getElementById('importCustomersInput').click()">⬇️ Importieren</button>
+                <input type="file" id="importCustomersInput" accept=".json" style="display:none" onchange="importCustomers(this)">
             </div>
+        </div>
 
-        <label class="toggle-switch" style="margin-bottom: 15px; font-weight: bold; color:#374151;">
+        <div class="settings-section">
+            <h4>Textvorlagen</h4>
+            <button class="control-btn secondary" style="width:100%; padding:8px; box-shadow:none; text-transform:none; font-size:12px;" onclick="openTemplateManager()">✏️ Vorlagen bearbeiten</button>
+        </div>
+
+        <label class="toggle-switch" style="margin-bottom: 15px; font-weight: bold; color:var(--gray-600);">
             <span>🌙 Dark Mode (Dunkles Design)</span>
             <input type="checkbox" id="settingsDarkMode">
             <span class="switch"></span>
         </label>
-        <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <div class="settings-actions">
             <button class="control-btn secondary" onclick="closeSettings()">Schließen</button>
             <button class="control-btn" onclick="saveSettings()">Speichern</button>
         </div>
@@ -662,19 +1943,39 @@
 
 <div id="app-root"></div>
 
-<template id="tpl-lo">
+<template id="tpl-controls-sketch">
     <div id="controls" class="no-print">
         <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
         <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
         <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
+            <span>FOTOS NUMMERIEREN</span>
+        </label>
         <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
     </div>
+</template>
+
+<template id="tpl-controls-basic">
+    <div id="controls" class="no-print">
+        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
+        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
+        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
+        <button class="control-btn secondary" onclick="saveOpenConstructionNow()">OFFENE BAUSTELLE SICHERN</button>
+        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
+            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;">
+            <span>FOTOS NUMMERIEREN</span>
+        </label>
+        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
+    </div>
+</template>
+
+<template id="tpl-lo">
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -726,8 +2027,8 @@
                 </label>
             </div>
             
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
                     <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
@@ -743,7 +2044,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -799,9 +2100,9 @@
                     <div id="boxArbeitszeitOrtungsgas" style="display: grid; grid-template-columns: 1fr; gap: 6px; align-content: start;">
                         <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Arbeitszeit</span><input type="text" placeholder="z.B. 1.5 Std" id="arbeitszeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
                         <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzeit</span><input type="text" placeholder="z.B. 45 Min" id="fahrzeit_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Fahrzone</span><select id="fahrzone_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Ortungsgas</span><select id="ortungsgas_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select></label>
-                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center;"><span style="width: 85px; flex-shrink: 0;">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Fahrzone</span><select id="fahrzone_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option value="">- wählen -</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="fahrzone_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Ortungsgas</span><select id="ortungsgas_select" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><option>0</option><option>5</option><option>10</option><option>20</option><option>50</option></select><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="ortungsgas_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
+                        <label class="checkbox-item" style="cursor: default; display: flex; align-items: center; gap: 6px;"><span style="width: 85px; flex-shrink: 0;">Färbemittel (g)</span><input type="text" placeholder="..." id="faerbemittel_input" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; flex: 1;"><span style="font-size: 11px; color: var(--gray-600); flex-shrink: 0;">Anz.</span><input type="number" min="1" step="1" id="faerbemittel_qty" placeholder="1" style="padding: 4px 8px; font-size: 12px; height: 26px; margin: 0; width: 58px; flex: 0 0 58px;"></label>
                     </div>
                 </div>
             </div>
@@ -928,6 +2229,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -964,18 +2266,7 @@
 </template>
 
 <template id="tpl-kb">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -1025,8 +2316,8 @@
                     <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
                 </label>
             </div>
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -1037,7 +2328,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1138,6 +2429,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -1174,17 +2466,7 @@
 </template>
 
 <template id="tpl-rb">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="basic"></div>
 
     <div class="page" id="mainPage">
         
@@ -1237,8 +2519,8 @@
                 </label>
             </div>
             
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="no-print" style="position: relative; margin-bottom: 10px;">
                     <span class="label">AUFTRAGGEBER SUCHEN & LADEN</span>
                     <input type="search" id="billingCustomerSearch" placeholder="Namen, Adresse oder Ort eingeben..." onkeyup="debouncedCustomerSearch(this, 'billing')" autocomplete="off">
@@ -1254,7 +2536,7 @@
                         <button type="button" class="no-print gps-btn" onclick="autoLocate(this, 'auftraggeber')">📍 Ortung</button>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1356,18 +2638,7 @@
 </template>
 
 <template id="tpl-dl">
-    <div id="controls" class="no-print">
-        <button class="control-btn" onclick="printAndSave()">DRUCKEN & SPEICHERN</button>
-        <button class="control-btn secondary" onclick="sendEmail()">EMAIL SENDEN</button>
-        <label id="btnPhotoNumbering" class="control-btn secondary" style="display:none; gap:8px;">
-            <input type="checkbox" id="checkPhotoNumbering" onchange="togglePhotoNumbering()" style="width:14px !important; height:14px; accent-color:#fff; margin:0;"> 
-            <span>FOTOS NUMMERIEREN</span>
-        </label>
-        <button class="control-btn secondary" onclick="clearSketch()">SKIZZE LÖSCHEN</button>
-        <input type="file" id="photoInput" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-        <button class="control-btn secondary" onclick="document.getElementById('photoInput').click()">FOTOS HINZUFÜGEN</button>
-        <button class="control-btn home" onclick="goHome()">🏠 ZUM HAUPTMENÜ</button>
-    </div>
+    <div data-controls-template="sketch"></div>
 
     <div class="page" id="mainPage">
         <div class="header">
@@ -1417,8 +2688,8 @@
                     <span>➕ Abweichender Auftraggeber (z.B. Hausverwaltung) hinzufügen</span>
                 </label>
             </div>
-            <div id="auftraggeberContainer" style="display:none; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--gray-200);">
-                <span class="label" style="color:var(--primary); font-size: 11px; margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
+            <div id="auftraggeberContainer" class="form-divider" style="display:none;">
+                <span class="label" style="margin-bottom: 6px;">Auftraggeber / Rechnungsadresse</span>
                 <div class="grid">
                     <div><span class="label">Name / Firma</span><input type="text" id="auftraggeber_name"></div>
                     <div><span class="label">Telefon</span><input type="text" id="auftraggeber_tel"></div>
@@ -1428,7 +2699,7 @@
                         <span class="label" style="margin:0;">Rechnungsadresse</span>
                     </div>
                     <input type="text" id="auftraggeber_adresse" placeholder="Straße / Hausnummer">
-                    <div class="grid" style="margin-top: 6px; grid-template-columns: 80px 1fr;">
+                    <div class="address-grid address-grid-compact">
                         <input type="text" id="auftraggeber_plz" placeholder="PLZ">
                         <input type="text" id="auftraggeber_ort" placeholder="Ort">
                     </div>
@@ -1573,6 +2844,7 @@
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" id="snapToggleBtn" onclick="toggleGridSnap(this)" title="Rasterfang an/aus">🧲</div>
             <div class="tool mode-tool" onclick="document.getElementById('sketchPhotoInput').click()" title="Bild in Skizze einfügen">🖼️</div>
+            <button type="button" class="tool mode-tool" id="sketchBgFitToggleBtn" onclick="toggleSketchBackgroundFitMode()" title="Bildmodus: Einpassen" style="width:auto; min-width:54px; padding:0 10px; border-radius:18px; font-size:11px; font-weight:700;">FIT</button>
             <div class="toolbar-divider"></div>
             <div class="tool mode-tool active" onclick="setMode('freehand', this)" title="Freihand">✏️</div>
             <div class="tool mode-tool" onclick="setMode('highlight', this)" title="Leuchtstift">🖍️</div>
@@ -1608,6 +2880,8 @@
     <div id="photoPagesContainer"></div>
 </template>
 
+<script src="vendor/html2canvas.min.js" data-pdf-lib="html2canvas"></script>
+<script src="vendor/jspdf.umd.min.js" data-pdf-lib="jspdf"></script>
 <script>
 /* =========================================================
    TEXT-VORLAGEN (Leckortung)
@@ -1628,8 +2902,12 @@ const DEFAULT_TEMPLATES = [
 let currentApp = null;
 let appCleanupFuncs = []; // Liste für Cleanup-Funktionen (Event Listeners)
 let hasUnsavedChanges = false;
+let currentDraftId = null;
 const DB_NAME = 'BruggerAppDB';
 const STORE_NAME = 'autosaveStore';
+const AUTOSAVE_KEY = 'brugger_autosave';
+const OPEN_JOBS_INDEX_KEY = 'brugger_open_jobs_index';
+const REPORT_FILE_MIME = 'application/x-brugger-lok';
 
 const initDB = () => new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -1660,6 +2938,18 @@ async function idbGet(key) {
             req.onerror = () => reject(tx.error);
         });
     } catch(e) { console.error("IDB Get Error", e); return null; }
+}
+
+async function idbDelete(key) {
+    try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete(key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => reject(tx.error);
+        });
+    } catch(e) { console.error("IDB Delete Error", e); return false; }
 }
 
 function attemptLogin() {
@@ -1703,11 +2993,204 @@ function updateSaveStatus(message = 'Bereit', state = 'saved') {
     const statusEl = ensureSaveStatus();
     if (!statusEl) return;
     statusEl.dataset.state = state;
+    statusEl.setAttribute('role', 'status');
+    statusEl.setAttribute('aria-live', 'polite');
     statusEl.textContent = message;
 }
 
 function formatStatusTime(date = new Date()) {
     return date.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
+}
+
+function isIOSLikeDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function supportsSpeechRecognition() {
+    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+function getPrintSupportContext() {
+    return {
+        isIOS: isIOSLikeDevice(),
+        supportsHasSelector: typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('selector(:has(*))')
+    };
+}
+
+function clearElement(element) {
+    if (!element) return;
+    while (element.firstChild) element.removeChild(element.firstChild);
+}
+
+function createOptionElement(value, label) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    return option;
+}
+
+function attachLogoFallback(img) {
+    img.addEventListener('error', () => {
+        img.style.display = 'none';
+    }, { once: true });
+}
+
+function createCompanyHeaderRight() {
+    const headerRight = document.createElement('div');
+    headerRight.className = 'header-right';
+
+    const strong = document.createElement('strong');
+    strong.textContent = 'Brugger Entfeuchtung & Kanaltechnik GmbH';
+    headerRight.appendChild(strong);
+    headerRight.appendChild(document.createElement('br'));
+    headerRight.appendChild(document.createTextNode('Liebenauer Hauptstraße 181, 8041 Graz'));
+    headerRight.appendChild(document.createElement('br'));
+    headerRight.appendChild(document.createTextNode('Tel: +43 316 471771'));
+
+    return headerRight;
+}
+
+function createPhotoPageElement(gridId) {
+    const page = document.createElement('div');
+    page.className = 'page';
+
+    const header = document.createElement('div');
+    header.className = 'header';
+
+    const headerTop = document.createElement('div');
+    headerTop.className = 'header-top';
+
+    const logo = document.createElement('img');
+    logo.src = 'Logo.PNG';
+    logo.alt = 'Brugger Logo';
+    logo.className = 'logo';
+    attachLogoFallback(logo);
+
+    headerTop.appendChild(logo);
+    headerTop.appendChild(createCompanyHeaderRight());
+    header.appendChild(headerTop);
+
+    const title = document.createElement('h1');
+    title.className = 'header-title';
+    title.textContent = 'Fotodokumentation';
+    if (currentApp === 'DL') {
+        title.style.background = 'var(--dl-header-bg)';
+        title.style.color = 'var(--dl-header-text)';
+        title.style.borderColor = 'var(--dl-header-border)';
+    }
+    header.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'photo-grid';
+    grid.id = gridId;
+
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    const company = document.createElement('span');
+    company.textContent = 'Brugger GmbH';
+    const pageNo = document.createElement('span');
+    pageNo.className = 'page-no';
+    footer.appendChild(company);
+    footer.appendChild(pageNo);
+
+    page.appendChild(header);
+    page.appendChild(grid);
+    page.appendChild(footer);
+    return page;
+}
+
+function createArrowMarker(arr) {
+    const marker = document.createElement('div');
+    marker.className = 'marker-arrow';
+    marker.style.left = arr.x + '%';
+    marker.style.top = arr.y + '%';
+    marker.innerHTML = '<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>';
+    return marker;
+}
+
+function createPhotoBoxElement(src, txt = '', arr = null) {
+    const photoBox = document.createElement('div');
+    photoBox.className = 'photo-box';
+    photoBox.draggable = true;
+    photoBox.addEventListener('dragstart', handleDragStart);
+    photoBox.addEventListener('dragend', handleDragEnd);
+    photoBox.addEventListener('dragover', handleDragOver);
+    photoBox.addEventListener('dragleave', handleDragLeave);
+    photoBox.addEventListener('drop', handleDrop);
+
+    const number = document.createElement('span');
+    number.className = 'photo-number';
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'delete-photo-btn no-print';
+    deleteButton.textContent = '×';
+    deleteButton.setAttribute('aria-label', 'Foto löschen');
+    deleteButton.addEventListener('click', () => deletePhoto(deleteButton));
+
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'img-container';
+    imageContainer.setAttribute('role', 'button');
+    imageContainer.tabIndex = 0;
+    imageContainer.setAttribute('aria-label', 'Foto bearbeiten');
+    imageContainer.addEventListener('click', () => openPhotoEditor(imageContainer));
+    imageContainer.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPhotoEditor(imageContainer);
+        }
+    });
+
+    const image = document.createElement('img');
+    image.src = src;
+    image.alt = 'Berichtsfoto';
+    imageContainer.appendChild(image);
+    if (arr) imageContainer.appendChild(createArrowMarker(arr));
+
+    const description = document.createElement('input');
+    description.type = 'text';
+    description.className = 'photo-desc';
+    description.placeholder = 'Beschreibung...';
+    description.value = txt;
+
+    photoBox.appendChild(number);
+    photoBox.appendChild(deleteButton);
+    photoBox.appendChild(imageContainer);
+    photoBox.appendChild(description);
+    return photoBox;
+}
+
+function hydrateSharedFragments(root) {
+    root.querySelectorAll('[data-controls-template]').forEach((host) => {
+        const templateId = host.dataset.controlsTemplate === 'basic' ? 'tpl-controls-basic' : 'tpl-controls-sketch';
+        const template = document.getElementById(templateId);
+        if (template) host.replaceWith(template.content.cloneNode(true));
+    });
+}
+
+function upgradeInteractiveAccessibility(root = document) {
+    root.querySelectorAll('[onclick]').forEach((element) => {
+        const tagName = element.tagName;
+        const isNativeInteractive = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'].includes(tagName);
+        if (!isNativeInteractive) {
+            if (!element.hasAttribute('role')) element.setAttribute('role', 'button');
+            if (!element.hasAttribute('tabindex')) element.tabIndex = 0;
+            if (!element.dataset.keyboardClickBound) {
+                element.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        element.click();
+                    }
+                });
+                element.dataset.keyboardClickBound = 'true';
+            }
+        }
+
+        if (!element.getAttribute('aria-label')) {
+            const derivedLabel = element.getAttribute('title') || element.textContent.trim().replace(/\s+/g, ' ');
+            if (derivedLabel) element.setAttribute('aria-label', derivedLabel);
+        }
+    });
 }
 
 function registerCleanup(fn) { appCleanupFuncs.push(fn); }
@@ -1718,14 +3201,17 @@ function startApp(type) {
         runCleanup(); // Aufräumen bevor neue App startet
 
         currentApp = type;
+        currentDraftId = null;
         document.getElementById('start-screen').style.display = 'none';
         const tpl = document.getElementById(type === 'LO' ? 'tpl-lo' : (type === 'KB' ? 'tpl-kb' : (type === 'RB' ? 'tpl-rb' : 'tpl-dl')));
         if (!tpl) throw new Error("Vorlage nicht gefunden: " + type);
         
         const appRoot = document.getElementById('app-root');
-        appRoot.innerHTML = ''; // WICHTIG: Vorherigen Inhalt löschen, um doppelte IDs zu vermeiden
+        clearElement(appRoot); // WICHTIG: Vorherigen Inhalt löschen, um doppelte IDs zu vermeiden
         if(type === 'DL') appRoot.classList.add('dl-app'); else appRoot.classList.remove('dl-app');
         appRoot.appendChild(tpl.content.cloneNode(true));
+        hydrateSharedFragments(appRoot);
+        upgradeInteractiveAccessibility(appRoot);
         ensureSaveStatus();
         initCommon();
         if (type === 'LO') initLO();
@@ -1746,6 +3232,22 @@ function startApp(type) {
    GEMEINSAME FUNKTIONEN
    ========================================================= */
 function preparePrintView() {
+    enablePrintLightMode();
+    document.body.classList.toggle('ios-print-mode', getPrintSupportContext().isIOS);
+    document.querySelectorAll('.print-page-break').forEach(el => el.classList.remove('print-page-break'));
+
+    const togglePrintVisibility = (element, visible) => {
+        if (!element) return;
+        element.classList.toggle('no-print', !visible);
+        element.classList.toggle('temp-hide', !visible);
+    };
+
+    const hasPrintableValue = (field) => {
+        if (!field) return false;
+        const value = String(field.value || '').trim();
+        return value !== '' && value !== '- wählen -' && value !== '0';
+    };
+
     document.querySelectorAll('textarea').forEach(el => {
         let clone = el.nextElementSibling;
         if (!clone || !clone.classList.contains('print-textarea-clone')) {
@@ -1753,32 +3255,56 @@ function preparePrintView() {
             clone.className = 'print-textarea-clone';
             el.parentNode.insertBefore(clone, el.nextSibling);
         }
-        clone.innerHTML = el.value.replace(/\n/g, '<br>');
+        clone.textContent = el.value;
     });
+
+    const printSupport = getPrintSupportContext();
     
     document.querySelectorAll('.checkbox-group, .checkbox-group-3').forEach(group => {
         const inputs = Array.from(group.querySelectorAll('input[type="checkbox"]'));
         const isAnyChecked = inputs.some(cb => cb.checked);
+        if (!isAnyChecked) {
+            if (!printSupport.supportsHasSelector || printSupport.isIOS) {
+                group.classList.add('no-print', 'temp-hide');
+                const previous = group.previousElementSibling;
+                if (previous && (previous.matches('h2') || previous.classList.contains('label'))) {
+                    previous.classList.add('no-print', 'temp-hide');
+                }
+            }
+            return;
+        }
         if (isAnyChecked) {
             inputs.forEach(cb => {
-                if (!cb.checked) cb.closest('.checkbox-item').classList.add('no-print');
+                if (!cb.checked) cb.closest('.checkbox-item').classList.add('no-print', 'temp-hide');
             });
         }
     });
 
+    ['ueberpruefteBauteileContainer', 'poolBauteileContainer'].forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        const hasCheckedEntry = !!container.querySelector('input[type="checkbox"]:checked');
+        if (!hasCheckedEntry) container.classList.add('no-print', 'temp-hide');
+    });
+
     const opts = [
-        { id: 'arbeitszeit_input', def: '' },
-        { id: 'ortungsgas_select', def: '0' },
-        { id: 'fahrzeit_input', def: '' },
-        { id: 'fahrzone_select', def: '' },
-        { id: 'faerbemittel_input', def: '' }
+        { ids: ['arbeitszeit_input'], defaults: [''] },
+        { ids: ['fahrzeit_input'], defaults: [''] },
+        { ids: ['fahrzone_select', 'fahrzone_qty'], defaults: ['', ''] },
+        { ids: ['ortungsgas_select', 'ortungsgas_qty'], defaults: ['0', ''] },
+        { ids: ['faerbemittel_input', 'faerbemittel_qty'], defaults: ['', ''] }
     ];
     opts.forEach(o => {
-        const el = document.getElementById(o.id);
-        if(el && el.parentElement) {
-            const val = el.value.trim();
-            if(val === o.def || val === '- wählen -') el.parentElement.classList.add('no-print', 'temp-hide');
-            else el.parentElement.classList.remove('no-print');
+        const firstEl = document.getElementById(o.ids[0]);
+        if(firstEl && firstEl.parentElement) {
+            const hasValue = o.ids.some((id, index) => {
+                const field = document.getElementById(id);
+                if (!field) return false;
+                const value = String(field.value || '').trim();
+                return value !== o.defaults[index] && value !== '- wählen -';
+            });
+            if(!hasValue) firstEl.parentElement.classList.add('no-print', 'temp-hide');
+            else firstEl.parentElement.classList.remove('no-print');
         }
     });
 
@@ -1786,15 +3312,365 @@ function preparePrintView() {
         if (el.value.trim() === '') el.parentElement.classList.add('no-print', 'temp-hide');
     });
 
+    [
+        'name',
+        'datum',
+        'auftraggeber_name',
+        'auftraggeber_tel'
+    ].forEach(id => {
+        const field = document.getElementById(id);
+        if (!field) return;
+        togglePrintVisibility(field.parentElement, hasPrintableValue(field));
+    });
+
+    [
+        { ids: ['adresse', 'plz', 'ort', 'telefon'] },
+        { ids: ['auftraggeber_adresse', 'auftraggeber_plz', 'auftraggeber_ort'], containerId: 'auftraggeberContainer' }
+    ].forEach(group => {
+        const fields = group.ids.map(id => document.getElementById(id)).filter(Boolean);
+        if (!fields.length) return;
+
+        const hasAnyValue = fields.some(hasPrintableValue);
+        const container = group.containerId
+            ? document.getElementById(group.containerId)
+            : fields[0].parentElement;
+
+        if (!hasAnyValue) {
+            togglePrintVisibility(container, false);
+            return;
+        }
+
+        togglePrintVisibility(container, true);
+        fields.forEach(field => togglePrintVisibility(field, hasPrintableValue(field)));
+    });
+
     document.querySelectorAll('.photo-desc').forEach(desc => {
         if (desc.value.trim() === '') desc.classList.add('no-print', 'temp-hide');
         else desc.classList.remove('no-print');
+    });
+
+    const reparaturSection = document.getElementById('reparaturSection');
+    if (reparaturSection && !sectionHasPrintableContent(reparaturSection)) {
+        reparaturSection.classList.add('no-print', 'temp-hide');
+    }
+
+    const printablePages = Array.from(document.querySelectorAll('#app-root .page')).filter(page => page.offsetParent !== null);
+    printablePages.forEach((page, index) => page.classList.toggle('print-page-break', index < printablePages.length - 1));
+}
+
+function sectionHasPrintableContent(section) {
+    const hasCheckedOption = Array.from(section.querySelectorAll('input[type="checkbox"]')).some(input => {
+        return input.checked && input.offsetParent !== null;
+    });
+
+    if (hasCheckedOption) return true;
+
+    return Array.from(section.querySelectorAll('input:not([type="checkbox"]):not([type="hidden"]), textarea, select')).some(field => {
+        if (field.offsetParent === null) return false;
+        const value = (field.value || '').trim();
+        return value !== '' && value !== '- wählen -' && value !== '0';
     });
 }
 
 function cleanupAfterPrint() {
     document.querySelectorAll('.print-textarea-clone').forEach(el => el.remove());
     document.querySelectorAll('.no-print.temp-hide').forEach(el => el.classList.remove('no-print', 'temp-hide'));
+    document.querySelectorAll('.print-page-break').forEach(el => el.classList.remove('print-page-break'));
+    document.body.classList.remove('ios-print-mode');
+    disablePrintLightMode();
+}
+
+function configureSpeechUI() {
+    const supported = supportsSpeechRecognition();
+    document.querySelectorAll('.mic-btn[onclick*="toggleDictation"]').forEach(btn => {
+        btn.disabled = !supported;
+        btn.classList.toggle('is-disabled', !supported);
+        if (!supported) {
+            btn.title = 'Diktieren wird in diesem Browser nicht unterstützt';
+            btn.setAttribute('aria-label', 'Diktieren wird in diesem Browser nicht unterstützt');
+        }
+    });
+}
+
+function maybeShowIOSExportHint(context) {
+    if (!isIOSLikeDevice()) return;
+    if (context === 'save') {
+        showToast('iPad: Im Teilen-Fenster "In Dateien sichern" fuer die .lok-Datei waehlen.', 'info');
+    } else if (context === 'print') {
+        showToast('iPad: PDF im Druckdialog sichern oder teilen.', 'info');
+    } else if (context === 'email') {
+        showToast('iPad: PDF nach dem Drucken manuell an die Mail anhängen.', 'info');
+    }
+}
+
+async function shareFileOnIOS(blob, fileName) {
+    if (!isIOSLikeDevice() || typeof navigator.share !== 'function' || typeof File === 'undefined') return false;
+    try {
+        const file = new File([blob], fileName, { type: blob.type || REPORT_FILE_MIME });
+        if (typeof navigator.canShare === 'function' && !navigator.canShare({ files: [file] })) return false;
+        await navigator.share({ files: [file], title: fileName });
+        return true;
+    } catch (e) {
+        if (e?.name === 'AbortError') return 'aborted';
+        console.warn('iOS share failed', e);
+        return false;
+    }
+}
+
+const externalScriptPromises = new Map();
+const HTML2CANVAS_SRC = 'vendor/html2canvas.min.js';
+const JSPDF_SRC = 'vendor/jspdf.umd.min.js';
+
+function arePdfLibrariesReady() {
+    return !!(window.html2canvas && window.jspdf && window.jspdf.jsPDF);
+}
+
+function loadExternalScript(src) {
+    if (externalScriptPromises.has(src)) return externalScriptPromises.get(src);
+    const promise = new Promise((resolve, reject) => {
+        if (arePdfLibrariesReady()) return resolve(true);
+
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing && existing.dataset.loaded === 'true') {
+            return resolve(true);
+        }
+
+        let script = existing;
+        if (script) {
+            script.remove();
+        }
+
+        script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.addEventListener('load', () => {
+            script.dataset.loaded = 'true';
+            resolve(true);
+        }, { once: true });
+        script.addEventListener('error', () => reject(new Error(`Script konnte nicht geladen werden: ${src}`)), { once: true });
+        document.head.appendChild(script);
+    });
+    externalScriptPromises.set(src, promise);
+    return promise;
+}
+
+async function ensurePdfLibraries() {
+    if (arePdfLibrariesReady()) return true;
+    await Promise.all([
+        loadExternalScript(HTML2CANVAS_SRC),
+        loadExternalScript(JSPDF_SRC)
+    ]);
+    return arePdfLibrariesReady();
+}
+
+function waitForNextPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function markProblematicImagesForPdf() {
+    const marked = [];
+    document.querySelectorAll('#app-root img').forEach(img => {
+        const src = img.getAttribute('src') || '';
+        const isEmbedded = src.startsWith('data:') || src.startsWith('blob:');
+        if (isEmbedded) return;
+        img.classList.add('pdf-export-hidden-image');
+        marked.push(img);
+    });
+    return marked;
+}
+
+function restoreProblematicImagesAfterPdf(images) {
+    images.forEach(img => img.classList.remove('pdf-export-hidden-image'));
+}
+
+function showPdfDebugError(error) {
+    const rawMessage = String(error?.message || error || 'Unbekannter PDF Fehler');
+    const rawStack = String(error?.stack || '').split('\n').slice(0, 6).join('\n');
+    const debugText = rawStack ? `${rawMessage}\n\n${rawStack}` : rawMessage;
+    console.error('PDF debug details:', debugText);
+    setTimeout(() => {
+        alert(`PDF DEBUG FEHLER\n\n${debugText}`);
+    }, 50);
+}
+
+function stripProblematicPdfCharacters(text) {
+    return String(text || '')
+        .replace(/[\u{1F000}-\u{1FAFF}]/gu, '')
+        .replace(/[\u2600-\u27BF]/g, '')
+        .replace(/[\u200D\uFE0E\uFE0F]/g, '')
+        .replace(/\s{2,}/g, ' ');
+}
+
+function sanitizePdfCloneDocument(clonedDocument) {
+    const root = clonedDocument.getElementById('app-root');
+    if (!root) return;
+
+    const walker = clonedDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let currentNode = walker.nextNode();
+    while (currentNode) {
+        textNodes.push(currentNode);
+        currentNode = walker.nextNode();
+    }
+
+    textNodes.forEach(node => {
+        const original = node.nodeValue || '';
+        const sanitized = stripProblematicPdfCharacters(original);
+        if (sanitized !== original) node.nodeValue = sanitized;
+    });
+}
+
+function fitCanvasIntoPdfPage(canvas, pdfWidth, pdfHeight) {
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const renderHeight = Math.min(imgHeight, pdfHeight);
+    const renderWidth = imgHeight > pdfHeight ? (canvas.width * pdfHeight) / canvas.height : imgWidth;
+    return {
+        x: (pdfWidth - renderWidth) / 2,
+        y: 0,
+        width: renderWidth,
+        height: renderHeight
+    };
+}
+
+function createPdfFallbackCanvas(sourceCanvas) {
+    const fallbackCanvas = document.createElement('canvas');
+    fallbackCanvas.width = Math.max(1, Math.floor(sourceCanvas.width * 0.75));
+    fallbackCanvas.height = Math.max(1, Math.floor(sourceCanvas.height * 0.75));
+    const context = fallbackCanvas.getContext('2d', { alpha: false });
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, fallbackCanvas.width, fallbackCanvas.height);
+    context.drawImage(sourceCanvas, 0, 0, fallbackCanvas.width, fallbackCanvas.height);
+    return fallbackCanvas;
+}
+
+function addCanvasToPdf(pdf, canvas, pageIndex, pdfWidth, pdfHeight) {
+    const placement = fitCanvasIntoPdfPage(canvas, pdfWidth, pdfHeight);
+    if (pageIndex > 0) pdf.addPage();
+
+    try {
+        const pngData = canvas.toDataURL('image/png');
+        pdf.addImage(pngData, 'PNG', placement.x, placement.y, placement.width, placement.height, undefined, 'NONE');
+        return;
+    } catch (pngError) {
+        console.warn('PNG export failed, trying fallback canvas', pngError);
+    }
+
+    const fallbackCanvas = createPdfFallbackCanvas(canvas);
+    const fallbackPlacement = fitCanvasIntoPdfPage(fallbackCanvas, pdfWidth, pdfHeight);
+    const jpegData = fallbackCanvas.toDataURL('image/jpeg', 0.8);
+    pdf.addImage(jpegData, 'JPEG', fallbackPlacement.x, fallbackPlacement.y, fallbackPlacement.width, fallbackPlacement.height, undefined, 'FAST');
+}
+
+async function saveBlobToDevice(blob, fileName, description = 'Datei') {
+    try {
+        if (window.showSaveFilePicker) {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: fileName,
+                types: [{ description, accept: { [blob.type || 'application/octet-stream']: [`.${fileName.split('.').pop()}`] } }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return true;
+        }
+    } catch (e) {
+        if (e?.name === 'AbortError') return 'aborted';
+    }
+
+    const iosShareResult = await shareFileOnIOS(blob, fileName);
+    if (iosShareResult === true || iosShareResult === 'aborted') return iosShareResult;
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+}
+
+async function exportReportPdf({ skipReportSave = false } = {}) {
+    if (currentApp === 'DL') {
+        const raw = document.getElementById('dl_pasted_data');
+        if (raw) raw.value = '';
+    }
+
+    if (!skipReportSave) {
+        maybeShowIOSExportHint('save');
+        await exportFullReport();
+    }
+
+    updateSaveStatus('PDF wird erstellt...', 'saving');
+
+    let hiddenImages = [];
+
+    try {
+        const libsReady = await ensurePdfLibraries();
+        if (!libsReady) throw new Error('PDF-Bibliotheken sind nicht verfügbar.');
+
+        preparePrintView();
+        document.body.classList.add('pdf-export-mode');
+        hiddenImages = markProblematicImagesForPdf();
+        await waitForNextPaint();
+
+        const pages = Array.from(document.querySelectorAll('#app-root .page')).filter(page => page.offsetParent !== null);
+        if (!pages.length) throw new Error('Keine Seiten für den PDF-Export gefunden.');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const captureScale = isIOSLikeDevice() ? 1.15 : 1.75;
+
+        for (let index = 0; index < pages.length; index++) {
+            const page = pages[index];
+            await waitForNextPaint();
+            const canvas = await window.html2canvas(page, {
+                scale: captureScale,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                onclone: sanitizePdfCloneDocument,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: document.documentElement.scrollWidth,
+                windowHeight: document.documentElement.scrollHeight
+            });
+            addCanvasToPdf(pdf, canvas, index, pdfWidth, pdfHeight);
+        }
+
+        const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.pdf';
+        const pdfBlob = pdf.output('blob');
+        const saveResult = await saveBlobToDevice(pdfBlob, fileName, 'PDF Dokument');
+        if (saveResult === 'aborted') {
+            updateSaveStatus('PDF Export abgebrochen', 'dirty');
+            return false;
+        }
+
+        updateSaveStatus(`PDF gespeichert ${formatStatusTime()}`, 'saved');
+        showToast('PDF exportiert', 'success');
+        return { fileName, blob: pdfBlob };
+    } catch (e) {
+        console.error('PDF export failed', e);
+        updateSaveStatus('PDF Export fehlgeschlagen', 'dirty');
+        const rawMessage = String(e?.message || '');
+        showPdfDebugError(e);
+        const message = /Script konnte nicht geladen werden|PDF-Bibliotheken/.test(rawMessage)
+            ? 'PDF Export nicht verfügbar. Bitte Seite neu laden und sicherstellen, dass der Ordner vendor neben der HTML-Datei vorhanden ist.'
+            : /tainted|insecure|canvas|cross-origin/i.test(rawMessage)
+                ? 'PDF Export fehlgeschlagen. Wahrscheinlich blockiert ein Bild oder Logo den Export. Das wurde jetzt abgesichert. Bitte erneut versuchen.'
+                : /offset .* larger|DataView|addImage/i.test(rawMessage)
+                    ? 'PDF Export fehlgeschlagen. Der iPad-Bildparser hat die Seite abgelehnt. Der Export wurde jetzt vereinfacht. Bitte erneut versuchen.'
+                : `PDF Export fehlgeschlagen: ${e.message}`;
+        showToast(message, 'error');
+        return false;
+    } finally {
+        restoreProblematicImagesAfterPdf(hiddenImages);
+        document.body.classList.remove('pdf-export-mode');
+        cleanupAfterPrint();
+    }
 }
 
 function initCommon() {
@@ -1826,6 +3702,8 @@ function initCommon() {
         if (mainResults && !mainResults.contains(event.target) && event.target !== mainSearch) mainResults.style.display = 'none';
         if (billingResults && !billingResults.contains(event.target) && event.target !== billingSearch) billingResults.style.display = 'none';
     });
+
+    configureSpeechUI();
     
     setupPWA();
 }
@@ -1835,25 +3713,100 @@ function autoResize() {
     this.style.height = (this.scrollHeight) + 'px'; 
 }
 
-function buildReportBaseName() {
-    const adr = document.getElementById('adresse')?.value.trim() || '';
-    const plz = document.getElementById('plz')?.value.trim() || '';
-    const ort = document.getElementById('ort')?.value.trim() || '';
-    const pnr = document.getElementById('projekt_nr')?.value.trim() || '';
-    
-    let baseTitle = 'Bericht';
-    if (currentApp === 'KB') baseTitle = 'Kanalreinigungs- & Inspektionsbericht';
-    else if (currentApp === 'RB') baseTitle = 'Regiebericht';
-    else if (currentApp === 'DL') baseTitle = 'Datenlogger-Auswertung';
-    else if (currentApp === 'LO') {
-        baseTitle = document.getElementById('checkFlachdach')?.checked ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
-    }
+function generateDraftId() {
+    return `draft_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
 
-    let titleParts = [];
-    if (pnr) titleParts.push(`Projekt ${pnr}`);
-    if (`${plz} ${ort}`.trim()) titleParts.push(`${plz} ${ort}`.trim());
-    if (adr) titleParts.push(adr);
-    return titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle;
+function ensureCurrentDraftId() {
+    if (!currentDraftId) currentDraftId = generateDraftId();
+    return currentDraftId;
+}
+
+function readFieldValue(id, source = null) {
+    if (source?.byId && typeof source.byId[id] !== 'undefined') return String(source.byId[id] || '').trim();
+    const el = document.getElementById(id);
+    return el ? String(el.value || '').trim() : '';
+}
+
+function getAppBaseTitle(appType = currentApp, source = null) {
+    if (appType === 'KB') return 'Kanalreinigungs- & Inspektionsbericht';
+    if (appType === 'RB') return 'Regiebericht';
+    if (appType === 'DL') return 'Datenlogger-Auswertung';
+    if (appType === 'LO') {
+        const isFlachdach = source?.meta ? !!source.meta.isFlachdach : !!document.getElementById('checkFlachdach')?.checked;
+        return isFlachdach ? 'Bericht-Flachdach-Überprüfung' : 'Leckortungsbericht';
+    }
+    return 'Bericht';
+}
+
+function collectReportMeta(source = null) {
+    const customerName = readFieldValue('name', source);
+    const address = readFieldValue('adresse', source);
+    const postalCode = readFieldValue('plz', source);
+    const city = readFieldValue('ort', source);
+    const projectNumber = readFieldValue('projekt_nr', source);
+    const reportDate = readFieldValue('datum', source);
+    const followUpText = readFieldValue('folgetermin_text', source);
+    const followUpRequired = source?.meta ? !!source.meta.followUpRequired : !!document.getElementById('check_folgetermin')?.checked;
+    const isFlachdach = source?.meta ? !!source.meta.isFlachdach : !!document.getElementById('checkFlachdach')?.checked;
+    const place = `${postalCode} ${city}`.trim();
+    const baseTitle = getAppBaseTitle(source?.appType || currentApp, source);
+    const titleParts = [];
+
+    if (projectNumber) titleParts.push(`Projekt ${projectNumber}`);
+    if (customerName) titleParts.push(customerName);
+    if (place) titleParts.push(place);
+    if (address) titleParts.push(address);
+
+    return {
+        draftId: source?.meta?.draftId || currentDraftId || null,
+        baseTitle,
+        displayName: titleParts.length > 0 ? `${baseTitle} - ${titleParts.join(', ')}` : baseTitle,
+        shortLabel: [customerName, place || address || '', projectNumber ? `P${projectNumber}` : ''].filter(Boolean).join(' | ') || baseTitle,
+        customerName,
+        address,
+        postalCode,
+        city,
+        place,
+        projectNumber,
+        reportDate,
+        followUpRequired,
+        followUpText,
+        isFlachdach
+    };
+}
+
+function getStorageJson(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function setStorageJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getCustomersLocal() {
+    return getStorageJson('brugger_customers', []);
+}
+
+function setCustomersLocal(customers) {
+    setStorageJson('brugger_customers', customers);
+}
+
+function getTemplatesLocal() {
+    return getStorageJson('brugger_templates', JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)));
+}
+
+function setTemplatesLocal(templates) {
+    setStorageJson('brugger_templates', templates);
+}
+
+function buildReportBaseName() {
+    return collectReportMeta().displayName;
 }
 
 function updateTitleWithAddress() { document.title = buildReportBaseName(); }
@@ -1928,8 +3881,10 @@ async function printAndSave() {
         const raw = document.getElementById('dl_pasted_data');
         if (raw) raw.value = '';
     }
-    await exportFullReport(); 
-    setTimeout(() => window.print(), 800); 
+    maybeShowIOSExportHint('save');
+    await exportFullReport();
+    maybeShowIOSExportHint('print');
+    setTimeout(() => window.print(), 900);
 }
 
 /* =========================================================
@@ -1979,6 +3934,93 @@ function resetMicBtn() {
    ========================================================= */
 let cropImg = new Image(), cropCvs = null, cropCtx = null, isCrop = false, cx1=0, cy1=0, cx2=0, cy2=0, cScale=1;
 
+let sketchBackgroundSourceData = null;
+let sketchBackgroundFitMode = 'contain';
+
+function drawImageFittedOnCanvas(canvas, source, fitMode = 'contain') {
+    if (!canvas || !source) return;
+    const ctx = canvas.getContext('2d');
+    const sourceWidth = source.naturalWidth || source.videoWidth || source.width;
+    const sourceHeight = source.naturalHeight || source.videoHeight || source.height;
+    if (!ctx || !sourceWidth || !sourceHeight || !canvas.width || !canvas.height) return;
+
+    const scale = fitMode === 'cover'
+        ? Math.max(canvas.width / sourceWidth, canvas.height / sourceHeight)
+        : Math.min(canvas.width / sourceWidth, canvas.height / sourceHeight);
+    const renderWidth = sourceWidth * scale;
+    const renderHeight = sourceHeight * scale;
+    const offsetX = (canvas.width - renderWidth) / 2;
+    const offsetY = (canvas.height - renderHeight) / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, offsetX, offsetY, renderWidth, renderHeight);
+}
+
+function restoreCanvasSnapshot(canvas, dataUrl, fitMode = 'stretch') {
+    if (!canvas || !dataUrl) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const image = new Image();
+    image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (fitMode === 'contain' || fitMode === 'cover') {
+            drawImageFittedOnCanvas(canvas, image, fitMode);
+            return;
+        }
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+    image.src = dataUrl;
+}
+
+function updateSketchBackgroundModeButton() {
+    const isFillMode = sketchBackgroundFitMode === 'cover';
+    const label = isFillMode ? 'FILL' : 'FIT';
+    const title = isFillMode ? 'Bildmodus: Füllen' : 'Bildmodus: Einpassen';
+    document.querySelectorAll('#sketchBgFitToggleBtn').forEach(button => {
+        button.textContent = label;
+        button.title = title;
+        button.setAttribute('aria-label', title);
+        button.classList.toggle('active', isFillMode);
+    });
+}
+
+function renderSketchBackground() {
+    const canvas = document.getElementById('sketch-bg-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (sketchBackgroundSourceData) {
+        restoreCanvasSnapshot(canvas, sketchBackgroundSourceData, sketchBackgroundFitMode);
+    }
+}
+
+function setSketchBackgroundSource(dataUrl, { markDirty = true } = {}) {
+    sketchBackgroundSourceData = dataUrl || null;
+    renderSketchBackground();
+    updateSketchBackgroundModeButton();
+    if (markDirty) {
+        hasUnsavedChanges = true;
+        saveToLocal();
+    }
+}
+
+function setSketchBackgroundFitMode(mode, { markDirty = true } = {}) {
+    sketchBackgroundFitMode = mode === 'cover' ? 'cover' : 'contain';
+    renderSketchBackground();
+    updateSketchBackgroundModeButton();
+    if (markDirty) {
+        hasUnsavedChanges = true;
+        saveToLocal();
+    }
+}
+
+function toggleSketchBackgroundFitMode() {
+    setSketchBackgroundFitMode(sketchBackgroundFitMode === 'contain' ? 'cover' : 'contain');
+}
+
 function _refreshCropCanvas() {
     document.getElementById('cropModal').style.display = 'flex';
     const mw = window.innerWidth*0.95, mh = window.innerHeight*0.65;
@@ -2020,12 +4062,7 @@ function confirmCrop() {
     let x=Math.min(cx1,cx2)*cScale, y=Math.min(cy1,cy2)*cScale, w=Math.abs(cx2-cx1)*cScale, h=Math.abs(cy2-cy1)*cScale;
     if(w<10||h<10) { x=0; y=0; w=cropImg.width; h=cropImg.height; }
     const tc = document.createElement('canvas'); tc.width=w; tc.height=h; tc.getContext('2d').drawImage(cropImg,x,y,w,h,0,0,w,h);
-    const bgc = document.getElementById('sketch-bg-canvas');
-    if (bgc) {
-        const cw=bgc.width, ch=bgc.height; let scale, off;
-        if(w/h > cw/ch) { scale = ch/h; off=(w*scale-cw)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,-off,0,w*scale,ch); } 
-        else { scale = cw/w; off=(h*scale-ch)/2; bgc.getContext('2d').drawImage(tc,0,0,w,h,0,-off,cw,h*scale); }
-    }
+    setSketchBackgroundSource(tc.toDataURL('image/png'));
     closeCropModal();
 }
 
@@ -2060,6 +4097,7 @@ function setupSketchListeners() {
     if(tb && touchOn) { tb.classList.add('active'); tb.style.background="#d0e4f5"; tb.style.borderColor="#2b83b8"; }
     const sb = document.getElementById('snapToggleBtn');
     if(sb && useGridSnap) { sb.classList.add('active'); sb.style.background="#d0e4f5"; sb.style.borderColor="#2b83b8"; }
+    updateSketchBackgroundModeButton();
     const cvs = document.getElementById('sketch-canvas');
     if(cvs) sketchCtx = initDrawing(cvs);
 }
@@ -2085,10 +4123,10 @@ function saveSketchState() {
 }
 
 function toggleGridSnap(el) { useGridSnap = !useGridSnap; el.classList.toggle('active', useGridSnap); el.style.background=useGridSnap?"#d0e4f5":"#fff"; el.style.borderColor=useGridSnap?"#2b83b8":"#ccc"; }
-function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setMode(m, el) { cMode = m; isErase = false; document.querySelectorAll('.mode-tool:not(#touchToggleBtn):not(#sketchBgFitToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 function setWidth(w, el) { cWidth = w; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.width-tool').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
 function setColor(c, el) { cColor = c; if(isErase) setMode('freehand', document.querySelector('.mode-tool[title="Freihand"]')); document.querySelectorAll('.color-tool').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function setEraser(el) { isErase = true; document.querySelectorAll('.mode-tool:not(#touchToggleBtn):not(#sketchBgFitToggleBtn)').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
 
 let cStampType = '';
 let cStampRotation = 0;
@@ -2259,10 +4297,17 @@ function initDrawing(cvs) {
         const r = cvs.getBoundingClientRect(); 
         if(r.width === 0 || r.height === 0) return;
         const dpr = window.devicePixelRatio || 1;
-        [cvs, bgCvs].forEach(c => { 
-            if(!c) return; const t = c.toDataURL(); c.width=r.width * dpr; c.height=r.height * dpr; 
-            const i=new Image(); i.onload=()=>c.getContext('2d').drawImage(i,0,0,c.width,c.height); i.src=t; 
-        }); 
+        [cvs, bgCvs].forEach(c => {
+            if(!c) return;
+            const snapshot = c.id === 'sketch-bg-canvas' && sketchBackgroundSourceData ? null : c.toDataURL();
+            c.width = r.width * dpr;
+            c.height = r.height * dpr;
+            if (c.id === 'sketch-bg-canvas' && sketchBackgroundSourceData) {
+                renderSketchBackground();
+            } else {
+                restoreCanvasSnapshot(c, snapshot, 'stretch');
+            }
+        });
     }
     setTimeout(rs, 100); 
     const resizeHandler = debounce(rs, 200);
@@ -2494,6 +4539,7 @@ function clearSketch() {
             if (c.id === 'sketch-canvas') setTimeout(() => { sketchHistory = [c.toDataURL()]; hasUnsavedChanges = true; saveToLocal(); }, 50);
         }
     });
+    sketchBackgroundSourceData = null;
 }
 
 /* =========================================================
@@ -2545,10 +4591,12 @@ function applyTemplateVisibility() {
     opts.style.display = (cf || leck) ? 'block' : 'none';
     const sel = document.getElementById('flachdachTemplate');
     if(sel) {
-        const v = sel.value; sel.innerHTML = '<option value="">- Vorlage wählen -</option>';
+        const v = sel.value;
+        clearElement(sel);
+        sel.appendChild(createOptionElement('', '- Vorlage wählen -'));
         const cat = cf ? 'flachdach' : 'leckortung';
         textTemplates.filter(t => t.category === cat).forEach(t => {
-            sel.innerHTML += `<option value="${t.id}">${t.title}</option>`;
+            sel.appendChild(createOptionElement(t.id, t.title));
         });
         if(Array.from(sel.options).some(o=>o.value===v)) sel.value=v;
     }
@@ -2564,11 +4612,20 @@ function applyTemplateVisibility() {
                 textTemplates.filter(t => t.category === 'flachdach').forEach(t => {
                     const label = document.createElement('label'); label.className = 'checkbox-item';
                     label.style.cssText = "background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd;";
-                    label.innerHTML = `<input type="checkbox" value="${t.id}" checked> <span style="font-weight:600">${t.title}</span>`;
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = t.id;
+                    checkbox.checked = true;
+                    const span = document.createElement('span');
+                    span.style.fontWeight = '600';
+                    span.textContent = t.title;
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(' '));
+                    label.appendChild(span);
                     aiChecks.appendChild(label);
                 });
             }
-        } else { aiOpts.style.display = 'none'; aiChecks.innerHTML = ''; }
+        } else { aiOpts.style.display = 'none'; clearElement(aiChecks); }
     }
 }
 
@@ -2934,8 +4991,8 @@ function getOrCreateLastGrid() {
     const c = document.getElementById('photoPagesContainer'); const grids = c.querySelectorAll('.photo-grid');
     let l = grids.length ? grids[grids.length-1] : null;
     if(!l || l.children.length >= 4) {
-        const p = document.createElement('div'); p.className = 'page'; const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
-        p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${currentApp==='DL'?'style="background: #e0f2fe; color: #0284c7; border-color: #bae6fd;"':''}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
+        const p = createPhotoPageElement(id);
         c.appendChild(p); renumberPhotoPages(); return document.getElementById(id);
     }
     return l;
@@ -2994,10 +5051,8 @@ function repackPhotoPages() {
         let p;
         if (i < existingPages.length) p = existingPages[i];
         else {
-            p = document.createElement('div'); p.className = 'page';
             const id = 'grid-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + i);
-            const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
-            p.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${id}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+            p = createPhotoPageElement(id);
             container.appendChild(p);
         }
     }
@@ -3005,25 +5060,15 @@ function repackPhotoPages() {
     boxes.forEach((box, i) => { const targetGrid = grids[Math.floor(i / 4)]; if (box.parentNode !== targetGrid) targetGrid.appendChild(box); });
     const finalPages = container.querySelectorAll('.page');
     for (let i = numPages; i < finalPages.length; i++) finalPages[i].remove();
-    if(boxes.length === 0) container.innerHTML = '';
+    if(boxes.length === 0) clearElement(container);
     updatePhotoNumbers(); renumberPhotoPages(); hasUnsavedChanges = true; saveToLocal();
 }
 
 function insertPhotoBox(src, gId=null, txt='', arr=null, skipRepack=false) {
-    const b = document.createElement('div'); b.className='photo-box';
-    b.draggable = true;
-    b.addEventListener('dragstart', handleDragStart); b.addEventListener('dragend', handleDragEnd);
-    b.addEventListener('dragover', handleDragOver); b.addEventListener('dragleave', handleDragLeave);
-    b.addEventListener('drop', handleDrop);
-    b.innerHTML = `<span class="photo-number"></span><button class="delete-photo-btn no-print" onclick="deletePhoto(this)">×</button><div class="img-container" onclick="openPhotoEditor(this)"><img src="${src}"></div><input type="text" class="photo-desc" placeholder="Beschreibung..." value="${txt.replace(/"/g,'&quot;')}">`;
+    const b = createPhotoBoxElement(src, txt, arr);
     let g = gId ? document.getElementById(gId) : null;
     if(!g) { const grids = document.querySelectorAll('.photo-grid'); if(grids.length > 0) g = grids[grids.length-1]; else g = getOrCreateLastGrid(); }
     g.appendChild(b);
-    if(arr) {
-        const a = document.createElement('div'); a.className='marker-arrow'; a.style.left=arr.x+'%'; a.style.top=arr.y+'%';
-        a.innerHTML = `<svg viewBox="0 0 100 100" fill="red"><path d="M10 10 L90 90 M90 50 L90 90 L50 90" stroke="white" stroke-width="5"/><path d="M10 10 L90 90 M90 55 L90 90 L55 90" fill="red"/></svg>`;
-        b.querySelector('.img-container').appendChild(a);
-    }
     const btn = document.getElementById('btnPhotoNumbering'); if(btn) btn.style.display = 'flex';
     updatePhotoNumbers();
     hasUnsavedChanges = true; saveToLocal();
@@ -3069,19 +5114,17 @@ async function sendEmail() {
         const raw = document.getElementById('dl_pasted_data');
         if (raw) raw.value = '';
     }
-    // 1. Bericht als Datei (.lok) speichern
+    maybeShowIOSExportHint('email');
     await exportFullReport();
-    
-    // 2. Drucken-Dialog für PDF-Erstellung öffnen
+
     setTimeout(() => {
         window.print();
-        
-        // 3. E-Mail Fenster im Anschluss öffnen
+
         setTimeout(() => {
             let sbj = buildReportBaseName();
             const folgeterminChecked = document.getElementById('check_folgetermin')?.checked;
             const folgeterminText = document.getElementById('folgetermin_text')?.value.trim();
-            
+
             if (folgeterminChecked) {
                 sbj = 'WICHTIG (Folgetermin) - ' + sbj;
             }
@@ -3095,23 +5138,35 @@ async function sendEmail() {
             const notizenId = (currentApp === 'LO' || currentApp === 'KB' || currentApp === 'DL') ? 'interne_notizen' : 'interne_notizen_rb';
             const notizen = document.getElementById(notizenId)?.value.trim();
             if (notizen) body += notizen + '\n\n';
-            
+
             body += 'BITTE DAS SOEBEN ERSTELLTE PDF HIER ANHÄNGEN.\n\n';
             body += 'Gesendet vom Brugger-Formular.';
             const emailTarget = localStorage.getItem('brugger_email') || 'kanal@brugger-entfeuchtung.at';
             window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(sbj)}&body=${encodeURIComponent(body)}`;
-        }, 800);
-    }, 800);
+        }, 900);
+    }, 900);
 }
 
 function getReportData() {
-    const d = { appType: currentApp, version: 1, toggles: { sketchEnabled: !!document.getElementById('toggleSketch')?.checked, auftraggeberEnabled: !!document.getElementById('checkAuftraggeber')?.checked, photoNumberingEnabled: !!document.getElementById('checkPhotoNumbering')?.checked }, byId: {}, inputsNoId: [], textareasNoId: [], selectsNoId: [], checkStatesOrdered: [], sketch: {}, signature: {}, photos: [] };
+    const d = { appType: currentApp, version: 1, toggles: { sketchEnabled: !!document.getElementById('toggleSketch')?.checked, auftraggeberEnabled: !!document.getElementById('checkAuftraggeber')?.checked, photoNumberingEnabled: !!document.getElementById('checkPhotoNumbering')?.checked }, byId: {}, inputsNoId: [], textareasNoId: [], selectsNoId: [], checkStatesOrdered: [], sketch: {}, signature: {}, photos: [], meta: {} };
     document.querySelectorAll('#app-root input').forEach(i => { if(i.type==='checkbox'||i.type==='file') return; if(i.id) d.byId[i.id]=i.value; else d.inputsNoId.push(i.value); });
     document.querySelectorAll('#app-root textarea').forEach(t => { if(t.id) d.byId[t.id]=t.value; else d.textareasNoId.push(t.value); });
     document.querySelectorAll('#app-root select').forEach(s => { if(s.id) d.byId[s.id]=s.value; else d.selectsNoId.push(s.value); });
     d.checkStatesOrdered = Array.from(document.querySelectorAll('#app-root input[type="checkbox"]')).map(c => !!c.checked);
+    d.meta = {
+        ...collectReportMeta(),
+        draftId: ensureCurrentDraftId(),
+        updatedAt: new Date().toISOString()
+    };
 
-    if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') { try{ d.sketch.bg=document.getElementById('sketch-bg-canvas').toDataURL('image/png'); d.sketch.lines=document.getElementById('sketch-canvas').toDataURL('image/png'); }catch(e){} }
+    if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') {
+        try {
+            d.sketch.bg = document.getElementById('sketch-bg-canvas').toDataURL('image/png');
+            d.sketch.bgSource = sketchBackgroundSourceData;
+            d.sketch.bgMode = sketchBackgroundFitMode;
+            d.sketch.lines = document.getElementById('sketch-canvas').toDataURL('image/png');
+        } catch(e) {}
+    }
     else { try{ if(sigCanvas) d.signature.png=sigCanvas.toDataURL('image/png'); }catch(e){} }
     document.querySelectorAll('#photoPagesContainer .page').forEach((p, idx) => {
         const imgs = Array.from(p.querySelectorAll('.photo-box')).map(b => {
@@ -3126,14 +5181,16 @@ function getReportData() {
 async function exportFullReport() {
     saveCustomers(); 
     const d = getReportData();
+    await syncOpenConstructionState(d);
     const fileName = buildReportBaseName().replace(/[/\\?%*:|"<>]/g, '-') + '.lok';
     const jsonStr = JSON.stringify(d);
+    const exportBlob = new Blob([jsonStr], { type: REPORT_FILE_MIME });
 
     try {
         if (window.showSaveFilePicker) {
             const handle = await window.showSaveFilePicker({
                 suggestedName: fileName,
-                types: [{ description: 'Brugger Bericht', accept: { 'application/json': ['.lok'] } }],
+                types: [{ description: 'Brugger Bericht', accept: { [REPORT_FILE_MIME]: ['.lok'], 'application/json': ['.json'] } }],
             });
             const writable = await handle.createWritable();
             await writable.write(jsonStr);
@@ -3145,8 +5202,21 @@ async function exportFullReport() {
         }
     } catch (e) { if (e.name === 'AbortError') return; }
 
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([jsonStr], {type:'application/octet-stream'}));
-    a.download = fileName; a.click();
+    const iosShareResult = await shareFileOnIOS(exportBlob, fileName);
+    if (iosShareResult === true) {
+        hasUnsavedChanges = false;
+        updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
+        showToast('Bericht zum Sichern in Dateien bereitgestellt', 'success');
+        return;
+    }
+    if (iosShareResult === 'aborted') return;
+
+    maybeShowIOSExportHint('save');
+    const url = URL.createObjectURL(exportBlob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
     hasUnsavedChanges = false;
     updateSaveStatus(`Datei gespeichert ${formatStatusTime()}`, 'saved');
     showToast("Bericht gespeichert!", "success");
@@ -3154,12 +5224,13 @@ async function exportFullReport() {
 
 function importFromStart(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
-    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
+    r.onload = e => { try { const d = JSON.parse(e.target.result); startApp(d.appType || (d.byId?.['rohrmaterial'] ? 'KB' : (d.byId?.['checkAuftraggeber']!==undefined&&!d.toggles?.sketchEnabled?'RB':'LO'))); requestAnimationFrame(() => { restoreFromData(d); hasUnsavedChanges = false; updateSaveStatus('Bericht geladen', 'saved'); syncOpenConstructionState(d); showToast("Bericht geladen", "success"); }); } catch(err) { console.error(err); showToast('Datei fehlerhaft.', 'error'); } };
     r.readAsText(f); inp.value='';
 }
 
 function restoreFromData(d) {
     if(!d || typeof d!=='object') return;
+    currentDraftId = d.meta?.draftId || currentDraftId || null;
     if(d.byId) Object.keys(d.byId).forEach(id => { const el = document.getElementById(id); if(el && el.type!=='checkbox') { el.value=d.byId[id]; if(el.tagName==='TEXTAREA') autoResize.call(el); } });
     if(d.inputsNoId) { let i=0; document.querySelectorAll('#app-root input').forEach(el=>{ if(el.type!=='checkbox'&&el.type!=='file'&&!el.id) el.value=d.inputsNoId[i++]||''; }); }
     if(d.textareasNoId) { let i=0; document.querySelectorAll('#app-root textarea').forEach(el=>{ if(!el.id) { el.value=d.textareasNoId[i++]||''; autoResize.call(el); } }); }
@@ -3176,18 +5247,19 @@ function restoreFromData(d) {
     if(currentApp==='LO' || currentApp==='KB' || currentApp==='DL') {
         if (currentApp==='LO') { applyReparaturState(); applyFlachdachState(); applyPoolState(); }
         if(d.toggles && typeof d.toggles.sketchEnabled==='boolean' && document.getElementById('toggleSketch')) { document.getElementById('toggleSketch').checked=d.toggles.sketchEnabled; document.getElementById('toggleSketch').dispatchEvent(new Event('change')); }
-        if(d.sketch?.bg) { const i=new Image(); i.onload=()=>document.getElementById('sketch-bg-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.bg; }
-        if(d.sketch?.lines||d.sketch?.png) { const i=new Image(); i.onload=()=>document.getElementById('sketch-canvas').getContext('2d').drawImage(i,0,0); i.src=d.sketch.lines||d.sketch.png; }
+        sketchBackgroundFitMode = d.sketch?.bgMode === 'cover' ? 'cover' : 'contain';
+        updateSketchBackgroundModeButton();
+        if(d.sketch?.bgSource || d.sketch?.bg) setSketchBackgroundSource(d.sketch.bgSource || d.sketch.bg, { markDirty: false });
+        if(d.sketch?.lines||d.sketch?.png) restoreCanvasSnapshot(document.getElementById('sketch-canvas'), d.sketch.lines||d.sketch.png, 'stretch');
     } else {
         updateDynamicRows();
         if(d.signature?.png && sigCtx) { const i=new Image(); i.onload=()=>sigCtx.drawImage(i,0,0); i.src=d.signature.png; }
     }
     
-    const c = document.getElementById('photoPagesContainer'); c.innerHTML='';
+    const c = document.getElementById('photoPagesContainer'); clearElement(c);
     (d.photos||[]).forEach(p => {
-        const pg = document.createElement('div'); pg.className='page'; const gId = 'grid-restore-'+p.index;
-        const headerStyle = currentApp==='DL' ? 'style="background: var(--dl-header-bg); color: var(--dl-header-text); border-color: var(--dl-header-border);"' : '';
-        pg.innerHTML = `<div class="header"><div class="header-top"><img src="Logo.PNG" alt="Brugger Logo" class="logo" onerror="this.style.display='none'"><div class="header-right"><strong>Brugger Entfeuchtung & Kanaltechnik GmbH</strong><br>Liebenauer Hauptstraße 181, 8041 Graz<br>Tel: +43 316 471771</div></div><h1 class="header-title" ${headerStyle}>Fotodokumentation</h1></div><div class="photo-grid" id="${gId}"></div><div class="footer"><span>Brugger GmbH</span><span class="page-no"></span></div>`;
+        const gId = 'grid-restore-'+p.index;
+        const pg = createPhotoPageElement(gId);
         c.appendChild(pg); 
         p.images.forEach(img => insertPhotoBox(img.dataUrl, gId, img.description, img.arrow, true));
     });
@@ -3204,7 +5276,7 @@ let sigCtx = null;
    CUSTOMER DATABASE
    ========================================================= */
 function saveCustomers() {
-    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    let customers = getCustomersLocal();
     const save = (prefix) => {
         const name = document.getElementById(prefix + 'name')?.value.trim();
         const adr = document.getElementById(prefix + 'adresse')?.value.trim();
@@ -3217,7 +5289,7 @@ function saveCustomers() {
     };
     save('');
     if (document.getElementById('checkAuftraggeber')?.checked) save('auftraggeber_');
-    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+    setCustomersLocal(customers);
 }
 
 const debouncedCustomerSearch = debounce(handleCustomerSearch, 200);
@@ -3226,20 +5298,52 @@ function handleCustomerSearch(input, type) {
     const searchTerm = input.value.toLowerCase();
     const resultsContainer = document.getElementById(type === 'main' ? 'mainCustomerResults' : 'billingCustomerResults');
     const customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
-    resultsContainer.innerHTML = '';
+    clearElement(resultsContainer);
     if (searchTerm.length < 2) { resultsContainer.style.display = 'none'; return; }
 
     const filtered = customers.filter(c => (c.name && c.name.toLowerCase().includes(searchTerm)) || (c.adresse && c.adresse.toLowerCase().includes(searchTerm)) || (c.ort && c.ort.toLowerCase().includes(searchTerm)));
     if (filtered.length === 0) { resultsContainer.style.display = 'none'; return; }
 
     filtered.slice(0, 10).forEach(customer => {
-        const div = document.createElement('div'); div.className = 'result-item'; div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
-        const info = document.createElement('div'); info.innerHTML = `<strong>${customer.name || ''}</strong><br><small>${customer.adresse || ''}, ${customer.plz || ''} ${customer.ort || ''}</small>`;
-        const delBtn = document.createElement('div'); delBtn.innerText = '🗑️'; delBtn.title = 'Löschen'; delBtn.style.cssText = 'padding:5px; cursor:pointer; opacity:0.6; font-size:14px;';
-        delBtn.onmouseover = () => delBtn.style.opacity = 1; delBtn.onmouseout = () => delBtn.style.opacity = 0.6;
-        delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomer(customer.id, type); };
-        div.onclick = () => selectCustomer(customer.id, type);
-        div.appendChild(info); div.appendChild(delBtn);
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.setAttribute('role', 'button');
+        div.tabIndex = 0;
+        div.setAttribute('aria-label', `Kundeneintrag ${customer.name || ''} laden`);
+        div.addEventListener('click', () => selectCustomer(customer.id, type));
+        div.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectCustomer(customer.id, type);
+            }
+        });
+
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = customer.name || '';
+        const lineBreak = document.createElement('br');
+        const details = document.createElement('small');
+        details.textContent = `${customer.adresse || ''}, ${customer.plz || ''} ${customer.ort || ''}`.trim();
+        info.appendChild(name);
+        info.appendChild(lineBreak);
+        info.appendChild(details);
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'result-delete-btn';
+        delBtn.textContent = '🗑️';
+        delBtn.title = 'Löschen';
+        delBtn.setAttribute('aria-label', `Kundeneintrag ${customer.name || ''} löschen`);
+        delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteCustomer(customer.id, type);
+        });
+
+        div.appendChild(info);
+        div.appendChild(delBtn);
         resultsContainer.appendChild(div);
     });
     resultsContainer.style.display = 'block';
@@ -3247,9 +5351,9 @@ function handleCustomerSearch(input, type) {
 
 function deleteCustomer(id, type) {
     if(!confirm("Diesen Eintrag wirklich löschen?")) return;
-    let customers = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+    let customers = getCustomersLocal();
     customers = customers.filter(c => c.id !== id);
-    localStorage.setItem('brugger_customers', JSON.stringify(customers));
+    setCustomersLocal(customers);
     const input = document.getElementById(type === 'main' ? 'mainCustomerSearch' : 'billingCustomerSearch');
     if(input) handleCustomerSearch(input, type);
     showToast("Eintrag gelöscht", "info");
@@ -3268,7 +5372,7 @@ function selectCustomer(customerId, type) {
 }
 
 function exportCustomers() {
-    const customers = localStorage.getItem('brugger_customers') || '[]';
+    const customers = JSON.stringify(getCustomersLocal());
     const a = document.createElement('a'); 
     a.href = URL.createObjectURL(new Blob([customers], {type:'application/json'}));
     a.download = 'Brugger_Kunden_' + new Date().toISOString().split('T')[0] + '.json'; 
@@ -3280,9 +5384,10 @@ function importCustomers(inp) {
     const f = inp.files?.[0]; if(!f) return; const r = new FileReader();
     r.onload = e => {
         try { const data = JSON.parse(e.target.result); if(Array.isArray(data)) {
-            let existing = JSON.parse(localStorage.getItem('brugger_customers')) || [];
+            let existing = getCustomersLocal();
             data.forEach(newCust => { const idx = existing.findIndex(c => c.name === newCust.name && c.plz === newCust.plz); if(idx > -1) existing[idx] = {...existing[idx], ...newCust}; else existing.push(newCust); });
-            localStorage.setItem('brugger_customers', JSON.stringify(existing)); showToast("Kundenliste importiert", "success");
+            setCustomersLocal(existing);
+            showToast("Kundenliste importiert", "success");
         } } catch(err) { showToast("Ungültige Datei", "error"); }
     }; r.readAsText(f); inp.value = '';
 }
@@ -3299,44 +5404,344 @@ function showToast(msg, type='info') {
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
 }
 
+function openJobDataKey(id) {
+    return `brugger_open_job_${id}`;
+}
+
+async function getOpenJobsIndex() {
+    return (await idbGet(OPEN_JOBS_INDEX_KEY)) || [];
+}
+
+async function setOpenJobsIndex(index) {
+    await idbSet(OPEN_JOBS_INDEX_KEY, index);
+}
+
+function buildOpenJobMeta(data) {
+    const meta = collectReportMeta(data);
+    return {
+        id: meta.draftId,
+        appType: data.appType,
+        displayName: meta.displayName,
+        shortLabel: meta.shortLabel,
+        customerName: meta.customerName,
+        address: meta.address,
+        place: meta.place,
+        projectNumber: meta.projectNumber,
+        reportDate: meta.reportDate,
+        followUpText: meta.followUpText,
+        updatedAt: data.meta?.updatedAt || new Date().toISOString()
+    };
+}
+
+function formatOpenJobTimestamp(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('de-AT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+async function saveOpenJob(data) {
+    const meta = buildOpenJobMeta(data);
+    if (!meta.id) return;
+
+    const index = await getOpenJobsIndex();
+    const next = index.filter(item => item.id !== meta.id);
+    next.unshift(meta);
+    next.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+    await idbSet(openJobDataKey(meta.id), data);
+    await setOpenJobsIndex(next.slice(0, 25));
+}
+
+async function removeOpenJob(id) {
+    if (!id) return;
+    const index = await getOpenJobsIndex();
+    const next = index.filter(item => item.id !== id);
+    await idbDelete(openJobDataKey(id));
+    await setOpenJobsIndex(next);
+}
+
+async function syncOpenConstructionState(data = null) {
+    const reportData = data || getReportData();
+    const draftId = reportData.meta?.draftId || currentDraftId;
+    if (reportData.meta?.followUpRequired) {
+        await saveOpenJob(reportData);
+    } else if (draftId) {
+        await removeOpenJob(draftId);
+    }
+    await refreshOpenJobsUI();
+}
+
+async function saveOpenConstructionNow() {
+    if (!currentApp) return;
+    const followupCheckbox = document.getElementById('check_folgetermin');
+    if (!followupCheckbox) {
+        showToast('Diese Funktion ist nur fuer offene Baustellen verfuegbar.', 'info');
+        return;
+    }
+    if (!followupCheckbox.checked) {
+        showToast('Bitte zuerst "Baustelle nicht abgeschlossen" aktivieren.', 'info');
+        return;
+    }
+
+    updateSaveStatus('Offene Baustelle wird gesichert...', 'saving');
+    hasUnsavedChanges = true;
+    const data = getReportData();
+    await idbSet(AUTOSAVE_KEY, data);
+    await syncOpenConstructionState(data);
+    updateSaveStatus(`Offene Baustelle gesichert ${formatStatusTime()}`, 'saved');
+    showToast('Offene Baustelle wurde gesichert', 'success');
+}
+
+async function resumeOpenJob(id) {
+    if (!id) return;
+    const data = await idbGet(openJobDataKey(id));
+    if (!data) {
+        await removeOpenJob(id);
+        await refreshOpenJobsUI();
+        showToast('Die offene Baustelle wurde nicht gefunden.', 'error');
+        return;
+    }
+    startApp(data.appType || 'LO');
+    requestAnimationFrame(() => {
+        restoreFromData(data);
+        hasUnsavedChanges = false;
+        updateSaveStatus('Baustelle fortgesetzt', 'saved');
+        showToast('Baustelle fortgesetzt', 'success');
+    });
+}
+
+async function resumeLatestOpenJob() {
+    const jobs = await getOpenJobsIndex();
+    if (!jobs.length) {
+        showToast('Keine offene Baustelle vorhanden.', 'info');
+        return;
+    }
+    await resumeOpenJob(jobs[0].id);
+}
+
+async function deleteOpenJobEntry(id) {
+    if (!confirm('Diese offene Baustelle aus der Liste entfernen?')) return;
+    await removeOpenJob(id);
+    await refreshOpenJobsUI();
+    showToast('Offene Baustelle entfernt', 'info');
+}
+
+function normalizeSortValue(value) {
+    return (value || '').toString().trim().toLowerCase();
+}
+
+function sortOpenJobs(jobs) {
+    const sortMode = document.getElementById('openJobsSort')?.value || 'customer-date';
+    const items = [...jobs];
+
+    const getSortDate = (job) => {
+        const reportDate = job.reportDate ? new Date(job.reportDate) : null;
+        if (reportDate && !Number.isNaN(reportDate.getTime())) return reportDate.getTime();
+        const updatedAt = new Date(job.updatedAt || 0);
+        return Number.isNaN(updatedAt.getTime()) ? 0 : updatedAt.getTime();
+    };
+
+    if (sortMode === 'customer-date') {
+        items.sort((a, b) => {
+            const customerCompare = normalizeSortValue(a.customerName || a.shortLabel).localeCompare(normalizeSortValue(b.customerName || b.shortLabel), 'de', { sensitivity: 'base' });
+            if (customerCompare !== 0) return customerCompare;
+            const dateCompare = getSortDate(b) - getSortDate(a);
+            if (dateCompare !== 0) return dateCompare;
+            return normalizeSortValue(a.address || '').localeCompare(normalizeSortValue(b.address || ''), 'de', { sensitivity: 'base' });
+        });
+        return items;
+    }
+
+    items.sort((a, b) => {
+        const dateCompare = getSortDate(b) - getSortDate(a);
+        if (dateCompare !== 0) return dateCompare;
+        return normalizeSortValue(a.customerName || a.shortLabel).localeCompare(normalizeSortValue(b.customerName || b.shortLabel), 'de', { sensitivity: 'base' });
+    });
+    return items;
+}
+
+function isSameCalendarDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear() && dateA.getMonth() === dateB.getMonth() && dateA.getDate() === dateB.getDate();
+}
+
+function getOpenJobFlags(job) {
+    const flags = {
+        isToday: false,
+        isStale: false,
+        isMissingFollowup: !job.followUpText
+    };
+    const updatedAt = new Date(job.updatedAt || 0);
+    if (!Number.isNaN(updatedAt.getTime())) {
+        const now = new Date();
+        flags.isToday = isSameCalendarDay(updatedAt, now);
+        const ageMs = now.getTime() - updatedAt.getTime();
+        flags.isStale = !flags.isToday && ageMs > 24 * 60 * 60 * 1000;
+    }
+    return flags;
+}
+
+async function refreshOpenJobsUI() {
+    const panel = document.getElementById('openJobsPanel');
+    const list = document.getElementById('openJobsList');
+    const quickBtn = document.getElementById('btnResumeOpenJob');
+    if (!panel || !list || !quickBtn) return;
+
+    const jobs = await getOpenJobsIndex();
+    clearElement(list);
+
+    if (!jobs.length) {
+        panel.classList.remove('is-visible');
+        quickBtn.style.display = 'none';
+        quickBtn.textContent = '🧰 Baustelle fortsetzen';
+        return;
+    }
+
+    const latestJob = [...jobs].sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0];
+    const sortedJobs = sortOpenJobs(jobs);
+
+    panel.classList.add('is-visible');
+    quickBtn.style.display = 'flex';
+    quickBtn.textContent = latestJob?.shortLabel ? `🧰 Baustelle fortsetzen: ${latestJob.shortLabel}` : '🧰 Baustelle fortsetzen';
+
+    sortedJobs.forEach(job => {
+        const flags = getOpenJobFlags(job);
+        const item = document.createElement('div');
+        item.className = 'open-job-item';
+        if (flags.isToday) item.classList.add('is-today');
+        if (flags.isStale) item.classList.add('is-stale');
+        if (flags.isMissingFollowup) item.classList.add('is-missing-followup');
+
+        const main = document.createElement('div');
+        main.className = 'open-job-main';
+
+        const badges = document.createElement('div');
+        badges.className = 'open-job-badges';
+
+        if (flags.isToday) {
+            const badgeToday = document.createElement('span');
+            badgeToday.className = 'open-job-badge today';
+            badgeToday.textContent = 'Heute';
+            badges.appendChild(badgeToday);
+        }
+
+        if (flags.isStale) {
+            const badgeStale = document.createElement('span');
+            badgeStale.className = 'open-job-badge stale';
+            badgeStale.textContent = 'Aelter';
+            badges.appendChild(badgeStale);
+        }
+
+        if (flags.isMissingFollowup) {
+            const badgeMissing = document.createElement('span');
+            badgeMissing.className = 'open-job-badge missing-followup';
+            badgeMissing.textContent = 'Ohne Info';
+            badges.appendChild(badgeMissing);
+        }
+
+        if (badges.childElementCount) main.appendChild(badges);
+
+        const name = document.createElement('p');
+        name.className = 'open-job-name';
+        name.textContent = job.displayName || job.shortLabel || 'Offene Baustelle';
+
+        const meta = document.createElement('p');
+        meta.className = 'open-job-meta';
+        meta.textContent = [job.appType, formatOpenJobTimestamp(job.updatedAt)].filter(Boolean).join(' | ');
+        main.appendChild(name);
+        main.appendChild(meta);
+
+        if (job.followUpText) {
+            const followup = document.createElement('p');
+            followup.className = 'open-job-followup';
+            followup.textContent = `Folgetermin: ${job.followUpText}`;
+            main.appendChild(followup);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'open-job-actions';
+
+        const resumeBtn = document.createElement('button');
+        resumeBtn.type = 'button';
+        resumeBtn.className = 'open-job-btn primary';
+        resumeBtn.textContent = 'Fortsetzen';
+        resumeBtn.addEventListener('click', () => resumeOpenJob(job.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'open-job-btn secondary';
+        deleteBtn.textContent = 'Entfernen';
+        deleteBtn.addEventListener('click', () => deleteOpenJobEntry(job.id));
+
+        actions.appendChild(resumeBtn);
+        actions.appendChild(deleteBtn);
+        item.appendChild(main);
+        item.appendChild(actions);
+        list.appendChild(item);
+    });
+}
+
 async function saveToLocal() {
     if(!currentApp) return;
     updateSaveStatus('Entwurf wird gesichert...', 'saving');
     const d = getReportData();
     hasUnsavedChanges = true;
-    await idbSet('brugger_autosave', d);
+    await idbSet(AUTOSAVE_KEY, d);
+    await syncOpenConstructionState(d);
     updateSaveStatus(`Lokal gesichert ${formatStatusTime()}`, 'saved');
 }
 
 async function checkAutoSave() {
-    const saved = await idbGet('brugger_autosave');
+    const saved = await idbGet(AUTOSAVE_KEY);
     const btn = document.getElementById('btnRestoreAutosave');
     if(saved && btn) {
         btn.style.display = 'flex';
-        try { if(saved.appType) btn.innerHTML = `🔄 Entwurf (${saved.appType}) wiederherstellen`; } catch(e){}
+        try { if(saved.appType) btn.textContent = `🔄 Entwurf (${saved.appType}) wiederherstellen`; } catch(e){}
     }
 }
 
 async function restoreAutosave() {
-    const saved = await idbGet('brugger_autosave');
+    const saved = await idbGet(AUTOSAVE_KEY);
     if(!saved) return;
     try {
         startApp(saved.appType);
-        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
+        setTimeout(() => { restoreFromData(saved); hasUnsavedChanges = false; updateSaveStatus('Entwurf wiederhergestellt', 'saved'); syncOpenConstructionState(saved); showToast('Entwurf wiederhergestellt', 'success'); }, 200);
     } catch(e) { showToast('Fehler beim Laden des Entwurfs', 'error'); }
 }
 
 function applyTheme() {
     const isDark = localStorage.getItem('brugger_darkmode') === 'true';
-    document.body.classList.toggle('dark-mode', isDark);
+    if (!document.body.classList.contains('print-light-mode')) {
+        document.body.classList.toggle('dark-mode', isDark);
+    }
     const cb = document.getElementById('settingsDarkMode');
     if(cb) cb.checked = isDark;
+}
+
+function enablePrintLightMode() {
+    document.body.dataset.printRestoreDarkMode = document.body.classList.contains('dark-mode') ? 'true' : 'false';
+    document.body.classList.add('print-light-mode');
+    document.body.classList.remove('dark-mode');
+}
+
+function disablePrintLightMode() {
+    if (!document.body.classList.contains('print-light-mode')) return;
+    const shouldRestoreDarkMode = document.body.dataset.printRestoreDarkMode === 'true';
+    document.body.classList.remove('print-light-mode');
+    document.body.classList.toggle('dark-mode', shouldRestoreDarkMode);
+    delete document.body.dataset.printRestoreDarkMode;
 }
 
 function initializeApp() {
     try {
         loadTemplates();
         checkAutoSave();
+        refreshOpenJobsUI();
         applyTheme();
         
         const appRoot = document.getElementById('app-root');
@@ -3505,7 +5910,8 @@ function saveSettings() {
     if(tech) localStorage.setItem('brugger_techniker', tech); else localStorage.removeItem('brugger_techniker');
     localStorage.setItem('brugger_darkmode', document.getElementById('settingsDarkMode').checked);
     applyTheme();
-    closeSettings(); showToast("Einstellungen gespeichert", "success");
+    closeSettings();
+    showToast("Einstellungen gespeichert", "success");
 }
 
 /* =========================================================
@@ -3515,7 +5921,7 @@ function loadTemplates() {
     try {
         const stored = localStorage.getItem('brugger_templates');
         if(stored) textTemplates = JSON.parse(stored);
-        else { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); }
+        else { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); setTemplatesLocal(textTemplates); }
     } catch(e) { textTemplates = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); }
 }
 
@@ -3525,8 +5931,10 @@ function loadTemplates() {
 function openTemplateManager() { closeSettings(); document.getElementById('templateManagerModal').style.display = 'flex'; refreshTemplateSelect(); }
 function closeTemplateManager() { document.getElementById('templateManagerModal').style.display = 'none'; }
 function refreshTemplateSelect() {
-    const sel = document.getElementById('tmSelect'); sel.innerHTML = '<option value="new">+ Neue Vorlage erstellen</option>';
-    textTemplates.forEach((t, i) => sel.innerHTML += `<option value="${i}">${t.title} (${t.category})</option>`);
+    const sel = document.getElementById('tmSelect');
+    clearElement(sel);
+    sel.appendChild(createOptionElement('new', '+ Neue Vorlage erstellen'));
+    textTemplates.forEach((t, i) => sel.appendChild(createOptionElement(String(i), `${t.title} (${t.category})`)));
     loadSelectedTemplate();
 }
 function loadSelectedTemplate() {
@@ -3539,17 +5947,18 @@ function saveTemplate() {
     if(!title || !text) return showToast("Bitte Titel und Text eingeben", "error");
     const val = document.getElementById('tmSelect').value; const newTpl = { id: title.toLowerCase().replace(/[^a-z0-9]/g, '_'), category, title, text };
     if (val === 'new') textTemplates.push(newTpl); else textTemplates[val] = newTpl;
-    localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gespeichert", "success"); refreshTemplateSelect();
+    setTemplatesLocal(textTemplates); showToast("Vorlage gespeichert", "success"); refreshTemplateSelect();
     if(currentApp === 'LO') applyTemplateVisibility();
 }
 function deleteSelectedTemplate() {
     const val = document.getElementById('tmSelect').value; if(val === 'new') return;
-    if(confirm("Vorlage wirklich löschen?")) { textTemplates.splice(val, 1); localStorage.setItem('brugger_templates', JSON.stringify(textTemplates)); showToast("Vorlage gelöscht", "info"); refreshTemplateSelect(); if(currentApp === 'LO') applyTemplateVisibility(); }
+    if(confirm("Vorlage wirklich löschen?")) { textTemplates.splice(val, 1); setTemplatesLocal(textTemplates); showToast("Vorlage gelöscht", "info"); refreshTemplateSelect(); if(currentApp === 'LO') applyTemplateVisibility(); }
 }
 
 function hardResetApp() {
     if(confirm("ACHTUNG: Dies löscht alle gespeicherten Daten (Einstellungen, Entwürfe, Vorlagen) und setzt die App komplett zurück.\n\nDies hilft oft, wenn die App nicht mehr reagiert.\n\nFortfahren?")) {
         hasUnsavedChanges = false;
+        currentDraftId = null;
         try { localStorage.clear(); } catch(e){}
         try { indexedDB.deleteDatabase(DB_NAME); } catch(e){}
         try { if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function(rs){ for(let r of rs) r.unregister(); }); } catch(e){}
