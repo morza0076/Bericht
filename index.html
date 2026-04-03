@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familien Planer - Tagesansicht</title>
+    <title>Familien Planer - Smart Edition</title>
     <style>
         :root { 
             --alle: #2c3e50; --michi: #0984e3; --peter: #6c5ce7; 
@@ -48,12 +48,11 @@
         .list-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; font-size: 0.85em; }
         .del { color: #e74c3c; cursor: pointer; font-weight: bold; margin-left: 10px; }
 
-        /* Modal (Pop-up) Styling */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         .modal-header h2 { margin: 0; color: #2c3e50; font-size: 1.4em; }
-        .close-btn { background: #eee; color: #333; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2em; transition: 0.2s; border: none;}
+        .close-btn { background: #eee; color: #333; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2em; border: none;}
         .close-btn:hover { background: #ff7675; color: white; }
         .day-detail-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
         .day-detail-item:last-child { border-bottom: none; }
@@ -76,27 +75,31 @@
             <button onclick="changeMonth(1)">▶</button>
         </div>
         <div class="calendar-grid" id="calendarGrid">
-            <div style="text-align:center; font-weight:bold">Mo</div>
-            <div style="text-align:center; font-weight:bold">Di</div>
-            <div style="text-align:center; font-weight:bold">Mi</div>
-            <div style="text-align:center; font-weight:bold">Do</div>
-            <div style="text-align:center; font-weight:bold">Fr</div>
-            <div style="text-align:center; font-weight:bold">Sa</div>
+            <div style="text-align:center; font-weight:bold">Mo</div><div style="text-align:center; font-weight:bold">Di</div>
+            <div style="text-align:center; font-weight:bold">Mi</div><div style="text-align:center; font-weight:bold">Do</div>
+            <div style="text-align:center; font-weight:bold">Fr</div><div style="text-align:center; font-weight:bold">Sa</div>
             <div style="text-align:center; font-weight:bold">So</div>
         </div>
     </section>
 
     <aside>
         <div class="card">
-            <h3>📅 Neuer Termin</h3>
+            <h3>📅 Neuer Termin / Geburtstag</h3>
             <div class="input-group">
-                <input type="text" id="termTitle" placeholder="Was steht an?">
-                <input type="date" id="termDate">
+                <input type="text" id="termTitle" placeholder="Was steht an? (Name für Geburtstag)">
+                
+                <div class="time-row">
+                    <input type="date" id="termDate" title="Startdatum" required>
+                    <span>bis</span>
+                    <input type="date" id="termEndDate" title="Enddatum">
+                </div>
+                
                 <div class="time-row">
                     <input type="time" id="termStart" title="Startzeit">
                     <span>bis</span>
                     <input type="time" id="termEnd" title="Endzeit">
                 </div>
+
                 <select id="termType">
                     <option value="alle">👨‍👩‍👧‍👦 Alle zusammen (Dunkelblau)</option>
                     <option value="michi">👤 Michi (Blau)</option>
@@ -106,9 +109,9 @@
                     <option value="la">🏃 Leichtathletik (Orange)</option>
                     <option value="sch-liah">🏫 Schule Liah (Violett)</option>
                     <option value="sch-oskar">🏫 Schule Oskar (Mintgrün)</option>
-                    <option value="geburtstag">🎂 Geburtstag (Goldgelb)</option>
+                    <option value="geburtstag">🎂 Geburtstag (Jährlich!)</option>
                 </select>
-                <button onclick="addTerm()">Termin eintragen</button>
+                <button onclick="addTerm()">Speichern</button>
             </div>
         </div>
 
@@ -135,40 +138,68 @@
 </div>
 
 <script>
-    const feiertage2026 = [
-        { date: "2026-01-01", name: "Neujahr" }, { date: "2026-01-06", name: "Hl. Drei Könige" },
-        { date: "2026-04-06", name: "Ostermontag" }, { date: "2026-05-01", name: "Staatsfeiertag" },
-        { date: "2026-05-14", name: "Christi Himmelfahrt" }, { date: "2026-05-25", name: "Pfingstmontag" },
-        { date: "2026-06-04", name: "Fronleichnam" }, { date: "2026-08-15", name: "Mariä Himmelfahrt" },
-        { date: "2026-10-26", name: "Nationalfeiertag" }, { date: "2026-11-01", name: "Allerheiligen" },
-        { date: "2026-12-08", name: "Mariä Empfängnis" }, { date: "2026-12-25", name: "Christtag" },
-        { date: "2026-12-26", name: "Stefanitag" }
-    ];
-
-    const ferienSteiermark2026 = [
-        { start: "2025-12-24", end: "2026-01-06" }, { start: "2026-02-16", end: "2026-02-21" },
-        { start: "2026-03-19", end: "2026-03-19" }, { start: "2026-03-28", end: "2026-04-06" },
-        { start: "2026-05-23", end: "2026-05-25" }, { start: "2026-07-11", end: "2026-09-13" },
-        { start: "2026-10-27", end: "2026-10-31" }, { start: "2026-12-24", end: "2027-01-06" } 
-    ];
+    // Automatisches Mitspringen des Enddatums!
+    document.getElementById('termDate').addEventListener('change', function() {
+        const endDateInput = document.getElementById('termEndDate');
+        endDateInput.min = this.value; // Man kann kein Enddatum vor dem Startdatum wählen
+        if (!endDateInput.value || endDateInput.value < this.value) {
+            endDateInput.value = this.value;
+        }
+    });
 
     const typeNames = {
         'alle': '👨‍👩‍👧‍👦 Alle', 'michi': '👤 Michi', 'peter': '👤 Peter', 'liah': '👤 Liah', 'oskar': '👤 Oskar',
         'la': '🏃 Leichtathletik', 'sch-liah': '🏫 Schule Liah', 'sch-oskar': '🏫 Schule Oskar', 'geburtstag': 'Geburtstag'
     };
 
-    let db = JSON.parse(localStorage.getItem('famPlanner_v11')) || { terms: [], todos: [] };
+    let db = JSON.parse(localStorage.getItem('famPlanner_v12')) || { terms: [], todos: [] };
     let viewDate = new Date();
     let currentModalDate = null;
 
-    function save() {
-        localStorage.setItem('famPlanner_v11', JSON.stringify(db));
-        render();
-        if(currentModalDate) openDayView(currentModalDate); // Aktualisiert das Pop-up, falls man darin etwas löscht
+    // Cache für die LIVE API (Feiertage & Ferien)
+    let apiCacheFeiertage = {};
+    let apiCacheFerien = {};
+
+    async function fetchHolidays(year) {
+        if(apiCacheFeiertage[year]) return; // Wurde schon geladen
+        
+        apiCacheFeiertage[year] = []; // Platzhalter, um doppeltes Laden zu verhindern
+        apiCacheFerien[year] = [];
+
+        try {
+            // Holt österreichische Feiertage live
+            let res = await fetch(`https://openholidaysapi.org/PublicHolidays?countryIsoCode=AT&languageIsoCode=DE&validFrom=${year}-01-01&validTo=${year}-12-31`);
+            let data = await res.json();
+            apiCacheFeiertage[year] = data.map(h => ({ date: h.startDate, name: h.name[0].text }));
+
+            // Holt steirische Schulferien (AT-6) live
+            let res2 = await fetch(`https://openholidaysapi.org/SchoolHolidays?countryIsoCode=AT&subdivisionCode=AT-6&languageIsoCode=DE&validFrom=${year}-01-01&validTo=${year}-12-31`);
+            let data2 = await res2.json();
+            apiCacheFerien[year] = data2.map(h => ({ start: h.startDate, end: h.endDate }));
+
+            renderCalendar(); // Rendert den Kalender neu, sobald die Daten da sind
+        } catch (e) {
+            console.error("Konnte aktuelle Ferien/Feiertage nicht laden.", e);
+        }
     }
 
-    function isFerien(dateStr) { return ferienSteiermark2026.some(f => dateStr >= f.start && dateStr <= f.end); }
-    function getFeiertag(dateStr) { return feiertage2026.find(f => f.date === dateStr); }
+    function isFerien(dateStr) { 
+        const year = dateStr.substring(0, 4);
+        if(!apiCacheFerien[year]) return false;
+        return apiCacheFerien[year].some(f => dateStr >= f.start && dateStr <= f.end); 
+    }
+    
+    function getFeiertag(dateStr) { 
+        const year = dateStr.substring(0, 4);
+        if(!apiCacheFeiertage[year]) return null;
+        return apiCacheFeiertage[year].find(f => f.date === dateStr); 
+    }
+
+    function save() {
+        localStorage.setItem('famPlanner_v12', JSON.stringify(db));
+        render();
+        if(currentModalDate) openDayView(currentModalDate); 
+    }
 
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
@@ -176,6 +207,9 @@
         const month = viewDate.getMonth();
         document.getElementById('monthDisplay').innerText = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(viewDate);
         
+        // Lade Feiertage & Ferien dynamisch für das angezeigte Jahr!
+        if(!apiCacheFeiertage[year]) { fetchHolidays(year); }
+
         while(grid.children.length > 7) grid.removeChild(grid.lastChild);
         const first = new Date(year, month, 1).getDay();
         const offset = (first === 0) ? 6 : first - 1;
@@ -188,7 +222,6 @@
             dayDiv.className = 'day';
             const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             
-            // Klick auf den Tag öffnet das Pop-up
             dayDiv.onclick = () => openDayView(dateStr);
             
             if(dateStr === today) dayDiv.classList.add('today');
@@ -199,18 +232,40 @@
             const feiertag = getFeiertag(dateStr);
             if(feiertag) dayDiv.innerHTML += `<div class="ev ev-feiertag">${feiertag.name}</div>`;
 
-            let daysTerms = db.terms.filter(t => t.date === dateStr);
+            // Termine & Geburtstage filtern
+            let daysTerms = db.terms.filter(t => {
+                if (t.type === 'geburtstag') {
+                    // Geburtstag: Prüft nur ob Monat und Tag übereinstimmen (-MM-DD)
+                    return t.date.substring(5) === dateStr.substring(5);
+                } else {
+                    // Normale Termine: Prüft Zeitraum zwischen Start und Enddatum
+                    let eDate = t.endDate || t.date;
+                    return dateStr >= t.date && dateStr <= eDate;
+                }
+            });
+
             daysTerms.sort((a, b) => (a.start || "24:00").localeCompare(b.start || "24:00"));
 
             daysTerms.forEach(t => {
-                const iconStr = t.type === 'geburtstag' ? '🎂 ' : '';
+                let displayTitle = t.title;
+                let iconStr = '';
+                
+                // Geburtstags-Logik (Alter berechnen)
+                if (t.type === 'geburtstag') {
+                    iconStr = '🎂 ';
+                    let birthYear = parseInt(t.date.substring(0,4));
+                    let currentYear = parseInt(dateStr.substring(0,4));
+                    let age = currentYear - birthYear;
+                    if (age > 0) displayTitle += ` (${age})`; // Zeigt das Alter an!
+                }
+
                 let timeStr = '';
-                if(t.start) {
+                if(t.type !== 'geburtstag' && t.start) {
                     timeStr = t.start;
                     if(t.end) timeStr += '-' + t.end;
                     timeStr = `<span class="time-badge">[${timeStr}]</span>`;
                 }
-                dayDiv.innerHTML += `<div class="ev ev-${t.type}">${iconStr}${timeStr}${t.title}</div>`;
+                dayDiv.innerHTML += `<div class="ev ev-${t.type}">${iconStr}${timeStr}${displayTitle}</div>`;
             });
             
             db.todos.filter(t => t.date === dateStr).forEach(t => {
@@ -220,75 +275,79 @@
         }
     }
 
-    // -- NEU: TAGESANSICHT (MODAL) --
     function openDayView(dateStr) {
         currentModalDate = dateStr;
         const modal = document.getElementById('dayModal');
         const content = document.getElementById('modalContentList');
-        
-        // Datum schön formatieren (z.B. 15.08.2026)
         const dParts = dateStr.split('-');
         document.getElementById('modalDateTitle').innerText = `${dParts[2]}.${dParts[1]}.${dParts[0]}`;
 
         let html = '';
-
-        // Ferien & Feiertage
         if(isFerien(dateStr)) html += `<div class="day-detail-item" style="background:#e8f5e9; border-left:4px solid #28a745; color:#155724; font-weight:bold;">🎒 Schulferien (Steiermark)</div>`;
         const feiertag = getFeiertag(dateStr);
         if(feiertag) html += `<div class="day-detail-item" style="background:#fff0f0; border-left:4px solid var(--feiertag); color:#c0392b; font-weight:bold;">🇦🇹 Feiertag: ${feiertag.name}</div>`;
 
-        // Termine
-        let daysTerms = db.terms.filter(t => t.date === dateStr);
+        let daysTerms = db.terms.filter(t => {
+            if (t.type === 'geburtstag') return t.date.substring(5) === dateStr.substring(5);
+            return dateStr >= t.date && dateStr <= (t.endDate || t.date);
+        });
+        
         daysTerms.sort((a, b) => (a.start || "24:00").localeCompare(b.start || "24:00"));
         
         daysTerms.forEach(t => {
-            let timeInfo = t.start ? `🕑 ${t.start}${t.end ? ' - '+t.end : ''} Uhr` : 'Ganztägig';
-            const iconStr = t.type === 'geburtstag' ? '🎂 ' : '';
+            let timeInfo = (t.start && t.type !== 'geburtstag') ? `🕑 ${t.start}${t.end ? ' - '+t.end : ''} Uhr` : 'Ganztägig';
+            if (t.endDate && t.endDate !== t.date && t.type !== 'geburtstag') timeInfo += ` (Mehrtägig bis ${t.endDate.split('-').reverse().join('.')})`;
+            
+            let displayTitle = t.title;
+            let iconStr = '';
+            if (t.type === 'geburtstag') {
+                iconStr = '🎂 ';
+                let age = parseInt(dateStr.substring(0,4)) - parseInt(t.date.substring(0,4));
+                if (age > 0) displayTitle += ` (${age}. Geburtstag)`;
+            }
+
             html += `<div class="day-detail-item">
                         <div>
                             <div class="ev ev-${t.type}">${iconStr}${typeNames[t.type]}</div><br>
-                            <span style="font-size:1.1em; font-weight:bold;">${t.title}</span><br>
+                            <span style="font-size:1.1em; font-weight:bold;">${displayTitle}</span><br>
                             <small style="color:#7f8c8d;">${timeInfo}</small>
                         </div>
                         <span class="del" style="font-size:1.5em;" onclick="deleteItem('terms', ${t.id}); event.stopPropagation();" title="Löschen">🗑️</span>
                      </div>`;
         });
 
-        // Todos
         db.todos.filter(t => t.date === dateStr).forEach(t => {
             html += `<div class="day-detail-item">
-                        <div>
-                            <div class="ev ev-todo">📍 To-Do (Frist)</div><br>
-                            <span style="font-size:1.1em; font-weight:bold;">${t.text}</span>
-                        </div>
+                        <div><div class="ev ev-todo">📍 To-Do (Frist)</div><br><span style="font-size:1.1em; font-weight:bold;">${t.text}</span></div>
                         <span class="del" style="font-size:1.5em;" onclick="deleteItem('todos', ${t.id}); event.stopPropagation();" title="Löschen">🗑️</span>
                      </div>`;
         });
 
         if(html === '') html = '<p style="text-align:center; color:#95a5a6; padding: 20px;">Keine Termine für diesen Tag.</p>';
-
         content.innerHTML = html;
         modal.style.display = 'flex';
     }
 
     function closeModal(e, force = false) {
-        // Schließt das Fenster, wenn man außerhalb klickt oder den X-Button drückt
         if(force || e.target.id === 'dayModal') {
             document.getElementById('dayModal').style.display = 'none';
             currentModalDate = null;
         }
     }
 
-    // -- RESTLICHE FUNKTIONEN --
     function addTerm() {
         const title = document.getElementById('termTitle').value;
         const date = document.getElementById('termDate').value;
+        const endDate = document.getElementById('termEndDate').value || date; // Nimmt Startdatum, wenn leer
         const start = document.getElementById('termStart').value;
         const end = document.getElementById('termEnd').value;
         const type = document.getElementById('termType').value;
+        
         if(!title || !date) return;
-        db.terms.push({ id: Date.now(), title, date, start, end, type });
-        document.getElementById('termTitle').value = ''; document.getElementById('termStart').value = ''; document.getElementById('termEnd').value = '';
+        db.terms.push({ id: Date.now(), title, date, endDate, start, end, type });
+        
+        document.getElementById('termTitle').value = ''; document.getElementById('termDate').value = ''; 
+        document.getElementById('termEndDate').value = ''; document.getElementById('termStart').value = ''; document.getElementById('termEnd').value = '';
         save();
     }
 
@@ -316,11 +375,7 @@
         });
     }
 
-    function deleteItem(type, id) {
-        db[type] = db[type].filter(x => x.id !== id);
-        save();
-    }
-
+    function deleteItem(type, id) { db[type] = db[type].filter(x => x.id !== id); save(); }
     function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderCalendar(); }
     function render() { renderCalendar(); renderTodos(); }
     
