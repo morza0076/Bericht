@@ -1,33 +1,56 @@
-// Function to escape HTML 
-function esc(string) {
-    return string
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Bericht</title>
+    <script>
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                switch (c) {
+                    case '&': return '&amp;';
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '"': return '&quot;';
+                    case "'": return '&#39;';
+                }
+            });
+        }
+        
+        function closeModal(e, force=false) {
+            if (e && e.target && e.target.id) {
+                // Your existing code to close the modal
+            }
+        }
 
-function closeModal(e, force) {
-    if (!force && (!e || !e.target)) return;
-    const id = e.target.id; // preserve existing behavior when force is true
-    // ... existing logic to handle modal close based on id
-}
+        function saveTerm() {
+            // Assuming you have startDate and endDate variables defined
+            if (endDate < date) {
+                alert('Enddatum muss nach dem Startdatum liegen.');
+                return;
+            }
+            if (startDate && endDate && endDate < startDate) {
+                alert('Endzeit muss nach der Startzeit liegen.');
+                return;
+            }
+            // Your existing code to save the term
+        }
+        
+        function renderCalendar() {
+            // Assuming feiertag, displayTitle, and t are defined
+            var content = esc(feiertag.name) + esc(displayTitle) + esc(t.text);
+            // Your existing code to render the calendar
+            document.innerHTML = content;
+        }
 
-function saveTerm() {
-    if (endDate < date) {
-        alert('End date must be after the start date.');
-        return;
-    }
-    if (startDate && endDate && endDate < startDate) {
-        alert('End date must be after the start date.');
-        return;
-    }
-    // ... existing logic to save term 
-}
-
-// Example usage of esc function when injecting into innerHTML
-const safeTitle = esc(displayTitle);
-const safeText = esc(t.text);
-calendarDayCell.innerHTML = safeTitle;
-todoSidebarList.innerHTML += `<li>${safeText}</li>`;
+        function openDayView() {
+            // Assuming feiertag, displayTitle, and t are defined
+            var content = esc(ferienData.name) + esc(feiertag.name) + esc(displayTitle) + esc(t.text);
+            // Your existing code to open the day view
+            document.innerHTML = content;
+        }
+    </script>
+</head>
+<body>
+    <h1>Willkommen zu Bericht</h1>
+</body>
+</html>
