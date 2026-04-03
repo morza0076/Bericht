@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familien Planer - Smart Edition (Gefixed)</title>
+    <title>Familien Planer - Premium Edition</title>
     <style>
         :root { 
             --alle: #2c3e50; --michi: #0984e3; --peter: #6c5ce7; 
             --liah: #00cec9; --oskar: #00b894;
             --la: #e67e22; --sch-liah: #8e44ad; --sch-oskar: #55efc4;
             --geburtstag: #f1c40f; --todo-red: #d63031; --feiertag: #e74c3c;
-            --bg: #f5f6fa; --card-bg: #ffffff; 
+            --bg: #f4f6f8; --card-bg: #ffffff; 
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #2d3436; }
         .main-layout { display: grid; grid-template-columns: 1.4fr 0.6fr; gap: 20px; max-width: 1500px; margin: auto; }
-        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 18px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         
-        #calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .day { min-height: 110px; background: #fff; border: 1px solid #eee; padding: 4px; border-radius: 4px; font-size: 0.8em; transition: 0.2s; cursor: pointer; }
-        .day:hover { border-color: var(--michi); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         
-        .day.today { border: 2px solid #2f3640; }
-        .day.ferien { background-color: #d4edda; border-color: #c3e6cb; } 
-        .date-num { font-weight: bold; margin-bottom: 4px; display: block; }
+        .day { min-height: 110px; background: #fff; border: 1px solid #e1e5e8; padding: 6px; border-radius: 8px; font-size: 0.8em; transition: all 0.2s ease; cursor: pointer; position: relative; }
+        .day:hover { border-color: var(--michi); box-shadow: 0 4px 8px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .weekend { background-color: #f8f9fa; } /* Feinschliff: Wochenende leicht grau */
+        
+        .day.today { border: 2px solid var(--michi); background-color: #f0f7ff; }
+        .today-badge { position: absolute; top: 6px; right: 6px; font-size: 0.7em; font-weight: bold; color: var(--michi); }
+        
+        .day.ferien { background-color: #e8f5e9; border-color: #c8e6c9; } 
+        .date-num { font-weight: bold; margin-bottom: 6px; display: block; font-size: 1.1em; color: #4a5568; }
 
-        .ev { padding: 3px 5px; border-radius: 3px; color: white; margin-bottom: 3px; font-size: 0.75em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; width: calc(100% - 10px); }
-        .ev-alle { background: var(--alle); font-weight: bold; }
+        .ev { padding: 3px 6px; border-radius: 4px; color: white; margin-bottom: 4px; font-size: 0.75em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; width: calc(100% - 12px); font-weight: 500; }
+        .ev-alle { background: var(--alle); }
         .ev-michi { background: var(--michi); }
         .ev-peter { background: var(--peter); }
         .ev-liah { background: var(--liah); color: #2d3436; }
@@ -34,69 +38,86 @@
         .ev-la { background: var(--la); }
         .ev-sch-liah { background: var(--sch-liah); color: white; }
         .ev-sch-oskar { background: var(--sch-oskar); color: #2d3436; }
-        .ev-geburtstag { background: var(--geburtstag); color: #2d3436; font-weight: bold; }
-        .ev-todo { background: var(--todo-red); border-left: 3px solid black; color: white; }
-        .ev-feiertag { background: var(--feiertag); color: white; font-weight: bold; }
-        .time-badge { opacity: 0.85; margin-right: 4px; font-size: 0.9em; }
+        .ev-geburtstag { background: var(--geburtstag); color: #2d3436; }
+        .ev-todo { background: var(--todo-red); border-left: 3px solid #8e0000; color: white; }
+        .ev-feiertag { background: var(--feiertag); color: white; }
+        .time-badge { opacity: 0.85; margin-right: 4px; font-size: 0.9em; font-weight: normal; }
 
-        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
-        select, input, button { padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 0.9em; font-family: inherit; }
-        button { background: #2f3640; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { opacity: 0.8; }
-        .time-row { display: flex; gap: 5px; align-items: center; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #e1e5e8; }
+        select, input, button { padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; font-size: 0.95em; font-family: inherit; transition: border-color 0.2s; outline: none; }
+        select:focus, input:focus { border-color: var(--michi); }
+        
+        .btn-row { display: flex; gap: 10px; }
+        button { flex: 1; background: #2f3640; color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        button:active { transform: translateY(0); }
+        .btn-cancel { background: #95a5a6; display: none; }
+
+        .time-row { display: flex; gap: 8px; align-items: center; color: #718096; font-size: 0.9em; }
         .time-row input { flex: 1; }
-        .list-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; font-size: 0.85em; }
-        .del { color: #e74c3c; cursor: pointer; font-weight: bold; margin-left: 10px; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 0.9em; transition: background 0.2s; border-radius: 6px; }
+        .list-item:hover { background: #f8f9fa; }
+        
+        .action-btns { display: flex; gap: 12px; font-size: 1.2em; align-items: center; }
+        .action-btn { cursor: pointer; transition: transform 0.2s; display: inline-block; }
+        .action-btn:hover { transform: scale(1.2); }
+        .del { color: #e74c3c; }
+        .done { color: #27ae60; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-        .modal-header h2 { margin: 0; color: #2c3e50; font-size: 1.4em; }
-        .close-btn { background: #eee; color: #333; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2em; border: none;}
-        .close-btn:hover { background: #ff7675; color: white; }
-        .day-detail-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
+        .empty-state { text-align: center; color: #a0aec0; padding: 20px; font-style: italic; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px); }
+        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f2f5; padding-bottom: 12px; margin-bottom: 15px; }
+        .modal-header h2 { margin: 0; color: #2d3748; font-size: 1.5em; }
+        .close-btn { background: #edf2f7; color: #4a5568; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2em; border: none; transition: 0.2s; box-shadow: none; }
+        .close-btn:hover { background: #e53e3e; color: white; transform: rotate(90deg); }
+        .day-detail-item { padding: 15px; border-bottom: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
         .day-detail-item:last-child { border-bottom: none; }
-        .day-detail-item .ev { width: auto; font-size: 0.85em; padding: 4px 8px; margin-bottom: 5px; }
 
         @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<header style="text-align: center; margin-bottom: 20px;">
-    <h1>🏠 Familien Planer</h1>
+<header style="text-align: center; margin-bottom: 25px; margin-top: 10px;">
+    <h1 style="color: #2c3e50; font-size: 2.2em; margin: 0;">📅 Familien Kalender</h1>
+    <p style="color: #718096; margin-top: 5px;">Termine, Aufgaben und Ferien im Griff</p>
 </header>
 
 <div class="main-layout">
     <section class="card">
         <div id="calendar-header">
-            <button onclick="changeMonth(-1)">◀</button>
-            <h2 id="monthDisplay"></h2>
-            <button onclick="changeMonth(1)">▶</button>
+            <button onclick="changeMonth(-1)" style="width: auto; padding: 10px 20px;">◀ Zurück</button>
+            <h2 id="monthDisplay" style="margin: 0; color: #2d3748; font-size: 1.6em;"></h2>
+            <button onclick="changeMonth(1)" style="width: auto; padding: 10px 20px;">Vor ▶</button>
         </div>
         <div class="calendar-grid" id="calendarGrid">
-            <div style="text-align:center; font-weight:bold">Mo</div><div style="text-align:center; font-weight:bold">Di</div>
-            <div style="text-align:center; font-weight:bold">Mi</div><div style="text-align:center; font-weight:bold">Do</div>
-            <div style="text-align:center; font-weight:bold">Fr</div><div style="text-align:center; font-weight:bold">Sa</div>
-            <div style="text-align:center; font-weight:bold">So</div>
+            <div style="text-align:center; font-weight:bold; color:#4a5568;">Mo</div><div style="text-align:center; font-weight:bold; color:#4a5568;">Di</div>
+            <div style="text-align:center; font-weight:bold; color:#4a5568;">Mi</div><div style="text-align:center; font-weight:bold; color:#4a5568;">Do</div>
+            <div style="text-align:center; font-weight:bold; color:#4a5568;">Fr</div><div style="text-align:center; font-weight:bold; color:#a0aec0;">Sa</div>
+            <div style="text-align:center; font-weight:bold; color:#a0aec0;">So</div>
         </div>
     </section>
 
     <aside>
         <div class="card">
-            <h3>📅 Neuer Termin / Geburtstag</h3>
+            <h3 style="margin-top:0; color:#2d3748;">📅 Neuer Termin / Geburtstag</h3>
             <div class="input-group">
                 <input type="text" id="termTitle" placeholder="Was steht an? (Name für Geburtstag)">
                 
                 <div class="time-row">
+                    <span>Vom</span>
                     <input type="date" id="termDate" title="Startdatum" required>
                     <span>bis</span>
                     <input type="date" id="termEndDate" title="Enddatum">
                 </div>
                 
                 <div class="time-row">
+                    <span>Zeit</span>
                     <input type="time" id="termStart" title="Startzeit">
-                    <span>bis</span>
+                    <span>-</span>
                     <input type="time" id="termEnd" title="Endzeit">
                 </div>
 
@@ -109,18 +130,24 @@
                     <option value="la">🏃 Leichtathletik</option>
                     <option value="sch-liah">🏫 Schule Liah</option>
                     <option value="sch-oskar">🏫 Schule Oskar</option>
-                    <option value="geburtstag">🎂 Geburtstag</option>
+                    <option value="geburtstag">🎂 Geburtstag (jährlich)</option>
                 </select>
-                <button onclick="addTerm()">Speichern</button>
+                <div class="btn-row">
+                    <button id="termCancelBtn" class="btn-cancel" onclick="cancelEdit()">Abbrechen</button>
+                    <button id="termSaveBtn" onclick="saveTerm()">Speichern</button>
+                </div>
             </div>
         </div>
 
         <div class="card">
-            <h3>✅ Aufgaben (To-Do)</h3>
+            <h3 style="margin-top:0; color:#2d3748;">✅ Aufgaben (To-Do)</h3>
             <div class="input-group">
                 <input type="text" id="todoInput" placeholder="Hausarbeit, Erledigung...">
-                <input type="date" id="todoDate">
-                <button onclick="addTodo()" style="background:var(--todo-red)">Aufgabe merken</button>
+                <input type="date" id="todoDate" title="Bis wann?">
+                <div class="btn-row">
+                    <button id="todoCancelBtn" class="btn-cancel" onclick="cancelEdit()">Abbrechen</button>
+                    <button id="todoSaveBtn" onclick="saveTodo()" style="background:var(--todo-red)">Aufgabe merken</button>
+                </div>
             </div>
             <div id="todoList" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
@@ -138,7 +165,6 @@
 </div>
 
 <script>
-    // Automatisches Mitspringen des Enddatums
     document.getElementById('termDate').addEventListener('change', function() {
         const endDateInput = document.getElementById('termEndDate');
         endDateInput.min = this.value;
@@ -150,27 +176,27 @@
         'la': '🏃 Leichtathletik', 'sch-liah': '🏫 Schule Liah', 'sch-oskar': '🏫 Schule Oskar', 'geburtstag': 'Geburtstag'
     };
 
-    // Zuverlässige, fest hinterlegte Ferien für die Steiermark!
     const festeFerien = [
         { start: "2026-02-16", end: "2026-02-21", name: "Semesterferien" },
         { start: "2026-03-19", end: "2026-03-19", name: "Josefitag (Schulfrei)" },
         { start: "2026-03-28", end: "2026-04-06", name: "Osterferien" },
         { start: "2026-05-23", end: "2026-05-25", name: "Pfingstferien" },
-        { start: "2026-07-11", end: "2026-09-13", name: "Sommerferien" }, // Die Sommerferien sind jetzt sicher dabei!
+        { start: "2026-07-11", end: "2026-09-13", name: "Sommerferien" }, 
         { start: "2026-10-27", end: "2026-10-31", name: "Herbstferien" },
         { start: "2026-12-24", end: "2027-01-06", name: "Weihnachtsferien" }
     ];
 
-    let db = JSON.parse(localStorage.getItem('famPlanner_v13')) || { terms: [], todos: [] };
+    let db = JSON.parse(localStorage.getItem('famPlanner_v15')) || JSON.parse(localStorage.getItem('famPlanner_v14')) || { terms: [], todos: [] };
     let viewDate = new Date();
     let currentModalDate = null;
     let apiCacheFeiertage = {};
+    let editId = null;
+    let editType = null;
 
     async function fetchFeiertage(year) {
         if(apiCacheFeiertage[year]) return; 
         apiCacheFeiertage[year] = []; 
         try {
-            // Holt nur noch die gesetzlichen Feiertage per API
             let res = await fetch(`https://openholidaysapi.org/PublicHolidays?countryIsoCode=AT&languageIsoCode=DE&validFrom=${year}-01-01&validTo=${year}-12-31`);
             let data = await res.json();
             apiCacheFeiertage[year] = data.map(h => ({ date: h.startDate, name: h.name[0].text }));
@@ -178,10 +204,7 @@
         } catch (e) { console.error("API Fehler", e); }
     }
 
-    function isFerien(dateStr) { 
-        return festeFerien.find(f => dateStr >= f.start && dateStr <= f.end); 
-    }
-    
+    function isFerien(dateStr) { return festeFerien.find(f => dateStr >= f.start && dateStr <= f.end); }
     function getFeiertag(dateStr) { 
         const year = dateStr.substring(0, 4);
         if(!apiCacheFeiertage[year]) return null;
@@ -189,7 +212,7 @@
     }
 
     function save() {
-        localStorage.setItem('famPlanner_v13', JSON.stringify(db));
+        localStorage.setItem('famPlanner_v15', JSON.stringify(db));
         render();
         if(currentModalDate) openDayView(currentModalDate); 
     }
@@ -203,8 +226,8 @@
         if(!apiCacheFeiertage[year]) { fetchFeiertage(year); }
 
         while(grid.children.length > 7) grid.removeChild(grid.lastChild);
-        const first = new Date(year, month, 1).getDay();
-        const offset = (first === 0) ? 6 : first - 1;
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const offset = (firstDayOfMonth === 0) ? 6 : firstDayOfMonth - 1;
         for(let i=0; i < offset; i++) grid.appendChild(document.createElement('div'));
 
         const today = new Date().toISOString().split('T')[0];
@@ -212,14 +235,23 @@
         for(let d=1; d <= new Date(year, month + 1, 0).getDate(); d++) {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'day';
+            const currentLoopDate = new Date(year, month, d);
             const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            
+            // Feinschliff: Wochenende markieren
+            if(currentLoopDate.getDay() === 0 || currentLoopDate.getDay() === 6) {
+                dayDiv.classList.add('weekend');
+            }
             
             dayDiv.onclick = () => openDayView(dateStr);
             
-            if(dateStr === today) dayDiv.classList.add('today');
+            if(dateStr === today) {
+                dayDiv.classList.add('today');
+                dayDiv.innerHTML += `<span class="today-badge">HEUTE</span>`;
+            }
             if(isFerien(dateStr)) dayDiv.classList.add('ferien');
             
-            dayDiv.innerHTML = `<span class="date-num">${d}</span>`;
+            dayDiv.innerHTML += `<span class="date-num">${d}</span>`;
             
             const feiertag = getFeiertag(dateStr);
             if(feiertag) dayDiv.innerHTML += `<div class="ev ev-feiertag">${feiertag.name}</div>`;
@@ -257,21 +289,24 @@
         }
     }
 
+    function formatDateDE(dateString) {
+        if(!dateString) return '';
+        const parts = dateString.split('-');
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
     function openDayView(dateStr) {
         currentModalDate = dateStr;
         const modal = document.getElementById('dayModal');
         const content = document.getElementById('modalContentList');
-        const dParts = dateStr.split('-');
-        document.getElementById('modalDateTitle').innerText = `${dParts[2]}.${dParts[1]}.${dParts[0]}`;
+        document.getElementById('modalDateTitle').innerText = formatDateDE(dateStr);
 
         let html = '';
-        
-        // Anzeige welcher Ferientag es ist!
         const ferienData = isFerien(dateStr);
-        if(ferienData) html += `<div class="day-detail-item" style="background:#e8f5e9; border-left:4px solid #28a745; color:#155724; font-weight:bold;">🎒 ${ferienData.name} (Steiermark)</div>`;
+        if(ferienData) html += `<div class="day-detail-item" style="background:#e8f5e9; border-left:4px solid #28a745; color:#155724; font-weight:bold; border-radius:6px; margin-bottom:8px;">🎒 ${ferienData.name} (Steiermark)</div>`;
         
         const feiertag = getFeiertag(dateStr);
-        if(feiertag) html += `<div class="day-detail-item" style="background:#fff0f0; border-left:4px solid var(--feiertag); color:#c0392b; font-weight:bold;">🇦🇹 Feiertag: ${feiertag.name}</div>`;
+        if(feiertag) html += `<div class="day-detail-item" style="background:#fff0f0; border-left:4px solid var(--feiertag); color:#c0392b; font-weight:bold; border-radius:6px; margin-bottom:8px;">🇦🇹 Feiertag: ${feiertag.name}</div>`;
 
         let daysTerms = db.terms.filter(t => {
             if (t.type === 'geburtstag') return t.date.substring(5) === dateStr.substring(5);
@@ -282,7 +317,7 @@
         
         daysTerms.forEach(t => {
             let timeInfo = (t.start && t.type !== 'geburtstag') ? `🕑 ${t.start}${t.end ? ' - '+t.end : ''} Uhr` : 'Ganztägig';
-            if (t.endDate && t.endDate !== t.date && t.type !== 'geburtstag') timeInfo += ` (Mehrtägig bis ${t.endDate.split('-').reverse().join('.')})`;
+            if (t.endDate && t.endDate !== t.date && t.type !== 'geburtstag') timeInfo += ` (Mehrtägig bis ${formatDateDE(t.endDate)})`;
             
             let displayTitle = t.title;
             let iconStr = '';
@@ -294,22 +329,31 @@
 
             html += `<div class="day-detail-item">
                         <div>
-                            <div class="ev ev-${t.type}">${iconStr}${typeNames[t.type]}</div><br>
-                            <span style="font-size:1.1em; font-weight:bold;">${displayTitle}</span><br>
-                            <small style="color:#7f8c8d;">${timeInfo}</small>
+                            <div class="ev ev-${t.type}" style="width: auto; padding: 4px 8px;">${iconStr}${typeNames[t.type]}</div><br>
+                            <span style="font-size:1.1em; font-weight:bold; color:#2d3748; line-height: 1.4;">${displayTitle}</span><br>
+                            <small style="color:#718096;">${timeInfo}</small>
                         </div>
-                        <span class="del" style="font-size:1.5em;" onclick="deleteItem('terms', ${t.id}); event.stopPropagation();" title="Löschen">🗑️</span>
+                        <div class="action-btns">
+                            <span class="action-btn" onclick="editItem('terms', ${t.id}); event.stopPropagation();" title="Bearbeiten">✏️</span>
+                            <span class="action-btn del" onclick="deleteItem('terms', ${t.id}); event.stopPropagation();" title="Löschen">🗑️</span>
+                        </div>
                      </div>`;
         });
 
         db.todos.filter(t => t.date === dateStr).forEach(t => {
             html += `<div class="day-detail-item">
-                        <div><div class="ev ev-todo">📍 To-Do (Frist)</div><br><span style="font-size:1.1em; font-weight:bold;">${t.text}</span></div>
-                        <span class="del" style="font-size:1.5em;" onclick="deleteItem('todos', ${t.id}); event.stopPropagation();" title="Löschen">🗑️</span>
+                        <div>
+                            <div class="ev ev-todo" style="width: auto; padding: 4px 8px;">📍 To-Do (Frist)</div><br>
+                            <span style="font-size:1.1em; font-weight:bold; color:#2d3748;">${t.text}</span>
+                        </div>
+                        <div class="action-btns">
+                            <span class="action-btn done" onclick="deleteItem('todos', ${t.id}); event.stopPropagation();" title="Erledigt!">✔️</span>
+                            <span class="action-btn" onclick="editItem('todos', ${t.id}); event.stopPropagation();" title="Bearbeiten">✏️</span>
+                        </div>
                      </div>`;
         });
 
-        if(html === '') html = '<p style="text-align:center; color:#95a5a6; padding: 20px;">Keine Termine für diesen Tag.</p>';
+        if(html === '') html = '<div class="empty-state">🎉 Kein Stress heute! Es stehen keine Termine an.</div>';
         content.innerHTML = html;
         modal.style.display = 'flex';
     }
@@ -321,7 +365,53 @@
         }
     }
 
-    function addTerm() {
+    function editItem(type, id) {
+        const item = db[type].find(x => x.id === id);
+        if (!item) return;
+
+        editId = id;
+        editType = type;
+
+        if (type === 'terms') {
+            document.getElementById('termTitle').value = item.title;
+            document.getElementById('termDate').value = item.date;
+            document.getElementById('termEndDate').value = item.endDate || item.date;
+            document.getElementById('termStart').value = item.start || '';
+            document.getElementById('termEnd').value = item.end || '';
+            document.getElementById('termType').value = item.type;
+            
+            document.getElementById('termSaveBtn').innerText = 'Änderung speichern';
+            document.getElementById('termSaveBtn').style.background = '#e67e22';
+            document.getElementById('termCancelBtn').style.display = 'inline-block';
+        } else if (type === 'todos') {
+            document.getElementById('todoInput').value = item.text;
+            document.getElementById('todoDate').value = item.date || '';
+            
+            document.getElementById('todoSaveBtn').innerText = 'Änderung speichern';
+            document.getElementById('todoSaveBtn').style.background = '#e67e22';
+            document.getElementById('todoCancelBtn').style.display = 'inline-block';
+        }
+        closeModal({}, true);
+    }
+
+    function cancelEdit() {
+        editId = null;
+        editType = null;
+        
+        document.getElementById('termTitle').value = ''; document.getElementById('termDate').value = ''; 
+        document.getElementById('termEndDate').value = ''; document.getElementById('termStart').value = ''; 
+        document.getElementById('termEnd').value = '';
+        document.getElementById('termSaveBtn').innerText = 'Speichern';
+        document.getElementById('termSaveBtn').style.background = '#2f3640';
+        document.getElementById('termCancelBtn').style.display = 'none';
+
+        document.getElementById('todoInput').value = ''; document.getElementById('todoDate').value = '';
+        document.getElementById('todoSaveBtn').innerText = 'Aufgabe merken';
+        document.getElementById('todoSaveBtn').style.background = 'var(--todo-red)';
+        document.getElementById('todoCancelBtn').style.display = 'none';
+    }
+
+    function saveTerm() {
         const title = document.getElementById('termTitle').value;
         const date = document.getElementById('termDate').value;
         const endDate = document.getElementById('termEndDate').value || date;
@@ -330,33 +420,54 @@
         const type = document.getElementById('termType').value;
         
         if(!title || !date) return;
-        db.terms.push({ id: Date.now(), title, date, endDate, start, end, type });
-        
-        document.getElementById('termTitle').value = ''; document.getElementById('termDate').value = ''; 
-        document.getElementById('termEndDate').value = ''; document.getElementById('termStart').value = ''; document.getElementById('termEnd').value = '';
+
+        if (editId && editType === 'terms') {
+            let index = db.terms.findIndex(x => x.id === editId);
+            if (index !== -1) db.terms[index] = { id: editId, title, date, endDate, start, end, type };
+            cancelEdit();
+        } else {
+            db.terms.push({ id: Date.now(), title, date, endDate, start, end, type });
+            cancelEdit(); 
+        }
         save();
     }
 
-    function addTodo() {
+    function saveTodo() {
         const text = document.getElementById('todoInput').value;
         const date = document.getElementById('todoDate').value;
         if(!text) return;
-        db.todos.push({ id: Date.now(), text, date });
-        document.getElementById('todoInput').value = ''; document.getElementById('todoDate').value = '';
+
+        if (editId && editType === 'todos') {
+            let index = db.todos.findIndex(x => x.id === editId);
+            if (index !== -1) db.todos[index] = { id: editId, text, date };
+            cancelEdit();
+        } else {
+            db.todos.push({ id: Date.now(), text, date });
+            cancelEdit();
+        }
         save();
     }
 
     function renderTodos() {
         const container = document.getElementById('todoList');
         container.innerHTML = '';
+        
+        if(db.todos.length === 0) {
+            container.innerHTML = '<div class="empty-state">🎉 Alles erledigt! Keine Aufgaben offen.</div>';
+            return;
+        }
+
         db.todos.sort((a,b) => {
             if (!a.date) return 1; if (!b.date) return -1;
             return (a.date > b.date) ? 1 : -1;
         }).forEach(t => {
-            const dateStr = t.date ? ` (Bis: ${new Date(t.date).toLocaleDateString('de-DE')})` : '';
+            const dateStr = t.date ? ` (Bis: ${formatDateDE(t.date)})` : '';
             container.innerHTML += `<div class="list-item">
-                <span><b>${t.text}</b><br><small style="color:#7f8c8d;">${dateStr}</small></span>
-                <span class="del" onclick="deleteItem('todos', ${t.id})">✕</span>
+                <span><b style="color:#2d3748;">${t.text}</b><br><small style="color:#718096;">${dateStr}</small></span>
+                <div class="action-btns">
+                    <span class="action-btn done" onclick="deleteItem('todos', ${t.id})" title="Erledigt!">✔️</span>
+                    <span class="action-btn" onclick="editItem('todos', ${t.id})" title="Bearbeiten">✏️</span>
+                </div>
             </div>`;
         });
     }
